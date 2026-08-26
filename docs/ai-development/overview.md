@@ -4,117 +4,141 @@
 
 この文書は、AI駆動開発の責務、承認境界、再開に必要な永続状態の正本である。アプリケーション固有の実装詳細は扱わない。
 
-## Source of Truth
+## 正本
 
-| 情報 | Source of Truth | 責務 |
+| 情報 | 正本 | 責務 |
 |---|---|---|
-| Requirement | GitHub Issue | Goal、Requirements、Acceptance Criteria、必要なOut of scope / Context |
-| Design | `docs/` | 現在有効なarchitecture、boundary、quality strategy、AI flow |
-| Implementation | codeとautomated tests | 実際の振る舞いと正確な実装詳細 |
-| Task | `.tasks/active/` と `.tasks/completed/` | 着手済み作業の実施・検証・review・feedback記録 |
+| 要求 | GitHub Issue | 要求原文と、目的・要件・受入条件・必要な制約・対象外・未確定事項からなる要求分析 |
+| 設計 | `docs/` | 現在有効なアーキテクチャ、責務境界、品質戦略、AI開発フロー |
+| 実装 | コードと自動テスト | 実際の振る舞いと正確な実装詳細 |
+| タスク | `.tasks/active/` と `.tasks/completed/` | 着手済み作業の実施・検証・レビュー・改善フィードバック記録 |
 
-Task Planはチャット上の承認対象であり、永続的な仕様ではない。Task fileへRequirement全文やDesign全文を複製しない。
+タスク計画はチャット上の承認対象であり、永続的な仕様ではない。Task file（タスク記録）へ要求全文や設計全文を複製しない。
 
 ## 基本フロー
 
 ```text
-Requirement Issue
-        |
-        v
-Design Impact Check
-        |
-        +-- Design変更なし ---------------------+
-        |                                       |
-        +-- Design変更あり -> 案提示 -> 承認     |
-                              -> Design PR       |
-                              -> merge ----------+
-                                                |
-                                                v
-Task Planning -> 人間承認 -> Implementation -> Review -> Verify
-                                                |
-                                                v
-                                      Draft PR -> develop
-                                                |
-                                                v
-                               Requirement充足確認 -> Issue Close
+要求Issue
+    |
+    v
+設計影響確認
+    |
+    +-- 設計変更なし -------------------+
+    |                                   |
+    +-- 設計変更あり -> 案提示 -> 承認   |
+                          -> 設計PR       |
+                          -> merge -------+
+                                        |
+                                        v
+タスク分解 -> 人間承認 -> 実装 -> レビュー -> 検証
+                                        |
+                                        v
+                              Draft PR -> develop
+                                        |
+                                        v
+                              受入条件確認 -> Issue完了
 ```
 
-Designの検討は必須だが、Design文書の変更は毎回必須ではない。
+設計影響の検討は必須だが、設計文書の変更は毎回必須ではない。
 
-## Requirement Issue
+## 要求Issue
 
-原則1要求1 Issueとし、重複を許容する。既存コードや既存IssueですでにAcceptance Criteriaを満たす場合は、新しい実装をせず根拠を示して完了できる。Issue templateはGoal、Requirements、Acceptance Criteriaを必須、Out of scopeとContextを任意とする。
+原則1要求1 Issueとし、重複を許容する。要求Issueは、要求者から受け取った「要求」と、その内容を明確化した「要求分析」を分離して保持する。Issue Formでは最上段の項目名を「要求」とし、その内容には要求原文をコピーして保存する。
 
-## Design Impact Check
+| 区分 | 項目 | 必須 | 内容 |
+|---|---|---|---|
+| 要求 | 原文 | 必須 | 要求者から受け取った内容を、AIによる要約や解釈へ置き換えず、原則として内容を変えずに記載する |
+| 要求分析 | 目的 | 必須 | なぜ必要なのか、何ができる状態になればよいのかを簡潔に整理する |
+| 要求分析 | 要件 | 必須 | 実装方法ではなく、満たす必要がある具体的な条件を整理する |
+| 要求分析 | 受入条件 | 必須 | 要求達成を客観的に判断できる条件を、可能な限りチェックリストとして整理する |
+| 要求分析 | 制約 | 任意 | 互換性、セキュリティ、利用範囲など、要求分析時点で明らかな制約を整理する |
+| 要求分析 | 対象外 | 任意 | 今回の要求で扱わない範囲を整理する |
+| 要求分析 | 未確定事項 | 任意 | 要求として未確定で、後続の確認が必要な事項だけを整理する |
 
-Task Planning前に `$check-design-impact` を使用し、現在のIssue、`develop`、`docs/`、実装を根拠として次を確認する。
+要求分析は要求原文の単なる言い換えにしない。要件や制約で実装方法を決定せず、設計段階で判断する事項を要求自体の未確定事項と混同しない。
 
-- frontend / backend責務
-- service境界とdependency方向
+要求Issueには、利用するフレームワークやライブラリ、API endpoint、DB column、対象ファイル、実装手順、Agent構成、タスク一覧などの設計・実装・タスク情報を混在させない。これらは必要に応じて、`docs/`、設計影響確認、タスク分解、`.tasks/`、実装で扱う。
+
+既存コードや既存Issueですでに受入条件を満たす場合は、新しい実装をせず根拠を示して完了できる。
+
+## 人間向け文章の言語
+
+人間が読むMarkdown本文・見出し・説明、Issue Formの表示文、Task記録、Skill本文、Pull Request向け説明などは、原則として日本語で記載する。逐語訳ではなく、日本語話者が不要な言語切り替えをせず自然に理解できる表現を優先する。
+
+ファイル名、ディレクトリ名、Skill名と呼び出し名、設定key、enum値、model identifier、branch名、command、package名、frameworkや製品の正式名称、API path、コード識別子など、機械的または技術的に英語を維持すべきものは変更しない。`Draft PR`、`develop`、`Main`、`Worker`、`Reviewer`など、英語のままの方が自然または正確な正式名称・開発用語も文脈に応じて維持する。
+
+日本語化だけを目的としたrenameや、新しい文書カテゴリの追加は行わない。詳細な方針を複数のファイルへ重複させず、この文書を参照する簡潔な案内に留める。
+
+## 設計影響確認
+
+タスク分解前に `$check-design-impact` を使用し、現在のIssue、`develop`、`docs/`、実装を根拠として次を確認する。
+
+- frontend / backendの責務
+- サービス境界と依存方向
 - API契約
-- authentication / authorization / session
-- persistence / DBとdata ownership
-- security boundary
-- testing strategyとCI / quality gate
-- AI development flow
+- 認証・認可・セッション
+- 永続化・DBとデータ所有権
+- セキュリティ境界
+- テスト戦略とCI・品質ゲート
+- AI開発フロー
 - Agent / Skill責務
 
-影響がなければ、その理由と根拠を簡潔に示してTask Planningへ進む。単なる事実訂正や明確化もDesign PRとして実装と分離できる。
+影響がなければ、その理由と根拠を簡潔に示してタスク分解へ進む。単なる事実訂正や明確化も設計PRとして実装と分離できる。
 
-新しいarchitecture判断、既存architecture変更、新しいservice / dependency、認証方式、persistence方式、API契約方式、testing strategyの大幅変更、新しいDesign文書やtop-level文書カテゴリ、AI flowの重要変更が必要なら、勝手に決めず選択肢・影響・推奨案を人間へ提示する。承認後に元Issueを `Refs #<number>` で参照するDesign PRを作り、mergeまでImplementationを開始しない。Design PRはRequirement Issueをcloseしない。
+新しいアーキテクチャ判断、既存アーキテクチャの変更、新しいサービスや依存関係、認証方式、永続化方式、API契約方式、テスト戦略の大幅変更、新しい設計文書やtop-level文書カテゴリ、AI開発フローの重要変更が必要なら、勝手に決めず選択肢・影響・推奨案を人間へ提示する。承認後に元Issueを `Refs #<number>` で参照する設計PRを作り、mergeまで実装を開始しない。設計PRは要求Issueをcloseしない。
 
-## Task Planningとapproval gate
+## タスク分解と承認ゲート
 
-Design gateを通過した後、`$plan-tasks` で1 Task = 1責務のレビュー可能な計画をチャットへ提示する。各Taskは目的、対象範囲、作業内容、対象外、dependency、concerns、completion criteria、priority、agent strategy、必須review経路を持つ。人間の明示承認前に書き込みを開始しない。
+設計承認ゲートを通過した後、`$plan-tasks` で1 Task = 1責務のレビュー可能な計画をチャットへ提示する。各Taskは目的、対象範囲、作業内容、対象外、依存、懸念事項、完了条件、優先度、Agent構成、必須レビュー経路を持つ。人間の明示承認前に書き込みを開始しない。
 
-agent strategyは次から選ぶ。
+Agent構成（`agent strategy`）は次から選ぶ。
 
-| Strategy | 必須経路 |
+| Agent構成 | 必須経路 |
 |---|---|
-| `parent-only` | Mainが実装・self review・最終判断 |
-| `worker-parent-review` | Workerが実装・self review、Mainがreview・最終判断 |
-| `worker-reviewer-parent` | Workerが実装・self review、独立Reviewerがreview、Mainが最終review |
+| `parent-only` | Mainが実装・セルフレビュー・最終判断 |
+| `worker-parent-review` | Workerが実装・セルフレビュー、Mainがレビュー・最終判断 |
+| `worker-reviewer-parent` | Workerが実装・セルフレビュー、独立Reviewerがレビュー、Mainが最終レビュー |
 
-承認対象はstrategyと必須経路までであり、人数や担当範囲は固定しない。承認後にMainが責務境界、独立性、dependency、file競合、統合コストから必要最小限を決める。目的、architecture判断、scope、対象外、完了条件、dependencyの意味、agent種別、必須review経路を変える場合は再承認する。検証結果、review結果、agent allocation、commit、PRなどのbookkeepingはscopeを変えない限り追加承認を要しない。
+承認対象はAgent構成と必須経路までであり、人数や担当範囲は固定しない。承認後にMainが責務境界、独立性、依存、ファイル競合、統合コストから必要最小限を決める。目的、アーキテクチャ判断、対象範囲、対象外、完了条件、依存の意味、Agent種別、必須レビュー経路を変える場合は再承認する。検証結果、レビュー結果、Agent割り当て、commit、PRなどの記録更新は、対象範囲を変えない限り追加承認を要しない。
 
 ## Task file
 
-未着手PlanはGitへ保存しない。Taskへ着手した時点で `.tasks/TEMPLATE.md` から `.tasks/active/<date>-<task>.md` を作り、実装と同じbranch / Pull Requestへ含める。Task fileだけのPull Requestは作らない。
+未着手のタスク計画はGitへ保存しない。Taskへ着手した時点で `.tasks/TEMPLATE.md` から `.tasks/active/<date>-<task>.md` を作り、実装と同じbranch / Pull Requestへ含める。Task fileだけのPull Requestは作らない。
 
-Task fileはSource Issueと現在のDesignを参照し、実施結果、検証、CI、agent allocation、review、flow feedback、commit、Pull Requestを記録する。完了時に `.tasks/completed/` へ移す。
+Task fileは元Issueと現在の設計を参照し、実施結果、検証、CI、Agent割り当て、レビュー、フロー改善フィードバック、commit、Pull Requestを記録する。完了時に `.tasks/completed/` へ移す。
 
 ## Main / Worker / Reviewer
 
-- Main: Task Planning、approval boundary、agent allocation、architecture判断、統合、最終review、最終判断を所有する。
-- Worker: 割り当て範囲の実装、必要な検証、self reviewを行い、結果・疑問・flow feedbackをMainへ返す。
-- Reviewer: Workerから独立して、Requirement充足、回帰、architecture / boundary違反、検証不足を確認し、findingとflow feedbackをMainへ返す。
+- Main: タスク分解、承認境界、Agent割り当て、アーキテクチャ判断、統合、最終レビュー、最終判断を所有する。
+- Worker: 割り当て範囲の実装、必要な検証、セルフレビューを行い、結果・疑問・フロー改善フィードバックをMainへ返す。
+- Reviewer: Workerから独立して、要求充足、回帰、アーキテクチャや責務境界の違反、検証不足を確認し、指摘とフロー改善フィードバックをMainへ返す。
 
 modelとreasoning effortは `.codex/` の責務であり、Skillへ記載しない。
 
-## ReviewとVerification
+## レビューと検証
 
-WorkerまたはMainは実装後にself reviewを行う。承認済みstrategyのreview経路を満たした後、MainがIssue、Design、Task file、実diff、検証結果を直接確認する。findingは正しさ、安全性、回帰、boundary、検証不足を重要度順に扱い、好みだけの指摘を避ける。
+WorkerまたはMainは実装後にセルフレビューを行う。承認済みAgent構成のレビュー経路を満たした後、MainがIssue、設計、Task file、実際のdiff、検証結果を直接確認する。指摘は正しさ、安全性、回帰、責務境界、検証不足を重要度順に扱い、好みだけの指摘を避ける。
 
-Verificationは `$verify-changes` を使い、共通入口 `sh scripts/verify.sh` でlint、typecheck、Unit Test、build、`git diff --check`を実行する。riskに応じたTask固有検証を追加し、未実施・失敗は理由と残るriskを記録して成功扱いにしない。
+検証は `$verify-changes` を使い、共通入口 `sh scripts/verify.sh` でlint、typecheck、Unit Test、build、`git diff --check`を実行する。リスクに応じたTask固有検証を追加し、未実施・失敗は理由と残るリスクを記録して成功扱いにしない。
 
 ## Pull RequestとIssue完了
 
-通常のImplementationは `develop` base、`codex/<task-name>` branch、1 Task = 1 Draft Pull Requestとする。GitHub remote操作はGitHub連携だけを使用し、`git push`、`gh`、直接API callへfallbackしない。PRはmergeしない。
+通常の実装は `develop` base、`codex/<task-name>` branch、1 Task = 1 Draft Pull Requestとする。GitHubへのリモート操作はGitHub連携だけを使用し、`git push`、`gh`、GitHub APIの直接呼び出しへ切り替えない。PRはmergeしない。
 
-TaskのDraft PR作成後は、Requirement Issue、現在のDesign、Task file、PR、diff、review / CI結果から別チャットで再開できる。すべてのAcceptance Criteriaを満たした根拠が揃うまでRequirement Issueをcloseしない。
+TaskのDraft PR作成後は、要求Issue、現在の設計、Task file、PR、diff、レビュー・CI結果から別チャットで再開できる。すべての受入条件を満たした根拠が揃うまで要求Issueをcloseしない。
 
-## Chatと永続状態の境界
+## チャットと永続状態の境界
 
-- Design Impact CheckとDesign PRはImplementationとは別チャットでよい。
-- Design PR merge後はIssue、現在の`develop`、現在の`docs/`だけで再開できる状態にする。
-- Task Planningから最初のImplementation Draft PRまでは同じチャットで継続する。
+- 設計影響確認と設計PRは実装とは別チャットでよい。
+- 設計PRのmerge後はIssue、現在の`develop`、現在の`docs/`だけで再開できる状態にする。
+- タスク分解から最初の実装Draft PRまでは同じチャットで継続する。
 - Draft PR後は永続状態から別チャットで復元できる。
-- 未着手Planは復元対象にせず、必要なら現在状態から再計画する。
+- 未着手のタスク計画は復元対象にせず、必要なら現在状態から再計画する。
 
 過去チャットの記憶だけを判断根拠にしない。
 
-## Flow feedback loop
+## フロー改善フィードバック
 
-Worker / Reviewerは中央ファイルを直接更新せず、困った点と改善候補をMainへ返す。Mainは `$record-flow-feedback` を使い、該当Task fileのFlow feedbackへcategory、symptom、impact、evidence、suggestionを記録する。候補例はTask粒度、approval差し戻し、Skillの曖昧さ、Design不足、検証command、review往復、不要手順である。
+Worker / Reviewerは中央ファイルを直接更新せず、困った点と改善候補をMainへ返す。Mainは `$record-flow-feedback` を使い、該当Task fileへ分類、発生事象、影響、根拠、改善案を記録する。候補例はTaskの粒度、承認差し戻し、Skillの曖昧さ、設計不足、検証コマンド、レビュー往復、不要手順である。
 
-将来は `.tasks/completed/` を読み取り、繰り返すfeedbackからSkill改善候補を作れる。初期段階では中央集約ファイル、自動scheduler、feedbackの自動適用を導入しない。改善自体がAI flowやSkill責務を変える場合は新しいRequirementとDesign Impact Checkを通す。
+将来は `.tasks/completed/` を読み取り、繰り返すフィードバックからSkill改善候補を作れる。初期段階では中央集約ファイル、自動スケジューラー、フィードバックの自動適用を導入しない。改善自体がAI開発フローやSkill責務を変える場合は、新しい要求と設計影響確認を通す。

@@ -67,4 +67,3 @@ body:
       placeholder: 追加の確認や判断が必要な事項
     validations:
       required: false
-

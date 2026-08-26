@@ -107,4 +107,3 @@ RequirementやDesign全文は複製せず、Source Issueと現在の `docs/` を
 ## 完了日時
 
 - 2026-08-27
-

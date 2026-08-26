@@ -1,0 +1,49 @@
+name: Requirement
+description: 1つの要求とAcceptance Criteriaを定義する
+title: "[Requirement] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        原則として1要求につき1 Issueを作成してください。実装案ではなく、達成したい結果を記載します。
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: この要求で達成したい結果を記載してください。
+      placeholder: 利用者または開発フローがどの状態になるべきか
+    validations:
+      required: true
+  - type: textarea
+    id: requirements
+    attributes:
+      label: Requirements
+      description: 必要な振る舞い・制約を箇条書きで記載してください。
+      placeholder: |
+        - 必要な振る舞い
+        - 守るべき制約
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance Criteria
+      description: 完了を客観的に確認できる条件をチェックリストで記載してください。
+      placeholder: |
+        - [ ] 確認可能な条件
+    validations:
+      required: true
+  - type: textarea
+    id: out-of-scope
+    attributes:
+      label: Out of scope
+      description: 今回扱わない事項があれば記載してください。
+    validations:
+      required: false
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: 背景、関連Issue、参考情報があれば記載してください。
+    validations:
+      required: false

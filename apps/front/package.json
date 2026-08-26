@@ -1,0 +1,16 @@
+{
+  "name": "@matsu-ai-dev-flow-lab/front",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  }
+}

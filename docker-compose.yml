@@ -1,0 +1,68 @@
+name: matsu-ai-dev-flow-lab
+
+x-workspace-service: &workspace-service
+  build:
+    context: .
+    target: development
+  image: matsu-ai-dev-flow-lab:local
+  init: true
+  working_dir: /workspace
+
+x-development-volumes: &development-volumes
+  - .:/workspace
+  - node_modules:/workspace/node_modules
+
+services:
+  setup:
+    <<: *workspace-service
+    command: ["npm", "ci"]
+    volumes: *development-volumes
+
+  api:
+    <<: *workspace-service
+    command: ["npm", "run", "dev", "--workspace", "@matsu-ai-dev-flow-lab/api"]
+    environment:
+      PORT: "3000"
+    ports:
+      - "3000:3000"
+    volumes: *development-volumes
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3000/api/health').then((response) => { if (!response.ok) process.exit(1) }).catch(() => process.exit(1))",
+        ]
+      interval: 2s
+      timeout: 2s
+      retries: 15
+
+  front:
+    <<: *workspace-service
+    command:
+      [
+        "npm",
+        "run",
+        "dev",
+        "--workspace",
+        "@matsu-ai-dev-flow-lab/front",
+        "--",
+        "--host",
+        "0.0.0.0",
+      ]
+    environment:
+      API_PROXY_TARGET: http://api:3000
+    ports:
+      - "5173:5173"
+    volumes: *development-volumes
+    depends_on:
+      api:
+        condition: service_healthy
+
+  verify:
+    <<: *workspace-service
+    command: ["npm", "run", "verify"]
+
+volumes:
+  node_modules:

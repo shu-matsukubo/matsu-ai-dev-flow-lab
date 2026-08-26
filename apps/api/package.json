@@ -1,0 +1,16 @@
+{
+  "name": "@matsu-ai-dev-flow-lab/api",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run",
+    "build": "tsc -p tsconfig.build.json"
+  },
+  "dependencies": {
+    "@hono/node-server": "2.1.1",
+    "hono": "4.13.5"
+  }
+}

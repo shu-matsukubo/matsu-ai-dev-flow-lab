@@ -2,7 +2,7 @@
 
 - Source Issue: ユーザー依頼（2026-08-26、初期構築時点でIssue未作成）
 - Design PR: なし（初期Designを同時にbootstrap）
-- 状態: `active`
+- 状態: `completed`
 - Task key: `bootstrap-001`
 - priority: `normal`
 - agent strategy: `parent-only`
@@ -87,17 +87,19 @@ AI駆動開発フローを安全に育てるための最小なrepository、appli
 | category | symptom | impact | evidence | suggestion |
 |---|---|---|---|---|
 | verify | container内の `npm ci` が企業TLS interception CAを信頼せず失敗した | 初回Docker buildとsetup / refreshを実行できなかった | `UNABLE_TO_VERIFY_LEAF_SIGNATURE` を確認。公開CAをBuildKit secretで渡すと成功 | `NPM_CA_FILE` によるoptionalな公開CA注入を標準化し、image・repository・lockfileへ残さない（今回実装済み） |
+| verify | 初回verify時は全fileがuntrackedで、`git diff --check` が末尾の余分な空行を検出しなかった | staging後の最終reviewで追加整形とverify再実行が必要になった | `git diff --cached --check` が複数fileの `new blank line at EOF` を報告し、整形・再staging後に成功 | empty repository bootstrapでは、最終verify前に追跡予定fileをstagingしてdiff gateの対象にする |
 | other | project-level `.codex/agents` が存在するとCodex DesktopのWindows sandbox helper setup refreshが失敗した | 通常sandboxのterminal / patch操作が中断した | agent TOMLを退避すると復旧し、公式schema準拠と標準TOML parse成功後も配置時だけ再現 | Codex Desktop側でproject custom agentとWindows sandbox helperの組合せを調査する。repository設定自体は保持し、現環境の制約として報告する |
 | skill | 公式 `quick_validate.py` が実行環境のPyYAML不足とWindows CP932出力でそのまま動作しなかった | Skill形式確認に一時dependencyとUTF-8指定が必要だった | bundled Pythonへ一時PyYAMLを追加し `PYTHONUTF8=1` で7 Skillが成功 | validatorのdependency明示とWindows UTF-8既定化を検討する |
 
 ## commit
 
-- 初期commit作成後にSHAを追記する
+- implementation: `82bce234edc2776e6762cc05b79b094f0a233a75`
+- completion bookkeeping: この完了記録を含む後続local commit
 
 ## Pull Request
 
-- 未作成
+- 未作成。remote repositoryがemptyで、利用可能なGitHub連携は既存parent SHAを必要とするため安全なroot commitを作成できない。禁止された`git push`、`gh`、直接API callへfallbackしていない
 
 ## 完了日時
 
-- 未完了
+- 2026-08-26 23:23:20 +09:00

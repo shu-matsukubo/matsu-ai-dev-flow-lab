@@ -74,7 +74,7 @@ RequirementやDesign全文は複製せず、Source Issueと現在の `docs/` を
 
 ## CI
 
-- Draft PR公開前のため未確認
+- Draft PR `#3` を作成済み。bookkeeping反映後の最終headで確認する
 
 ## agent allocation
 
@@ -98,11 +98,14 @@ RequirementやDesign全文は複製せず、Source Issueと現在の `docs/` を
 
 ## commit
 
-- 未作成
+- implementation: `06239d0ed7d10a8ee86979a62458a366d82e3bcc`（`feat: update requirement issue form`）
 
 ## Pull Request
 
-- 未作成
+- URL: `https://github.com/shu-matsukubo/matsu-ai-dev-flow-lab/pull/3`
+- head: `codex/requirement-issue-form`
+- base: `develop`
+- draft: `true`
 
 ## 完了日時
 

@@ -1,49 +1,70 @@
-name: Requirement
-description: 1つの要求とAcceptance Criteriaを定義する
-title: "[Requirement] "
+name: 要求
+description: 1つの要求と、その要求分析を記録する
+title: "[要求] "
 body:
+  - type: textarea
+    id: original-request
+    attributes:
+      label: 要求
+      description: 要求原文を、内容を変えずにそのままコピーしてください。
+      placeholder: 要求原文をそのまま貼り付けてください。
+    validations:
+      required: true
   - type: markdown
     attributes:
       value: |
-        原則として1要求につき1 Issueを作成してください。実装案ではなく、達成したい結果を記載します。
+        ## 要求分析
+
+        要求原文をもとに、以下の項目を記載してください。実装方法や作業手順ではなく、実現したい結果と判断基準を記載します。
   - type: textarea
-    id: goal
+    id: purpose
     attributes:
-      label: Goal
-      description: この要求で達成したい結果を記載してください。
-      placeholder: 利用者または開発フローがどの状態になるべきか
+      label: 目的
+      description: この要求で実現したい結果や、解決したい課題を記載してください。
+      placeholder: 利用者または開発フローがどのような状態になるべきか
     validations:
       required: true
   - type: textarea
     id: requirements
     attributes:
-      label: Requirements
-      description: 必要な振る舞い・制約を箇条書きで記載してください。
+      label: 要件
+      description: 要求を満たすために必要な振る舞いや条件を箇条書きで記載してください。
       placeholder: |
         - 必要な振る舞い
-        - 守るべき制約
+        - 守るべき条件
     validations:
       required: true
   - type: textarea
     id: acceptance-criteria
     attributes:
-      label: Acceptance Criteria
-      description: 完了を客観的に確認できる条件をチェックリストで記載してください。
+      label: 受入条件
+      description: 要求が満たされたことを客観的に確認できる条件をチェックリストで記載してください。
       placeholder: |
         - [ ] 確認可能な条件
     validations:
       required: true
   - type: textarea
-    id: out-of-scope
+    id: constraints
     attributes:
-      label: Out of scope
-      description: 今回扱わない事項があれば記載してください。
+      label: 制約
+      description: あらかじめ守る必要がある制約があれば記載してください。
+      placeholder: 技術・運用・期限などの制約
     validations:
       required: false
   - type: textarea
-    id: context
+    id: out-of-scope
     attributes:
-      label: Context
-      description: 背景、関連Issue、参考情報があれば記載してください。
+      label: 対象外
+      description: 今回の要求では扱わない事項があれば記載してください。
+      placeholder: 今回は扱わない事項
     validations:
       required: false
+  - type: textarea
+    id: undecided-items
+    attributes:
+      label: 未確定事項
+      description: まだ判断や確認が必要な事項があれば記載してください。
+      placeholder: 追加の確認や判断が必要な事項
+    validations:
+      required: false
+

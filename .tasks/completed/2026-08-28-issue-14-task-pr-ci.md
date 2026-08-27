@@ -4,7 +4,7 @@
 - 設計PR: `#15`
 - Issue branch: `issue/14`
 - Issue統合PR: `#16`
-- 状態: `active`
+- 状態: `completed`
 - タスクキー: `issue-14-task-pr-ci`
 - 優先度: `high`
 - Agent構成: `worker-parent-review`
@@ -46,7 +46,7 @@
 
 ## 懸念事項
 
-- 現行workflowの`pull_request.branches`は`main`と`develop`だけを対象とするため、この設定変更を含む最初のTask PR自身ではCIが起動しない
+- 公開前は現行base filterにより最初のTask PR自身ではCIが起動しない可能性を想定したが、公開後にCI run `#23`が起動して成功し、懸念は解消した
 - Task PR公開前にローカルの`sh scripts/verify.sh`成功を必須とし、Docker検証不能時は成功扱いにしない
 - local Task branchは`5340e3e`を起点とし、remote Issue branchは同じtreeを指す初期化commit `e9546b4`がheadであるため、remote公開時は`e9546b4`をparentにして最終tree一致を確認する
 
@@ -57,12 +57,12 @@
 - [x] 複雑なworkflow分岐、branch自動同期、新しい品質ゲートを追加していない
 - [x] 共通品質ゲートが成功している
 - [x] WorkerセルフレビューとMainレビューが完了している
-- [ ] Task記録と実装が同じTask PRに含まれている
+- [x] Task記録と実装が同じTask PRに含まれている
 
 ## 実装結果
 
 - 変更内容: `.github/workflows/ci.yml`の`pull_request.branches`へquoted `'issue/**'`を1行追加した。`main`・`develop`向けPull Request、既存push branches、権限、job構成、`sh scripts/verify.sh`呼び出しは維持した
-- 残るリスク: 現行base filterにより本Task PR自身ではCIが起動しない見込みで、actionlintも環境に未導入。本変更は1行のbranch filter追加であり、共通品質ゲート成功とWorker・Mainの差分レビューで補完した
+- 残るリスク: actionlintは環境に未導入のため未実施。ただしGitHubがworkflowを受理してTask PRのCI run `#23`を起動し、共通品質ゲートは成功した。実装上の未解消指摘はない
 
 ## ローカル検証
 
@@ -80,8 +80,10 @@
 
 ## CI
 
-- 現行workflowのbase filterにより、本Task PRでは起動しない見込み
-- Task PR未作成のため未確認
+- GitHub Actions CI run `#23`（run id `33120791471`）がTask PR `#17`で起動した
+- 状態: `completed`
+- 結果: `success`
+- 公開前のbootstrap懸念と異なり、追加した`issue/**` filterを含むworkflowがこのTask PR自身で有効になったことを実績で確認した
 
 ## Agent割り当て
 
@@ -102,18 +104,26 @@
 | `skill` | 最新`develop`と同一commitのIssue branchからDraft PRを作成できなかった | 承認直後のIssue統合Draft PR作成が一度停止した | GitHubが`No commits between develop and issue/14`を返した | Issue統合Draft PRを即時作成する場合の内容変更を伴わない初期化commitを、調整Skillの開始手順へ明記する |
 | `skill` | remote Issue branchへ初期化commitを作成した後もlocal Issue branchとTask branchは初期化前commitを指した | local branch graphだけではTask branchがremote Issue branchの最新headから開始したことを表現できず、公開時にremote parentの再構成が必要になった | local `task/14-task-pr-ci`は`5340e3e`、remote `issue/14`は同一treeの`e9546b4` | 初期化commit作成後にlocal Issue branchへ同じ状態を同期してからTask branchを作成する手順を調整Skillへ明記する |
 | `verify` | Docker Desktop backendが古いruntime socketを削除できずcrashした | 共通品質ゲートを実行できず、Task PR公開を一時停止した | host logの`remove ... sailor-ingest.sock: The file cannot be accessed by the system`と複数回の`sh scripts/verify.sh`失敗。ユーザーによるDocker起動後の再実行は成功 | 共通検証前にDocker daemonのpreflightを行い、runtime socket障害時の安全な復旧またはOS再起動手順を環境運用として整理する |
+| `verify` | 最初のTask PRではCIが起動しないと見込んだが、実際にはCI run `#23`が起動して成功した | 公開時のPR本文とTask記録に誤った見込みを一時記載した | Task PR `#17`のhead `e560002`に対するGitHub Actions run `33120791471` | workflow triggerのbootstrap挙動は推測で確定せず、Draft PR作成後のrun実績を確認して記録する |
 
 ## commit
 
 - local implementation commit: `f50bd43f2b2346ad5985d9dea841eb9ac1d8d61b`
 - local verification-blocker record commit: `3e9de2dd0930391f794c81969828a5f1de4a55b6`
-- local verification-success record commit: commit後に記録
-- remote公開commit: 未作成
+- local verification-success record commit: `51d53cf4e4872c51f07655327f70d990eacb4c23`
+- remote initial publish commit: `e560002bc38c97c21feb4d21bc1b57e9c71b8130`
+- remote completion bookkeeping: Task PR `#17`のheadへ後続commitとして反映
 
 ## Pull Request
 
-- 未作成
+- Task Draft PR: `#17`
+- URL: https://github.com/shu-matsukubo/matsu-ai-dev-flow-lab/pull/17
+- base: `issue/14`
+- head: `task/14-task-pr-ci`
+- draft: `true`
+- 内容: `.github/workflows/ci.yml`と本Task記録
+- CI: run `#23` success
 
 ## 完了日時
 
-- 未完了
+- 2026-08-28T07:03:43+09:00

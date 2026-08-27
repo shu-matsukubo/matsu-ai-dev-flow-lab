@@ -92,7 +92,7 @@
 
 ## CI
 
-- Draft PR作成後に確認する
+- Draft PR `#4` の最終remote headで確認し、結果をPR本文へ記録する
 
 ## Agent担当
 
@@ -118,11 +118,18 @@
 
 ## コミット
 
-- 実装commit: 公開準備時に記録する
+- local実装commit: `54e1e3caeb1ae303163e3da1e7cc2f4dfc885324`
+- remote実装commit: `285fd85283525333ce2e953bf7383fd11bdd341c`
+- local / remote実装tree: `67a1de5191ed148361de94aa1f390aab6c1a42bb`（完全一致）
+- 記録整理commit: このタスク記録のPR情報を更新するcommit
 
 ## Pull Request
 
-- 未作成
+- URL: `https://github.com/shu-matsukubo/matsu-ai-dev-flow-lab/pull/4`
+- 番号: `#4`
+- head: `codex/human-facing-language-alignment`
+- base: `develop`
+- draft: `true`
 
 ## 完了日時
 

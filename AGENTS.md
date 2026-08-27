@@ -15,7 +15,9 @@
 
 共通検証入口は `sh scripts/verify.sh`。Dockerが利用できない場合は理由を報告し、成功扱いにしない。
 
-通常の実装PRは `develop` base、`codex/<task-name>` branch、1タスク = 1 Draft PRとする。設計PRは実装から分離し、元Issueを `Refs #<number>` で参照する。PRをmergeせず、全受入条件の確認前にIssueをcloseしない。
+通常の実装は、1 Requirement Issue = 1 `issue/<issue-id>` branch = 1 Issue統合Draft PR、1 Task = 1 `task/<issue-id>-<task-id>` branch = 1 Draft Task PRの二階層とする。Task計画の人間承認後に最新の `develop` からIssue branchとIssue統合Draft PRを作成し、各Taskは着手時点の最新Issue branchから開始する。Task PRのbaseは対応するIssue branch、Issue統合PRのbaseは `develop` とする。Task記録には元Issue、設計PR、Issue branch、Issue統合PR、Task branch、Task PRを記録する。設計PRは実装から分離し、元Issueを `Refs #<number>` で参照する。
+
+Task PRではTask単位の変更・レビュー・検証を行い、Issue統合PRでは全Task完了後に最新 `develop` をIssue branchへmergeした状態でRequirement Issue全体の統合・回帰検証と受入条件確認を行う。両PRはSquash mergeを基本とし、PRのmerge、branch削除、Issue closeは人間だけが行う。AI agentはPRをmergeせず、全受入条件の確認前にIssueをcloseしない。
 
 `git push`、`gh` CLI、GitHub APIへの直接`curl`は禁止する。remote操作はGitHub連携だけを使用し、実行できなければlocalの実装・検証・commit状態と必要なユーザー操作を報告して停止する。secret、credential、実案件固有情報をcommitしない。
 

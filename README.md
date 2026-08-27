@@ -28,7 +28,12 @@ TLS inspection環境でnpm registry用の追加CAが必要な場合は、local P
 ```text
 設計変更なし
 要求Issue -> 設計影響確認 -> タスク分解 -> 承認
-          -> 実装 -> レビュー -> 検証 -> Draft PR -> 要求確認
+          -> Issue branch・Issue統合Draft PR
+          -> Task branch -> Task実装 -> レビュー -> 検証 -> Draft Task PR
+          -> Issue branchへTaskをSquash merge
+          -> 最新developをmerge -> 統合レビュー・検証 -> 受入条件確認
+          -> Issue統合PRをReady for review
+          -> 人間がSquash merge・branch削除・Issue完了を判断
 
 設計PRが必要（設計変更または既存設計の明確化）
 要求Issue -> 設計影響確認 -> 影響分析 -> 設計案提示 -> 承認
@@ -42,3 +47,5 @@ TLS inspection環境でnpm registry用の追加CAが必要な場合は、local P
 - [現在のシステム設計](docs/architecture/system.md)
 - [テスト戦略](docs/quality/testing.md)
 - [AI開発フロー](docs/ai-development/overview.md)
+
+Issue統合Draft PRは、対応するRequirement Issue、設計、Task記録・Task PR、検証結果、受入条件、`develop` 同期状態を辿る索引です。AI agentはPRをmergeせず、Task PRは対応するIssue branchをbaseにします。

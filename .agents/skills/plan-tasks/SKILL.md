@@ -29,4 +29,6 @@ Agent構成は次から選ぶ。通常の既定構成は `worker-parent-review` 
 
 計画をチャットへ提示し、人間の明示承認を待つ。未着手計画をGitへ保存しない。承認後、実際にタスクへ着手するときだけ `.tasks/TEMPLATE.md` から `.tasks/active/<date>-<task>.md` を作る。タスクファイルだけを先にcommitまたはPull Request化しない。
 
+承認後、Mainは最新の `develop` から `issue/<issue-id>` branchと、`develop`をbaseとするIssue統合Draft PRを作成する。Issue統合Draft PRはRequirement Issue、設計、Task、検証、受入条件、`develop` 同期状態を辿る索引とする。各Taskは着手時点の最新Issue branchから `task/<issue-id>-<task-id>` branchを作り、対応するIssue branchをbaseとするTask PRで公開する。
+
 目的、アーキテクチャ判断、対象範囲、対象外、完了条件、依存関係の意味、Agent種別、必須レビュー経路を変更する場合は再計画・再承認へ戻る。

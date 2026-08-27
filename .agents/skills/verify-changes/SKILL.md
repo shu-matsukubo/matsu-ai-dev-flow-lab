@@ -5,7 +5,7 @@ description: 実装後またはレビュー修正後に、共通検証入口と�
 
 # 検証
 
-要求Issue、現在の設計、タスクファイル、実diff、`docs/quality/testing.md` を確認する。repository全体の共通品質ゲートは `sh scripts/verify.sh` を使用し、Skillへ個別commandを複製しない。
+要求Issue、現在の設計、タスクファイル、対応するIssue統合PR、実diff、`docs/quality/testing.md` を確認する。Task PRではTaskの変更リスクとIssue branchへの取り込み可能性を、Issue統合PRでは全Task完了後に最新`develop`をmergeした状態でRequirement Issue全体の統合・回帰と受入条件を確認する。repository全体の共通品質ゲートは `sh scripts/verify.sh` を使用し、Skillへ個別commandを複製しない。
 
 共通品質ゲートはESLint、TypeScript typecheck、ユニットテスト、build、`git diff --check`を含む。変更リスクが共通品質ゲートだけで覆えない場合は、対象を絞った追加テスト、起動確認、契約確認など最小十分な検証を選ぶ。大きなテスト戦略変更が必要なら実装せず設計影響確認へ戻る。
 

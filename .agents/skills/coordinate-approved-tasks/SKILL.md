@@ -5,7 +5,7 @@ description: 人間が承認したタスクを、承認範囲、依存関係、A
 
 # 承認済みタスクの調整
 
-承認済み計画、要求Issue、現在の設計、タスクのbaseを確認する。着手時に `.tasks/TEMPLATE.md` から `.tasks/active/` へタスクファイルを作り、`codex/<task-name>` branch上で実装と一緒に扱う。通常baseは`develop`とする。
+承認済み計画、要求Issue、現在の設計、タスクのbaseを確認する。計画承認後、Mainは最新の `develop` から `issue/<issue-id>` branchとIssue統合Draft PR（baseは `develop`）を作成する。着手時に `.tasks/TEMPLATE.md` から `.tasks/active/` へタスクファイルを作り、その時点の最新Issue branchから `task/<issue-id>-<task-id>` branchを開始する。Task記録にはIssue、設計PR、Issue branch、Issue統合PR、Task branch、Task PRの追跡参照を持たせ、実装と同じTask PRへ含める。
 
 承認されたAgent構成を、その必須レビュー経路を含めて適用する。承認後に独立Reviewerを独断で追加・省略したり、別の構成へ変更したりしない。構成の変更が必要になった場合は、実装を広げずMainへ返して再承認を求める。
 
@@ -20,3 +20,5 @@ WorkerへIssue、タスクファイル、担当範囲、対象外、統合点、
 承認外の改善、新しい依存関係、アーキテクチャ判断、対象範囲変更が必要なら実装を広げず再承認へ戻る。Mainは報告だけに依存せず実diffと検証結果を確認し、`$review-changes` と `$verify-changes` の結果をタスクファイルへ記録する。フィードバックは `$record-flow-feedback` でMainが記録する。
 
 合格後はタスクファイルを `.tasks/completed/` へ移し、`$publish-task-pr` で実装とタスク記録を同じDraft Pull Requestへ公開する。mergeとIssue closeは行わない。
+
+Task PRはTask単位のレビュー・検証、Issue統合PRは全Task完了後に最新 `develop` をIssue branchへmergeした状態でRequirement Issue全体の統合・回帰検証と受入条件確認を担う。両PRはSquash mergeを基本とし、merge、branch削除、Issue closeは人間だけが行う。

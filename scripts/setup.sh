@@ -11,4 +11,4 @@ cd "$REPOSITORY_ROOT"
 build_workspace_image
 run_setup_container
 
-echo "Setup completed. Run: docker compose up front api"
+echo "セットアップが完了しました。実行: docker compose up front api"

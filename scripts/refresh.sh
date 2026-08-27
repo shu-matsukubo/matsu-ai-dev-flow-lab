@@ -11,4 +11,4 @@ cd "$REPOSITORY_ROOT"
 build_workspace_image --pull
 run_setup_container
 
-echo "Repository state and dependencies are synchronized."
+echo "リポジトリの状態と依存関係を同期しました。"

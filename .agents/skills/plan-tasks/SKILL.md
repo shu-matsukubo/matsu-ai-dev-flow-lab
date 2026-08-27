@@ -1,28 +1,28 @@
 ---
 name: plan-tasks
-description: Design gate通過後のRequirementを、承認可能な単一責務Taskへ分解し、scope、完了条件、依存、risk、agent strategy、必須review経路をチャットで提示する。
+description: 設計ゲート通過後の要求を、承認可能な単一責務タスクへ分解し、対象範囲、完了条件、依存関係、リスク、Agent構成、必須レビュー経路をチャットで提示する。
 ---
 
-# Task Planning
+# タスク計画
 
-`$check-design-impact` がDesign変更不要と判断した根拠、または必要なDesign PRのmergeを確認してから使用する。Requirement Issue、現在の`develop`、`docs/`、関連実装を読み、過去の未着手Planを正本として復元しない。
+`$check-design-impact` が設計変更不要と判断した根拠、または必要な設計PRのmergeを確認してから使用する。要求Issue、現在の`develop`、`docs/`、関連実装を読み、過去の未着手計画を正本として復元しない。
 
-1 Taskを1つの責務とレビュー可能な成果に限定する。各Taskへ次を定義する。
+1タスクを1つの責務とレビュー可能な成果に限定する。各タスクへ次を定義する。
 
-- 一意なTask key、title、priority
+- 一意なタスク識別子、タイトル、優先度
 - 目的、対象範囲、作業内容、対象外
-- dependencyと着手・完了・公開を止める条件
-- concernsとcompletion criteria
-- agent strategyと必須review経路
+- 依存関係と着手・完了・公開を止める条件
+- 懸念事項と完了条件
+- Agent構成と必須レビュー経路
 
-agent strategyは次から選ぶ。
+Agent構成は次から選ぶ。
 
-- `parent-only`: Mainが実装、self review、最終判断を行う。
-- `worker-parent-review`: Workerが実装・self reviewし、Mainがreviewする。
-- `worker-reviewer-parent`: Workerの実装・self review後、独立Reviewerがreviewし、Mainが最終reviewする。
+- `parent-only`: Mainが実装、セルフレビュー、最終判断を行う。
+- `worker-parent-review`: Workerが実装・セルフレビューし、Mainがレビューする。
+- `worker-reviewer-parent`: Workerの実装・セルフレビュー後、独立Reviewerがレビューし、Mainが最終レビューする。
 
-軽量かどうかを行数だけで判断しない。boundary、risk、独立reviewの価値からstrategyを選び、Worker / Reviewerの人数や担当範囲は固定しない。
+軽量かどうかを行数だけで判断しない。境界、リスク、独立レビューの価値から構成を選び、Worker / Reviewerの人数や担当範囲は固定しない。
 
-計画をチャットへ提示し、人間の明示承認を待つ。未着手PlanをGitへ保存しない。承認後、実際にTaskへ着手するときだけ `.tasks/TEMPLATE.md` から `.tasks/active/<date>-<task>.md` を作る。Task fileだけを先にcommitまたはPull Request化しない。
+計画をチャットへ提示し、人間の明示承認を待つ。未着手計画をGitへ保存しない。承認後、実際にタスクへ着手するときだけ `.tasks/TEMPLATE.md` から `.tasks/active/<date>-<task>.md` を作る。タスクファイルだけを先にcommitまたはPull Request化しない。
 
-目的、architecture判断、scope、対象外、完了条件、dependencyの意味、agent種別、必須review経路を変更する場合は再計画・再承認へ戻る。
+目的、アーキテクチャ判断、対象範囲、対象外、完了条件、依存関係の意味、Agent種別、必須レビュー経路を変更する場合は再計画・再承認へ戻る。

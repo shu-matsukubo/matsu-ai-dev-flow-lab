@@ -2,7 +2,7 @@
 
 AI駆動開発で、要求・設計・タスク・実装・テスト・レビュー・承認ゲート・Agent / Skillの責務を安全に分離できるか研究するPublicリポジトリです。アプリケーション機能の充実より、再開可能でレビュー可能な開発フローを優先します。
 
-## Application
+## アプリケーション
 
 - `apps/front`: React + TypeScript + Vite
 - `apps/api`: Hono + TypeScript
@@ -10,7 +10,7 @@ AI駆動開発で、要求・設計・タスク・実装・テスト・レビュ
 
 DB、認証、認可、外部SaaS、OpenAPI、code generation、shared package、deployment構成は導入していません。
 
-## Setup
+## セットアップ
 
 Docker DesktopとDocker Compose v2が必要です。
 
@@ -23,14 +23,14 @@ Frontは `http://localhost:5173`、API healthは `http://localhost:3000/api/heal
 
 TLS inspection環境でnpm registry用の追加CAが必要な場合は、local PEM fileのpathを `NPM_CA_FILE` に設定してscriptを実行します。CAはBuildKit secretとしてだけ使用され、repositoryやimageへ保存されません。
 
-## AI development flow
+## AI開発フロー
 
 ```text
-Requirement Issue -> Design Impact Check -> Task Planning -> Approval
--> Implementation -> Review -> Verify -> Draft PR -> Requirement確認
+要求Issue -> 設計影響確認 -> タスク分解 -> 承認
+-> 実装 -> レビュー -> 検証 -> Draft PR -> 要求確認
 ```
 
-Designの検討は常に行いますが、Design文書の変更は影響がある場合だけ行います。
+設計の検討は常に行いますが、設計文書の変更は影響がある場合だけ行います。
 
 詳細は次を参照してください。
 

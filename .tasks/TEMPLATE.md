@@ -1,16 +1,16 @@
-# Task title
+# タスク名
 
-- Source Issue: `#<number>`
-- Design PR: `なし` / `#<number>`
+- 元Issue: `#<number>`
+- 設計PR: `なし` / `#<number>`
 - 状態: `active`
-- Task key: `<承認済みPlan内で一意のkey>`
-- priority: `normal` (`high` / `normal` / `low`)
-- agent strategy: `worker-parent-review` (`parent-only` / `worker-parent-review` / `worker-reviewer-parent`)
-- task branch: `codex/<task-name>`
-- base branch: `develop`
+- タスクキー: `<承認済みPlan内で一意のkey>`
+- 優先度: `normal` (`high` / `normal` / `low`)
+- Agent構成: `worker-parent-review` (`parent-only` / `worker-parent-review` / `worker-reviewer-parent`)
+- タスクブランチ: `codex/<task-name>`
+- ベースブランチ: `develop`
 - 承認記録: `<承認日時または会話内の識別情報>`
 
-RequirementやDesign全文は複製せず、Source Issueと現在の `docs/` を参照する。このファイルは着手済み作業の実施記録である。
+要求や設計全文は複製せず、元Issueと現在の `docs/` を参照する。このファイルは着手済み作業の実施記録である。
 
 ## 目的
 
@@ -28,28 +28,28 @@ RequirementやDesign全文は複製せず、Source Issueと現在の `docs/` を
 
 - このTaskで扱わない事項を記載する
 
-## dependency
+## 依存関係
 
-依存がなければ「なし」と記載する。依存があれば対象、種類、gate、完了条件、現在状態の根拠を記載する。
+依存がなければ「なし」と記載する。依存があれば対象、種類、ゲート、完了条件、現在状態の根拠を記載する。
 
-| 依存対象 | type | gate | 完了条件 | 現在状態と根拠 |
+| 依存対象 | 種類 | ゲート | 完了条件 | 現在状態と根拠 |
 |---|---|---|---|---|
-| `<Task / PR / Design PR>` | `<hard / soft / ordering>` | `<start / complete / publish / merge>` | `<条件>` | `<状態、URLまたはpath>` |
+| `<タスク / PR / 設計PR>` | `<hard / soft / ordering>` | `<start / complete / publish / merge>` | `<条件>` | `<状態、URLまたはpath>` |
 
-## concerns
+## 懸念事項
 
-- risk、前提、制約を記載する。なければ「なし」
+- リスク、前提、制約を記載する。なければ「なし」
 
-## completion criteria
+## 完了条件
 
 - [ ] 完了を判断できる条件を記載する
 
-## implementation result
+## 実装結果
 
 - 変更内容: 未実施
-- 残るrisk: 未確認
+- 残るリスク: 未確認
 
-## local verification
+## ローカル検証
 
 - 未実施
 
@@ -57,21 +57,21 @@ RequirementやDesign全文は複製せず、Source Issueと現在の `docs/` を
 
 - 未確認
 
-## agent allocation
+## Agent割り当て
 
 - 未実施
 
-## review result
+## レビュー結果
 
-- self review: 未実施
-- independent review: strategy対象外 / 未実施
-- Main review: 未実施
+- セルフレビュー: 未実施
+- 独立レビュー: strategy対象外 / 未実施
+- Mainレビュー: 未実施
 
-## flow feedback
+## フロー改善フィードバック
 
 問題がなければ「なし」。記録する場合は中央ファイルへ転記せずTaskごとに追記する。
 
-| category | symptom | impact | evidence | suggestion |
+| 区分 | 発生事象 | 影響 | 根拠 | 改善案 |
 |---|---|---|---|---|
 | `<task-size / approval / skill / design / verify / review / unnecessary-step / other>` | `<発生した事象>` | `<作業への影響>` | `<観測した根拠>` | `<改善候補>` |
 

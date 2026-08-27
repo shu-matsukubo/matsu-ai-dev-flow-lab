@@ -20,7 +20,7 @@ require_docker() {
 build_workspace_image() {
   if [ -n "${NPM_CA_FILE:-}" ]; then
     if [ ! -f "$NPM_CA_FILE" ]; then
-      echo "NPM_CA_FILEで指定されたCA fileが見つかりません: $NPM_CA_FILE" >&2
+      echo "NPM_CA_FILEで指定されたCAファイルが見つかりません: $NPM_CA_FILE" >&2
       exit 1
     fi
 

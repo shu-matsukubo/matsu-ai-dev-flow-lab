@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - name: Checkout
+      - name: ソース取得
         uses: actions/checkout@v4
-      - name: Verify
+      - name: 品質検証
         run: sh scripts/verify.sh

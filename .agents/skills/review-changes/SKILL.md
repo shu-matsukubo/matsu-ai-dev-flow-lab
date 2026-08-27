@@ -1,23 +1,23 @@
 ---
 name: review-changes
-description: 承認済みImplementation diffをRequirement充足、正しさ、回帰、architectureと責務境界、安全性、検証不足の順にreviewする。
+description: 承認済み実装diffを要求充足、正しさ、回帰、アーキテクチャと責務境界、安全性、検証不足の順にレビューする。
 ---
 
-# Implementation Review
+# 実装レビュー
 
-Requirement Issue、現在の`docs/`、Task file、baseからの実diff、local verification結果を直接読む。Agentの報告や過去チャットだけを根拠にしない。
+要求Issue、現在の`docs/`、タスクファイル、baseからの実差分、ローカル検証結果を直接読む。Agentの報告や過去チャットだけを根拠にしない。
 
 次を重要度順に確認する。
 
-- Goal、Requirements、Acceptance Criteriaとcompletion criteriaを満たすか
-- 対象外変更、不要dependency、無関係な整形がないか
-- error、空入力、境界値、再実行、部分失敗で正しさを失わないか
-- frontend / backend、service、dependency、API、data、securityの境界を破らないか
+- 目的、要件、受入条件と完了条件を満たすか
+- 対象外変更、不要な依存関係、無関係な整形がないか
+- エラー、空入力、境界値、再実行、部分失敗で正しさを失わないか
+- frontend / backend、service、依存関係、API、data、securityの境界を破らないか
 - secret、credential、個人情報、過剰権限、危険なremote操作がないか
-- test、lint、typecheck、buildが変更riskを十分に覆うか
-- Designと実装が矛盾せず、未導入機能を現在の契約としていないか
-- agent strategyの必須review経路を満たしたか
+- テスト、lint、typecheck、buildが変更リスクを十分に覆うか
+- 設計と実装が矛盾せず、未導入機能を現在の契約としていないか
+- Agent構成の必須レビュー経路を満たしたか
 
-findingは `P0`（停止が必要）、`P1`（merge前に必須修正）、`P2`（限定的不具合・契約違反・検証不足）、`P3`（小さな保守性懸念）で示す。各findingにpathと最小行範囲、具体的な影響または再現条件、必要な修正を含める。好みだけの指摘、根拠のない将来懸念、diff外の既存問題はfindingにしない。
+指摘は `P0`（停止が必要）、`P1`（merge前に必須修正）、`P2`（限定的不具合・契約違反・検証不足）、`P3`（小さな保守性懸念）で示す。各指摘にpathと最小行範囲、具体的な影響または再現条件、必要な修正を含める。好みだけの指摘、根拠のない将来懸念、diff外の既存問題は指摘にしない。
 
-findingがない場合も、確認したdiff、検証範囲、残るriskを示す。flow上の問題はMainへ返し、Task fileへの記録はMainに委ねる。
+指摘がない場合も、確認した差分、検証範囲、残るリスクを示す。フロー上の問題はMainへ返し、タスクファイルへの記録はMainに委ねる。

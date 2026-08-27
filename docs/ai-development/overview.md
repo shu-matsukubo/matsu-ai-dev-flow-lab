@@ -22,10 +22,11 @@
 ```text
 設計変更なし
 要求Issue -> 設計影響確認 -> タスク分解 -> 人間承認
-          -> 実装 -> レビュー -> 検証 -> Draft PR -> develop
-                                                    |
-                                                    v
-                                          受入条件確認 -> Issue完了
+          -> Issue branch作成 -> Issue統合Draft PR
+          -> Task実装 -> レビュー -> 検証 -> Task PR -> Issue branch
+          -> 最新developをmerge -> 統合レビュー・検証 -> 受入条件確認
+          -> Issue統合PRをReady for review
+          -> 人間がdevelopへSquash merge -> 人間がIssue完了を判断
 
 設計変更あり
 要求Issue -> 設計影響確認 -> 影響分析 -> 設計案提示 -> 人間承認
@@ -123,15 +124,76 @@ Agent構成（`agent strategy`）は次から選ぶ。通常は `worker-parent-r
 
 承認対象はAgent構成と必須経路までであり、人数や担当範囲は固定しない。承認後にMainが責務境界、独立性、依存、ファイル競合、統合コストから必要最小限を決める。目的、アーキテクチャ判断、対象範囲、対象外、完了条件、依存の意味、Agent種別、必須レビュー経路を変える場合は再承認する。検証結果、レビュー結果、Agent割り当て、commit、PRなどの記録更新は、対象範囲を変えない限り追加承認を要しない。
 
+## Requirement Issue単位の実装統合
+
+実装のGit / GitHub上の統合境界はRequirement Issue単位とする。Taskは要求内部のレビュー可能な作業単位として維持するが、Taskの途中成果を直接`develop`へ入れず、Issue branchを共通の親・統合点として扱う。
+
+```text
+develop
+  |
+  +-- issue/<issue-id>
+        |
+        +-- task/<issue-id>-<task-id> -> Task PR -> issue/<issue-id>
+        +-- task/<issue-id>-<task-id> -> Task PR -> issue/<issue-id>
+        +-- task/<issue-id>-<task-id> -> Task PR -> issue/<issue-id>
+        |
+        +-- Issue統合PR -> develop
+```
+
+各対象の責務は次のとおりとする。
+
+| 対象 | 責務 |
+|---|---|
+| Requirement Issue | 要求と要求分析の正本 |
+| Design | 現在有効な設計の正本 |
+| Issue統合PR | 1つのRequirement Issueによる実装成果を`develop`へ統合し、要求全体の状態を追跡・レビューする入口 |
+| Task / Task PR | Requirement Issue内部の実装・レビュー・検証単位 |
+| コードと自動テスト | 実際の振る舞いと正確な実装詳細の正本 |
+
+### branchとPull Requestの開始
+
+タスク分解が人間に承認された後、最新の`develop`から`issue/<issue-id>` branchを作成し、`develop`をbaseとするIssue統合PRをDraftで作成する。Issue統合Draft PRは、Task実装の完了を待たず、要求全体の進行状態をGitHub上から復元する入口として早い段階で用意する。
+
+各Taskは、そのTaskを開始する時点の最新Issue branchから`task/<issue-id>-<task-id>` branchを作成する。Task PRは対応するIssue branchをbaseとするDraftで公開し、`develop`を直接baseにしない。Task fileは従来どおりTaskの実装と同じbranch・Task PRへ含める。
+
+同一Requirement Issue内でTask間に依存がある場合は、先行Task PRをIssue branchへ取り込んだ後、後続Taskを最新のIssue branchから開始する。独立したTaskは、ファイル競合、統合コスト、Agent構成を考慮して並列に進めてよい。Task branch同士を直接依存させることを既定にしない。
+
+### developとの同期とRequirement Issue間の独立性
+
+Issue branchを常に最新の`develop`へ追従させることは要求しない。Issue branch作成時は最新の`develop`を起点とし、全Task完了後のIssue統合レビュー前には最新の`develop`をIssue branchへmergeして、競合解消、統合検証、回帰検証を行う。それ以外でも、`develop`側の変更がTaskや統合判断へ影響するとMainが判断した場合は追加で同期してよい。
+
+同期は`develop`をIssue branchへmergeする方式を基本とし、共有branchをrebaseしたりforce pushしたりしない。途中のdevelop merge履歴はIssue branchに残してよく、最終的にIssue統合PRをSquash mergeすることで`develop`上の履歴をRequirement Issue単位へまとめる。
+
+複数のIssue branchは互いに直接mergeせず、別のIssue branchをbaseにせず、未mergeの実装へ直接依存しない。他のRequirement Issueの成果が必要な場合は、原則としてその成果が`develop`へmergeされた後に`develop`経由で取り込む。同じ領域を変更したIssue間の競合は、Task間の暗黙的な競合ではなく、Requirement Issue単位の統合問題として扱う。
+
+### mergeとbranchの終了
+
+Task PRとIssue統合PRはいずれもSquash mergeを基本とする。Task PRをIssue branchへmergeした後、不要になったTask branchは削除してよい。Issue統合PRを`develop`へmergeした後、不要になったIssue branchは削除してよい。
+
+AI agentはTask PRおよびIssue統合PRをmergeせず、PRの作成・更新、レビュー、検証、状態確認と判断根拠の記録までを担う。Squash mergeとbranch削除は人間が行う。Requirement IssueのcloseもIssue統合PRのmergeで自動化せず、受入条件の根拠を確認した人間が最終判断する。
+
+### Issue統合Draft PR
+
+Issue統合Draft PRには、本文を複製せず、次の正本と状態を辿れる参照を記録する。
+
+- 対応するRequirement Issue
+- 関連するDesignと設計PR
+- 対応するTask、Task file、Task PRとその状態
+- Requirement Issue全体の検証状況と未実施項目
+- 受入条件ごとの充足根拠
+- 最新`develop`の取り込みと、重要な競合・判断の記録
+
+全Taskが完了し、最新の`develop`を取り込んだ状態で必要な統合・回帰検証と受入条件確認が完了した後に、Issue統合PRをReady for reviewへ変更する。Draft状態やPR本文を要求・設計・実装の新しい正本にはせず、各正本と永続的な作業状態を結ぶ索引として扱う。
+
 ## Task file
 
-未着手のタスク計画はGitへ保存しない。Taskへ着手した時点で `.tasks/TEMPLATE.md` から `.tasks/active/<date>-<task>.md` を作り、実装と同じbranch / Pull Requestへ含める。Task fileだけのPull Requestは作らない。
+未着手のタスク計画はGitへ保存しない。Taskへ着手した時点で `.tasks/TEMPLATE.md` から `.tasks/active/<date>-<task>.md` を作り、実装と同じTask branch / Task PRへ含める。Task fileだけのPull Requestは作らない。
 
-Task fileは元Issueと現在の設計を参照し、実施結果、検証、CI、Agent割り当て、レビュー、フロー改善フィードバック、commit、Pull Requestを記録する。完了時に `.tasks/completed/` へ移す。
+Task fileは元Issue、Issue branch、Issue統合PRと現在の設計を参照し、実施結果、検証、CI、Agent割り当て、レビュー、フロー改善フィードバック、commit、Task PRを記録する。完了時に `.tasks/completed/` へ移し、同じTask PRの成果としてIssue branchへ取り込む。Task fileだけを後から別branchや別PRで更新しない。
 
 ## Main / Worker / Reviewer
 
-- Main: タスク分解、承認境界、Agent割り当て、アーキテクチャ判断、統合、最終レビュー、最終判断を所有する。
+- Main: タスク分解、承認境界、Agent割り当て、アーキテクチャ判断、統合判断と調整、最終レビュー、最終判断を所有する。
 - Worker: 割り当て範囲の実装、必要な検証、セルフレビューを行い、結果・疑問・フロー改善フィードバックをMainへ返す。
 - Reviewer: Workerから独立して、要求充足、回帰、アーキテクチャや責務境界の違反、検証不足を確認し、指摘とフロー改善フィードバックをMainへ返す。
 
@@ -145,9 +207,11 @@ WorkerまたはMainは実装後にセルフレビューを行う。承認済みA
 
 ## Pull RequestとIssue完了
 
-通常の実装は `develop` base、`codex/<task-name>` branch、1 Task = 1 Draft Pull Requestとする。GitHubへのリモート操作はGitHub連携だけを使用し、`git push`、`gh`、GitHub APIの直接呼び出しへ切り替えない。PRはmergeしない。
+通常の実装は、1 Requirement Issue = 1 Issue branch = 1 Issue統合PR、1 Task = 1 Task branch = 1 Task PRの二階層とする。Task PRは対応するIssue branch、Issue統合PRは`develop`をbaseにする。設計PRはこの実装用branch構造から分離する。
 
-TaskのDraft PR作成後は、要求Issue、現在の設計、Task file、PR、diff、レビュー・CI結果から別チャットで再開できる。すべての受入条件を満たした根拠が揃うまで要求Issueをcloseしない。
+GitHubへのリモート操作はGitHub連携だけを使用し、`git push`、`gh`、GitHub APIの直接呼び出しへ切り替えない。AI agentはPRをmergeせず、すべての受入条件を満たした根拠が揃うまで要求Issueのcloseを求めない。
+
+Task PR作成後は、要求Issue、現在の設計、Issue統合PR、Task file、Task PR、diff、レビュー・CI結果から別チャットで再開できる。Issue統合時は、要求Issue、現在の設計、Issue統合PR、取り込み済みTask PR、Task file、最新`develop`との差分、統合検証、受入条件の根拠から状態を復元する。
 
 ## チャットと永続状態の境界
 
@@ -156,8 +220,9 @@ TaskのDraft PR作成後は、要求Issue、現在の設計、Task file、PR、d
 - 設計PR作成後は後続へ進まず、merge後にその設計チャットを完了する。
 - 実装は別チャットで元の要求Issueを改めて入力し、最新の`develop`と`docs/`を正本として設計影響確認から再開する。
 - 過去チャット上の未永続なタスク計画や実装計画を復元・引き継がず、現在の正本から必要な計画を作る。
-- タスク分解から最初の実装Draft PRまでは同じチャットで継続する。
-- Draft PR後は要求Issue、現在の設計、Task file、PR、diff、レビュー・CI結果から別チャットで復元できる。
+- タスク分解の承認後、Issue branchとIssue統合Draft PRを作成し、最初のTask PRを公開するまでは同じチャットで継続する。
+- Task PR後は要求Issue、現在の設計、Issue統合PR、Task file、Task PR、diff、レビュー・CI結果から別チャットで復元できる。
+- Issue統合レビューは、要求Issue、現在の設計、Issue統合PR、取り込み済みTask PR、Task file、最新`develop`との差分と検証結果から別チャットでも復元できる。
 - 未着手のタスク計画は復元対象にせず、必要なら現在状態から再計画する。
 
 過去チャットの記憶だけを判断根拠にしない。

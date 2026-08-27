@@ -2,7 +2,7 @@
 
 - 元Issue: `#6`
 - 設計PR: `#11`
-- 状態: `active`
+- 状態: `completed`
 - タスクキー: `issue-6-agent-strategy-skills`
 - 優先度: `normal`
 - Agent構成: `worker-parent-review`
@@ -68,7 +68,7 @@ merge済みの設計PR `#11` で定義されたAgent構成の選択基準を、�
 - ファイル数、変更行数、抽象的なレビュー価値だけでは独立Reviewerを追加せず、軽微な変更は具体的理由がない限り対象にしないルールを反映した
 - `coordinate-approved-tasks`へ、承認済み構成と必須レビュー経路を維持し、独立Reviewerの追加・省略や構成変更を独断で行わない境界を反映した
 - WorkerセルフレビューとMainによる実差分・検証結果の確認、最終レビュー、最終判断を維持した
-- 残るリスク: ローカルDocker品質ゲートはdaemon未接続により未成功。Draft PR作成後のGitHub Actions CI確認が必要
+- 残るリスク: ローカルDocker品質ゲートはdaemon未接続により未成功。GitHub Actionsの同一品質検証は成功しており、実装差分に関する未解消リスクはなし
 
 ## ローカル検証
 
@@ -85,7 +85,9 @@ merge済みの設計PR `#11` で定義されたAgent構成の選択基準を、�
 
 ## CI
 
-- Draft PR作成後に確認する
+- GitHub Actions `CI` run #17: 成功
+- `verify` jobと「品質検証」step: 成功
+- URL: `https://github.com/shu-matsukubo/matsu-ai-dev-flow-lab/actions/runs/33092552177`
 
 ## Agent割り当て
 
@@ -113,11 +115,19 @@ merge済みの設計PR `#11` で定義されたAgent構成の選択基準を、�
 
 - local実装commit: `f43933a0d830bfbc6422de2f1af4f944118c9ccc`
 - local実装tree: `e2087ada891b9b7ffb85a2cdb7b877cf68495569`
+- local公開前記録commit: `598d6e104820116fb9bd4b9f8104fd1d4482b01d`
+- remote実装commit: `ef436c4211bca36b641ec6668d91e6c8b11e74f7`
+- local / remote公開前tree: `49841cd5426735a8aabf075c22efc36feb840d4e`（完全一致）
+- 記録整理commit: 本Task記録の完了、CI、PR情報を反映するbranch head
 
 ## Pull Request
 
-- 未作成
+- URL: `https://github.com/shu-matsukubo/matsu-ai-dev-flow-lab/pull/13`
+- 番号: `#13`
+- head: `codex/issue-6-agent-strategy-skills`
+- base: `develop`
+- draft: `true`
 
 ## 完了日時
 
-- 未完了
+- 2026-08-28

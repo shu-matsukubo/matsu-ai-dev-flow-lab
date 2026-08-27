@@ -2,7 +2,7 @@
 
 - 元Issue: `#5`
 - 設計PR: `#9`
-- 状態: `active`
+- 状態: `completed`
 - タスクキー: `issue-5-flow-boundary-alignment`
 - 優先度: `normal`
 - Agent構成: `worker-reviewer-parent`
@@ -68,7 +68,7 @@ merge済みの設計PR `#9` で定義された設計フェーズと実装計画�
 - `check-design-impact`へ、影響分析を許可しつつ具体的なTask、対象ファイル、作業順序、実装手順、Agent割り当て、`$plan-tasks`を禁止する境界を反映した
 - `plan-tasks`へ、設計PRが必要なチャットでは使用せず、merge後の別チャットで設計影響確認をやり直した場合だけ使用する条件を反映した
 - `README.md`の概要フローを、設計PR不要と設計PR必要の分岐へ更新した
-- 残るリスク: ローカルDocker品質ゲートはdaemon未接続により未成功。Draft PRのGitHub Actionsで確認する
+- 残るリスク: ローカルDocker品質ゲートはdaemon未接続により未成功。GitHub Actions CIは成功しており、実装差分に関する未解消リスクはなし
 
 ## ローカル検証
 
@@ -81,7 +81,8 @@ merge済みの設計PR `#9` で定義された設計フェーズと実装計画�
 
 ## CI
 
-- Draft PR作成後にGitHub Actionsの `CI` を確認する
+- GitHub Actions `CI` run #12: 成功
+- URL: `https://github.com/shu-matsukubo/matsu-ai-dev-flow-lab/actions/runs/33084152733`
 
 ## Agent割り当て
 
@@ -109,12 +110,19 @@ merge済みの設計PR `#9` で定義された設計フェーズと実装計画�
 
 - local実装commit: `60fca8abc2c68023564a6b307291961c9b54aed7`
 - local実装tree: `cee9c1bf20932ee76146c756a0c8765421fdbc3a`
-- 記録整理commit: 未作成
+- local公開前記録commit: `cbddbc3`
+- remote実装commit: `e1141d3c4279c1ac7346d52b92a7ef40dfee5dd6`
+- local / remote公開前tree: `af1cc408e63d75bc3f97b78a943794542fbfb711`（完全一致）
+- 記録整理commit: 本Task記録の完了、CI、PR情報を反映するbranch head
 
 ## Pull Request
 
-- 未作成
+- URL: `https://github.com/shu-matsukubo/matsu-ai-dev-flow-lab/pull/10`
+- 番号: `#10`
+- head: `codex/issue-5-flow-boundary-alignment`
+- base: `develop`
+- draft: `true`
 
 ## 完了日時
 
-- 未完了
+- 2026-08-27

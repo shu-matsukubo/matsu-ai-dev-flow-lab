@@ -87,7 +87,7 @@ merge済みの二階層PR設計と、Agentが実際に従う作業ガイド、Ta
 ## 実装結果
 
 - 変更内容: 承認対象の8ファイルだけを更新し、作業ガイド、Task template、計画・調整・公開・レビュー・検証Skillをmerge済み二階層PR設計へ整合させた。独立ReviewerのP1を受け、`publish-task-pr`のfrontmatter descriptionに残っていた`develop`向け旧表記も対応するIssue branch向けDraft Task PRへ修正した
-- 残るリスク: remote Task branch / Draft Task PRの公開、remote親commit、local / remote tree、base・draft状態は確認済み。GitHub Actions CIの最終結果だけを確認する
+- 残るリスク: 実装・公開上の未解消事項なし。CI結果をTask記録へ反映する後続commitの最新headについては、Task PRとIssue統合PRで最終runを追跡する
 
 ## ローカル検証
 
@@ -102,7 +102,10 @@ merge済みの二階層PR設計と、Agentが実際に従う作業ガイド、Ta
 
 ## CI
 
-- Task PR `#18`作成後のGitHub Actions runを確認中
+- GitHub Actions CI run `#27`（run id `33122945603`）がTask PR `#18`のhead `7cf1efbdffd070b3fd5c02a23b55ddc09e12d9cf`で起動した
+- 状態: `completed`
+- 結果: `success`
+- CI結果を記録する後続commitの最新headについては、Task PR `#18`とIssue統合PR `#16`でrun実績を追跡する
 
 ## Agent割り当て
 
@@ -129,7 +132,9 @@ merge済みの二階層PR設計と、Agentが実際に従う作業ガイド、Ta
 - remote initial publish commit: `4d0f865ebabcd7cff4d91c813aed326b5c62c3d0`
 - remote parent: `4b007b225f4009d4a744f5eb1e869aa5e4c2e222`
 - remote initial publish tree: `7361fc606fbc78097fc00802c2b464db3db02086`。local implementation treeと一致
-- remote completion bookkeeping: 本記録のPR情報をTask branchへ後続commitとして反映する
+- local PR bookkeeping commit: `38c4bc242d69d1686ab51e32fd7e67617521c518`
+- remote PR bookkeeping commit: `7cf1efbdffd070b3fd5c02a23b55ddc09e12d9cf`
+- remote CI result bookkeeping: 本記録のCI結果をTask branchへ後続commitとして反映する
 
 ## Pull Request
 
@@ -140,8 +145,9 @@ merge済みの二階層PR設計と、Agentが実際に従う作業ガイド、Ta
 - PR作成時head: `4d0f865ebabcd7cff4d91c813aed326b5c62c3d0`
 - draft: `true`
 - 内容: 承認対象8ファイルと本Task記録
+- CI: run `#27` success。CI結果記録後の最新head runはPR上で確認する
 
 ## 完了日時
 
 - ローカル実装・レビュー・検証・Draft Task PR公開: 2026-08-28T07:31:12+09:00
-- CI: 確認中
+- CI run `#27`成功確認: 2026-08-28T07:34:28+09:00

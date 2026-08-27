@@ -17,13 +17,15 @@ description: 設計ゲート通過後の要求を、承認可能な単一責務�
 - 懸念事項と完了条件
 - Agent構成と必須レビュー経路
 
-Agent構成は次から選ぶ。
+Agent構成は次から選ぶ。通常の既定構成は `worker-parent-review` とし、Task固有の事情から別の構成が適切な場合だけ切り替える。
 
-- `parent-only`: Mainが実装、セルフレビュー、最終判断を行う。
-- `worker-parent-review`: Workerが実装・セルフレビューし、Mainがレビューする。
-- `worker-reviewer-parent`: Workerの実装・セルフレビュー後、独立Reviewerがレビューし、Mainが最終レビューする。
+- `parent-only`: ごく小さく責務と挙動が明確で、Workerへ委譲する価値が低い場合に選び、Mainが実装・セルフレビュー・最終判断を行う。
+- `worker-parent-review`: Workerへ委譲する価値があり、独立Reviewerを必要とする具体的な理由がない通常のTaskで選び、Workerが実装・セルフレビューし、Mainがレビュー・最終判断を行う。
+- `worker-reviewer-parent`: Workerの実装・セルフレビュー後、独立Reviewerがレビューし、Mainが最終レビューする。高リスクまたは複雑な責務境界など、独立した観点による追加レビューが必要な具体的理由を計画で説明できる場合だけ選ぶ。説明できない場合は `worker-parent-review` を選ぶ。
 
-軽量かどうかを行数だけで判断しない。境界、リスク、独立レビューの価値から構成を選び、Worker / Reviewerの人数や担当範囲は固定しない。
+軽量かどうかを行数だけで判断しない。境界、リスク、独立レビューで検出したい不具合から構成を選び、Worker / Reviewerの人数や担当範囲は固定しない。ファイル数、変更行数、「レビューには一般的に価値がある」といった抽象的な理由だけでは `worker-reviewer-parent` を選ばない。軽微な文言・設定・局所的変更は、独立Reviewerを追加する具体的理由がない限り `worker-reviewer-parent` の対象としない。Workerへ委譲する価値に応じて `parent-only` または `worker-parent-review` を選ぶ。
+
+どの構成でも、Workerを使用する場合のセルフレビューとMainによる実差分・検証結果の確認、最終レビュー、最終判断は省略しない。独立ReviewerはMainの最終レビューを代替しない。
 
 計画をチャットへ提示し、人間の明示承認を待つ。未着手計画をGitへ保存しない。承認後、実際にタスクへ着手するときだけ `.tasks/TEMPLATE.md` から `.tasks/active/<date>-<task>.md` を作る。タスクファイルだけを先にcommitまたはPull Request化しない。
 

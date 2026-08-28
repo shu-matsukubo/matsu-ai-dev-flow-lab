@@ -11,7 +11,8 @@
 | 要求 | GitHub Issue | 要求原文と、目的・要件・受入条件・必要な制約・対象外・未確定事項からなる要求分析 |
 | 設計 | `docs/` | 現在有効なアーキテクチャ、責務境界、品質戦略、AI開発フロー |
 | 実装 | コードと自動テスト | 実際の振る舞いと正確な実装詳細 |
-| タスク | `.tasks/active/` と `.tasks/completed/` | 着手済み作業の実施・検証・レビュー・改善フィードバック記録 |
+| Issue Task | `.issue-tasks/active/` と `.issue-tasks/completed/` | Requirement Issueを分解して着手したTaskの実施・検証・レビュー記録 |
+| Flow Feedback | `.flow-feedback/pending/`、`.flow-feedback/resolved/`、`.flow-feedback/dismissed/` | AI開発フロー改善のための観測と処理状態。directory配置を状態の正本とする |
 
 タスク計画はチャット上の承認対象であり、永続的な仕様ではない。Task file（タスク記録）へ要求全文や設計全文を複製しない。
 
@@ -58,7 +59,7 @@
 
 要求分析は要求原文の単なる言い換えにしない。要件や制約で実装方法を決定せず、設計段階で判断する事項を要求自体の未確定事項と混同しない。
 
-要求Issueには、利用するフレームワークやライブラリ、API endpoint、DB column、対象ファイル、実装手順、Agent構成、タスク一覧などの設計・実装・タスク情報を混在させない。これらは必要に応じて、`docs/`、設計影響確認、タスク分解、`.tasks/`、実装で扱う。
+要求Issueには、利用するフレームワークやライブラリ、API endpoint、DB column、対象ファイル、実装手順、Agent構成、タスク一覧などの設計・実装・タスク情報を混在させない。これらは必要に応じて、`docs/`、設計影響確認、タスク分解、`.issue-tasks/`、実装で扱う。
 
 既存コードや既存Issueですでに受入条件を満たす場合は、新しい実装をせず根拠を示して完了できる。
 
@@ -188,13 +189,13 @@ Issue統合Draft PRには、本文を複製せず、次の正本と状態を辿�
 
 ## Task file
 
-未着手のタスク計画はGitへ保存しない。Taskへ着手した時点で `.tasks/TEMPLATE.md` から `.tasks/active/<date>-<task>.md` を作り、実装と同じTask branch / Task PRへ含める。Task fileだけのPull Requestは作らない。
+未着手のタスク計画はGitへ保存しない。Taskへ着手した時点で `.issue-tasks/TEMPLATE.md` から `.issue-tasks/active/<date>-<task>.md` を作り、実装と同じTask branch / Task PRへ含める。Task fileだけのPull Requestは作らない。
 
-Task fileは元Issue、Issue branch、Issue統合PRと現在の設計を参照し、実施結果、検証、CI、Agent割り当て、レビュー、フロー改善フィードバック、commit、Task PRを記録する。完了時に `.tasks/completed/` へ移し、同じTask PRの成果としてIssue branchへ取り込む。Task fileだけを後から別branchや別PRで更新しない。
+Task fileは元Issue、Issue branch、Issue統合PRと現在の設計を参照し、実施結果、検証、CI、Agent割り当て、レビュー、commit、Task PRを記録する。Flow Feedback本文はTask fileへ記録せず、追跡が必要な場合だけ対応するfeedback fileへの参照を持たせる。完了時に `.issue-tasks/completed/` へ移し、同じTask PRの成果としてIssue branchへ取り込む。Task fileだけを後から別branchや別PRで更新しない。
 
 ## Main / Worker / Reviewer
 
-- Main: タスク分解、承認境界、Agent割り当て、アーキテクチャ判断、統合判断と調整、最終レビュー、最終判断を所有する。
+- Main: タスク分解、承認境界、Agent割り当て、アーキテクチャ判断、統合判断と調整、最終レビュー、最終判断、およびFlow Feedbackの観測確認と新規記録を所有する。
 - Worker: 割り当て範囲の実装、必要な検証、セルフレビューを行い、結果・疑問・フロー改善フィードバックをMainへ返す。
 - Reviewer: Workerから独立して、要求充足、回帰、アーキテクチャや責務境界の違反、検証不足を確認し、指摘とフロー改善フィードバックをMainへ返す。
 
@@ -236,6 +237,76 @@ Task PR作成後は、要求Issue、現在の設計、Issue統合PR、Task file�
 
 ## フロー改善フィードバック
 
-Worker / Reviewerは中央ファイルを直接更新せず、困った点と改善候補をMainへ返す。Mainは `$record-flow-feedback` を使い、該当Task fileへ分類、発生事象、影響、根拠、改善案を記録する。候補例はTaskの粒度、承認差し戻し、Skillの曖昧さ、設計不足、検証コマンド、レビュー往復、不要手順である。
+Flow Feedbackは監査ログや完全なイベントログではなく、AI開発フローを改善するためのbest-effortな観測情報である。正本は`.flow-feedback/`以下の1件1ファイルとし、Issue Taskの実施記録から分離する。
 
-将来は `.tasks/completed/` を読み取り、繰り返すフィードバックからSkill改善候補を作れる。初期段階では中央集約ファイル、自動スケジューラー、フィードバックの自動適用を導入しない。改善自体がAI開発フローやSkill責務を変える場合は、新しい要求と設計影響確認を通す。
+### ファイルと状態
+
+`.flow-feedback/`は次の構成を持つ。
+
+```text
+.flow-feedback/
+  TEMPLATE.md
+  pending/
+  resolved/
+  dismissed/
+```
+
+| directory | 意味 |
+|---|---|
+| `pending/` | 未処理。改善または対応不要の最終判断が完了していない |
+| `resolved/` | 改善として処理済み |
+| `dismissed/` | 根拠を確認し、対応不要として処理済み |
+
+状態はファイルの配置だけを正本とする。`status: pending`のような同一情報を本文へ重複して持たせず、単に読んだだけではファイルを移動しない。
+
+ファイル名は`i<issue-id>-t<task-id>-f<feedback-id>.md`とする。例は`i01-t01-f01.md`である。Issue IDは発生元Requirement Issue、Task IDは同一Issue内で一意なTask識別子、feedback IDは同一Issue / Task内で一意な識別子を使用する。repository全体の連番管理は導入せず、categoryや問題内容をファイル名へ重複して持たせない。
+
+各feedback fileは最低限、次を記録する。
+
+- 発生元Issue
+- 発生元Task
+- 発生元PR。存在しない場合はその旨
+- `category`
+- `symptom`（発生事象）
+- `impact`
+- `evidence`
+- `suggestion`（改善候補）
+
+要求や設計の全文、個人情報、secret、credentialは複製しない。Task fileへfeedback本文を複製せず、必要な場合だけfeedback fileへの参照を記録する。
+
+### 通常Taskでの責務
+
+Worker / ReviewerはAI開発フロー上の問題を観測した場合、Task本来の作業を広げずMainへ返す。Mainは観測事実を確認し、必要な場合だけ`.flow-feedback/pending/`へ新しいfeedback fileを追加する。問題がなければfeedback fileを作らない。
+
+通常Taskでは新規feedbackの記録だけを行い、次を行わない。
+
+- 既存feedbackの検索・整理
+- 重複feedbackの統合
+- 改善要否の判断
+- 既存feedbackの更新、削除、`resolved/`または`dismissed/`への移動
+- feedbackを理由とする承認範囲外のSkillまたはAI開発フロー変更
+
+同種の問題が複数Taskで観測されても自動統合せず、それぞれを独立した観測として保持する。
+
+### AIフロー改善作業
+
+AIフロー改善は通常Taskとは別のRequirement Issueとして行い、その時点の`.flow-feedback/pending/`をまとめて確認できる。feedbackごとにRequirement Issueを大量作成せず、同種または関連する複数feedbackを1つの改善Requirementで扱ってよい。ただし、元feedback fileは統合または削除しない。
+
+各feedbackは次のいずれかとして処理する。
+
+- 改善が必要: 通常の設計影響確認、必要な設計承認、タスク分解、実装、レビュー、検証を通し、改善が完了した後に`resolved/`へ移動する
+- 対応不要: 根拠を確認して記録した後に`dismissed/`へ移動する
+
+分析とレビューには複数Agentを利用してよいが、永続状態を変更するwriterは1つに限定する。少なくとも、`.flow-feedback/`内の既存fileの更新・移動、SkillやAI開発フロー文書、改善対象となる共通fileを複数Agentが並行して直接変更しない。lock file、lease、DB、schedulerなどの排他制御基盤は導入しない。
+
+### 収集範囲
+
+Flow Feedbackの完全収集は保証しない。観測漏れを許容し、mergeされず完全に破棄されたTask、branch、Pull Requestだけに存在したfeedbackを救済する特殊フローは導入しない。必要な問題が繰り返し発生する場合は、将来のTaskから再度観測されることを許容する。
+
+中央`feedback.md`、外部DB、GitHub Actionsによる自動集約、scheduler、重複排除、自動改善は導入しない。改善自体がAI開発フローやSkill責務を変える場合は、新しい要求と設計影響確認を通す。
+
+### 既存Task記録からの移行
+
+この方式の導入時は、既存の`.tasks/`を`.issue-tasks/`へ変更し、既存Task file内のfeedbackを1観測1ファイルのまま`.flow-feedback/pending/`へ移す。重複統合、改善要否の判断、`resolved/`または`dismissed/`への振り分けは行わない。Task fileからfeedback本文を削除し、追跡に必要な場合だけ移行先への参照を残す。
+
+Requirement Issueの運用開始前に記録されたfeedbackは、移行専用のIssue ID `00`をファイル名へ使用し、発生元Issueを「なし（Issue運用開始前）」と明記する。`i00`は既存記録の移行だけに使用し、新しいfeedbackには使用しない。

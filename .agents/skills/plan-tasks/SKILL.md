@@ -31,4 +31,6 @@ Agent構成は次から選ぶ。通常の既定構成は `worker-parent-review` 
 
 承認後、Mainは最新の `develop` から `issue/<issue-id>` branchと、`develop`をbaseとするIssue統合Draft PRを作成する。Issue統合Draft PRはRequirement Issue、設計、Task、検証、受入条件、`develop` 同期状態を辿る索引とする。各Taskは着手時点の最新Issue branchから `task/<issue-id>-<task-id>` branchを作り、対応するIssue branchをbaseとするTask PRで公開する。
 
+Issue統合Draft PRとTask PRはRequirement Issueを `Refs #<number>` などの非close形式で参照し、PR本文に `Closes`、`Fixes`、`Resolves` およびGitHubが同等に扱う自動close keywordを使用しない。Task PRには担当範囲が寄与する受入条件、根拠、未対象または未充足の事項を記録し、Issue統合PRは要求全体の受入条件ごとの充足状況、根拠、未実施項目、残るリスクを追跡する索引とする。PRのmerge後もIssueはopenのまま維持し、すべての受入条件と根拠を確認した人間だけが明示的にcloseする。AI agentはIssueをcloseしない。
+
 目的、アーキテクチャ判断、対象範囲、対象外、完了条件、依存関係の意味、Agent種別、必須レビュー経路を変更する場合は再計画・再承認へ戻る。

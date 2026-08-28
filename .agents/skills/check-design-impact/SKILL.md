@@ -25,4 +25,4 @@ description: 要求Issueからタスク計画へ進む前に、現在の設計�
 
 単なる事実訂正や明確化が必要なら、実装と分離した設計PR候補として示す。新しいアーキテクチャ判断、既存アーキテクチャ変更、新しいservice / 依存関係、認証方式、persistence方式、API契約方式、テスト戦略の大幅変更、新しい設計文書・top-level文書カテゴリ、AIフローの重要変更が必要なら、選択肢、影響、推奨案、未決事項を人間へ提示して停止する。
 
-承認された設計変更は元Issueを `Refs #<number>` で参照する設計PRに限定する。要求Issueをcloseせず、設計PRがmergeされるまで、その判断を前提に実装へ進まない。
+承認された設計変更は元Issueを `Refs #<number>` で参照する設計PRに限定する。設計PR本文に `Closes`、`Fixes`、`Resolves` およびGitHubが同等に扱う自動close keywordを含めず、その変更範囲が寄与する受入条件、根拠、未対象または未充足の事項を記録する。設計PRのmerge後も要求Issueはopenのまま維持し、AI agentはIssueをcloseしない。すべての受入条件と根拠を確認した後にIssueをcloseする責務は人間だけが持つ。設計PRがmergeされるまで、その判断を前提に実装へ進まない。

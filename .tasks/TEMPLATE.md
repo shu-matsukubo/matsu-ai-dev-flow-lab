@@ -6,8 +6,12 @@
 - タスクキー: `<承認済みPlan内で一意のkey>`
 - 優先度: `normal` (`high` / `normal` / `low`)
 - Agent構成: `worker-parent-review` (`parent-only` / `worker-parent-review` / `worker-reviewer-parent`)
-- タスクブランチ: `codex/<task-name>`
-- ベースブランチ: `develop`
+- Issue branch: `issue/<issue-id>`
+- Issue統合PR: `#<number>`
+- Issue統合PRのベースブランチ: `develop`
+- タスクブランチ: `task/<issue-id>-<task-id>`
+- Task PR: `#<number>`
+- Task PRのベースブランチ: `issue/<issue-id>`
 - 承認記録: `<承認日時または会話内の識別情報>`
 
 要求や設計全文は複製せず、元Issueと現在の `docs/` を参照する。このファイルは着手済み作業の実施記録である。

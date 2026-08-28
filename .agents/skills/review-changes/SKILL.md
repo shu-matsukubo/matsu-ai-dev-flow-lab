@@ -5,7 +5,7 @@ description: 承認済み実装diffを要求充足、正しさ、回帰、アー
 
 # 実装レビュー
 
-要求Issue、現在の`docs/`、タスクファイル、baseからの実差分、ローカル検証結果を直接読む。Agentの報告や過去チャットだけを根拠にしない。
+要求Issue、現在の`docs/`、タスクファイル、対応するIssue統合PR、baseからの実差分、ローカル検証結果を直接読む。Agentの報告や過去チャットだけを根拠にしない。Task PRではTaskの承認範囲・完了条件とIssue branchへの安全な取り込みを確認し、Issue統合PRでは全Task、最新`develop`同期、Requirement Issue全体の受入条件と統合・回帰を確認する。
 
 次を重要度順に確認する。
 

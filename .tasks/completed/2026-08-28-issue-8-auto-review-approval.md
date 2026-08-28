@@ -10,7 +10,7 @@
 - Issue統合PR: `#22`
 - Issue統合PRのベースブランチ: `develop`
 - タスクブランチ: `task/8-t1`
-- Task PR: `公開準備中`
+- Task PR: `#23`
 - Task PRのベースブランチ: `issue/8`
 - 承認記録: 2026-08-28のチャットでユーザーが「承認」
 
@@ -65,7 +65,7 @@ Codex Desktopの「おまかせ承認」に相当する現行の正式設定をM
 - [x] TOMLとして有効で、OpenAI公式JSON schemaの検証に成功する
 - [x] 共通品質ゲート`sh scripts/verify.sh`が成功する
 - [x] Workerの実装・セルフレビューとMainレビューが完了している
-- [ ] Task記録と実装が同じDraft Task PRに含まれている
+- [x] Task記録と実装が同じDraft Task PRに含まれている
 
 ## 実装結果
 
@@ -88,7 +88,8 @@ Codex Desktopの「おまかせ承認」に相当する現行の正式設定をM
 
 ## CI
 
-- Task PR作成前のため未確認
+- Task PR初回head `ee7658079c9ed5e6d64697e3f3a1a4818df344f5`: GitHub Actions `CI` run `#39`（run ID `33156537702`）が`success`
+- 本記録のPR情報を反映する最終metadata commitでもCIを起動し、最終headの結果はDraft Task PR上で確認する。CI結果そのものの追記による自己参照commitは作らない
 
 ## Agent割り当て
 
@@ -114,18 +115,21 @@ Codex Desktopの「おまかせ承認」に相当する現行の正式設定をM
 
 ## commit
 
-- 未作成
+- ローカル実装commit: `d6bfc60a0fc77e1a04a1a15cd092f30d10a2ee95`（tree `cf6f4125119e9b42330b3b77184867a7c8faa050`）
+- GitHub Task branch初回公開commit: `ee7658079c9ed5e6d64697e3f3a1a4818df344f5`（tree `cf6f4125119e9b42330b3b77184867a7c8faa050`）
+- ローカルとremoteの初回公開tree SHAが一致することを確認済み
 
 ## Pull Request
 
 - Issue統合Draft PR: `#22`（base `develop`、head `issue/8`、draft）
-- Task Draft PR: 未作成
+- Task Draft PR: `#23`（base `issue/8`、head `task/8-t1`、draft）
+- Task Draft PR URL: `https://github.com/shu-matsukubo/matsu-ai-dev-flow-lab/pull/23`
 
 ## 完了報告
 
 - このTaskが寄与する受入条件と根拠: 正式なAuto-review設定2件をMain project設定へ追加し、公式文書・schema・現行Codex strict config loaderで有効性を確認した。既存Main設定と無関係なAgent / Skill / sandbox設定を維持し、共通品質ゲートも成功した
-- 未対象または未充足の事項: PR merge、branch削除、Issue `#8`のcloseは人間の責務として対象外。Task PR公開とCI確認は未実施
-- 未実施項目: Draft Task PR作成、remote tree照合、GitHub Actions CI確認、Issue統合レビュー前の最新`develop`同期
+- 未対象または未充足の事項: PR merge、branch削除、Issue `#8`のcloseは人間の責務として対象外。Issue統合レビューはTask PR取り込み後に実施する
+- 未実施項目: Issue統合レビュー前の最新`develop`同期とRequirement Issue全体の統合・回帰検証
 - 残るリスク: project trustとmanaged requirementsによる設定precedence。実装・ローカルレビュー・ローカル検証上の未解消事項なし
 - Requirement Issueの状態: merge後もopen。全受入条件と根拠を確認した人間だけが明示的にcloseする
 - AI agentによるIssue close: 行わない
@@ -133,3 +137,4 @@ Codex Desktopの「おまかせ承認」に相当する現行の正式設定をM
 ## 完了日時
 
 - ローカル実装・レビュー・検証完了: 2026-08-28T17:37:58+09:00
+- Draft Task PR公開・初回CI確認完了: 2026-08-28T17:45:00+09:00

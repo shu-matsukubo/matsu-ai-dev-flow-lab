@@ -10,7 +10,7 @@
 - Issue統合PR: `#20`
 - Issue統合PRのベースブランチ: `develop`
 - タスクブランチ: `task/7-human-close-flow-alignment`
-- Task PR: `未作成`
+- Task PR: `#21`
 - Task PRのベースブランチ: `issue/7`
 - 承認記録: 2026-08-28のチャットでユーザーが「承認」
 
@@ -74,12 +74,12 @@
 - [x] 変更したSkillがvalidatorを通過している
 - [x] 共通品質ゲートとTask固有の横断整合確認が成功している
 - [x] WorkerセルフレビューとMainレビューが完了している
-- [ ] Task記録と実装が同じTask PRに含まれている
+- [x] Task記録と実装が同じTask PRに含まれている
 
 ## 実装結果
 
 - 変更内容: `AGENTS.md`、Task template、設計影響確認・タスク計画・承認済みTask調整・Task PR公開・実装レビューの5 Skillを、設計PR `#19` で確定した人間限定のIssue完了判断へ整合した。PRの非close参照、自動close keyword禁止、AI agentのIssue close禁止、Task / 設計PRとIssue統合PR / AI完了報告の証跡範囲を明確化した
-- 残るリスク: 実装・レビュー・ローカル検証上の未解消事項なし。Task PRのGitHub Actions結果は公開後に確認する
+- 残るリスク: 実装・レビュー・ローカル検証上の未解消事項なし。初回remote headのGitHub Actionsは成功済みで、PR記録整理commit後の最終headをPR上で追跡する
 
 ## ローカル検証
 
@@ -93,7 +93,10 @@
 
 ## CI
 
-- Task PR公開前のため未確認
+- GitHub Actions CI run `#34`（run id `33151139962`）がTask PR `#21`の初回head `af5428960c89511838b8deca120f1440a83216b0`で完了
+- 状態: `completed`
+- 結果: `success`
+- PR情報をTask記録へ反映する後続commitの最終runはTask PR上で追跡する
 
 ## Agent割り当て
 
@@ -119,23 +122,34 @@
 
 ## commit
 
-- local implementation / review / verification commit: 未作成
+- local implementation / review / verification commit: `2c88019ab0066ea934d650d7d8101ab5735ef0b1`
+- local implementation tree: `d6d187c578cf0bc027db92c3285236848aa5ce82`
+- remote initial publish commit: `af5428960c89511838b8deca120f1440a83216b0`
+- remote initial publish tree: `d6d187c578cf0bc027db92c3285236848aa5ce82`。local implementation treeと一致
+- PR記録整理commit: このTask記録の更新として同じTask branchへ反映する
 
 ## Pull Request
 
 - Issue統合Draft PR: `#20`（base `develop`、head `issue/7`、draft）
-- Task Draft PR: 未作成
+- Task Draft PR: `#21`
+- URL: https://github.com/shu-matsukubo/matsu-ai-dev-flow-lab/pull/21
+- base: `issue/7`
+- head: `task/7-human-close-flow-alignment`
+- draft: `true`
+- 初回remote head: `af5428960c89511838b8deca120f1440a83216b0`
+- 内容: 承認対象7ファイルと本Task記録
+- CI: 初回headのrun `#34` success。PR記録整理後の最終head runはPR上で確認する
 
 ## 完了報告
 
 - このTaskが寄与する受入条件と根拠: PR作成ルールの非close参照、自動close keyword禁止、AI agentのIssue close禁止、merge後のopen維持と人間の明示close、PR / AI完了報告の証跡責務を、作業ガイド・Task template・関連5 Skillへ反映した
 - 未対象または未充足の事項: 設計正本は設計PR `#19` で反映済みのため変更していない。PR merge、branch削除、Issue `#7` のcloseは人間の責務として対象外
-- 未実施項目: Task PR公開後のGitHub Actions CI確認
-- 残るリスク: Task PR公開前のためremote最終treeとCI結果は未確認
+- 未実施項目: PR記録整理commit後の最終headに対するGitHub Actions CI確認
+- 残るリスク: 初回remote treeとCIは確認済み。PR記録整理commitは本Task記録だけの更新であり、その最終head CIをTask PR上で追跡する
 - Requirement Issueの状態: open。Task PRやIssue統合PRのmerge後もopenを維持し、全受入条件と根拠を確認した人間だけが明示的にcloseする
 - AI agentによるIssue close: 行っていない
 
 ## 完了日時
 
 - ローカル実装・レビュー・検証完了: 2026-08-28T16:16:19+09:00
-- Task PR公開: 未完了
+- Task PR公開・初回CI成功確認: 2026-08-28T16:22:22+09:00

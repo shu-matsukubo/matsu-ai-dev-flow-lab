@@ -19,6 +19,8 @@
 
 Task PRではTask単位の変更・レビュー・検証を行い、Issue統合PRでは全Task完了後に最新 `develop` をIssue branchへmergeした状態でRequirement Issue全体の統合・回帰検証と受入条件確認を行う。両PRはSquash mergeを基本とし、PRのmerge、branch削除、Issue closeは人間だけが行う。AI agentはPRをmergeせず、全受入条件の確認前にIssueをcloseしない。
 
+設計PR、Task PR、Issue統合PRは、Requirement Issueを `Refs #<number>` などの非close形式で参照する。PR本文では `Closes`、`Fixes`、`Resolves` およびGitHubが同等に扱う自動close keywordを使用しない。設計PRとTask PRには担当範囲が寄与する受入条件、根拠、未対象または未充足の事項を記録し、Issue統合PRとAI agentの完了報告には要求全体の受入条件ごとの充足状況と根拠、未実施項目、残るリスクを示す。PR merge後もRequirement Issueはopenのまま維持し、全受入条件と根拠を確認した人間だけが明示的にIssueをcloseする。Main、Worker、Reviewerを含むAI agentはIssueをcloseしない。
+
 `git push`、`gh` CLI、GitHub APIへの直接`curl`は禁止する。remote操作はGitHub連携だけを使用し、実行できなければlocalの実装・検証・commit状態と必要なユーザー操作を報告して停止する。secret、credential、実案件固有情報をcommitしない。
 
 詳細な判断基準は [AI開発フロー](docs/ai-development/overview.md)、現在の境界は [システム設計](docs/architecture/system.md)、品質ゲートは [テスト戦略](docs/quality/testing.md) を正本とする。

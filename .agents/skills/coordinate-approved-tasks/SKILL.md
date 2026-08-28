@@ -19,6 +19,6 @@ WorkerへIssue、タスクファイル、担当範囲、対象外、統合点、
 
 承認外の改善、新しい依存関係、アーキテクチャ判断、対象範囲変更が必要なら実装を広げず再承認へ戻る。Mainは報告だけに依存せず実diffと検証結果を確認し、`$review-changes` と `$verify-changes` の結果をタスクファイルへ記録する。フィードバックは `$record-flow-feedback` でMainが記録する。
 
-合格後はタスクファイルを `.tasks/completed/` へ移し、`$publish-task-pr` で実装とタスク記録を同じDraft Pull Requestへ公開する。mergeとIssue closeは行わない。
+合格後はタスクファイルを `.tasks/completed/` へ移し、`$publish-task-pr` で実装とタスク記録を同じDraft Pull Requestへ公開する。Issue統合Draft PRとTask PRはRequirement Issueを `Refs #<number>` などの非close形式で参照し、本文に `Closes`、`Fixes`、`Resolves` およびGitHubが同等に扱う自動close keywordを使用しない。Task PRには担当範囲が寄与する受入条件、根拠、未対象または未充足の事項を記録する。Main、Worker、Reviewerは受入条件を満たしたと判断してもRequirement Issueをcloseしない。
 
-Task PRはTask単位のレビュー・検証、Issue統合PRは全Task完了後に最新 `develop` をIssue branchへmergeした状態でRequirement Issue全体の統合・回帰検証と受入条件確認を担う。両PRはSquash mergeを基本とし、merge、branch削除、Issue closeは人間だけが行う。
+Task PRはTask単位のレビュー・検証、Issue統合PRは全Task完了後に最新 `develop` をIssue branchへmergeした状態でRequirement Issue全体の統合・回帰検証と受入条件確認を担う。Issue統合PRとAI完了報告には、要求全体の受入条件ごとの充足状況、根拠、未実施項目、残るリスクを記載する。両PRはSquash mergeを基本とし、merge後もIssueをopenで維持する。merge、branch削除、Issue closeは人間だけが行い、Issue closeは全受入条件と根拠を確認した後に人間が明示的に実施する。

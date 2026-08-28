@@ -26,7 +26,8 @@
           -> Task実装 -> レビュー -> 検証 -> Task PR -> Issue branch
           -> 最新developをmerge -> 統合レビュー・検証 -> 受入条件確認
           -> Issue統合PRをReady for review
-          -> 人間がdevelopへSquash merge -> 人間がIssue完了を判断
+          -> 人間がdevelopへSquash merge
+          -> 人間が受入条件を確認してIssueを明示的にclose
 
 設計変更あり
 要求Issue -> 設計影響確認 -> 影響分析 -> 設計案提示 -> 人間承認
@@ -170,7 +171,7 @@ Issue branchを常に最新の`develop`へ追従させることは要求しな�
 
 Task PRとIssue統合PRはいずれもSquash mergeを基本とする。Task PRをIssue branchへmergeした後、不要になったTask branchは削除してよい。Issue統合PRを`develop`へmergeした後、不要になったIssue branchは削除してよい。
 
-AI agentはTask PRおよびIssue統合PRをmergeせず、PRの作成・更新、レビュー、検証、状態確認と判断根拠の記録までを担う。Squash mergeとbranch削除は人間が行う。Requirement IssueのcloseもIssue統合PRのmergeで自動化せず、受入条件の根拠を確認した人間が最終判断する。
+AI agentはTask PRおよびIssue統合PRをmergeせず、PRの作成・更新、レビュー、検証、状態確認と判断根拠の記録までを担う。AI agentはRequirement Issueをcloseしない。Squash merge、branch削除、Requirement Issueのcloseは人間が行い、Issue統合PRのmergeによってcloseを自動化しない。
 
 ### Issue統合Draft PR
 
@@ -209,7 +210,13 @@ WorkerまたはMainは実装後にセルフレビューを行う。承認済みA
 
 通常の実装は、1 Requirement Issue = 1 Issue branch = 1 Issue統合PR、1 Task = 1 Task branch = 1 Task PRの二階層とする。Task PRは対応するIssue branch、Issue統合PRは`develop`をbaseにする。設計PRはこの実装用branch構造から分離する。
 
-GitHubへのリモート操作はGitHub連携だけを使用し、`git push`、`gh`、GitHub APIの直接呼び出しへ切り替えない。AI agentはPRをmergeせず、すべての受入条件を満たした根拠が揃うまで要求Issueのcloseを求めない。
+設計PR、Task PR、Issue統合PRの本文では、対応するRequirement Issueを `Refs #<number>` または通常のリンクなど、closeを伴わない形式で参照する。`Closes`、`Fixes`、`Resolves`およびGitHubが同等に扱う自動closeキーワードは使用しない。Requirement Issueとの追跡関係は維持しながら、どのPRのmergeでもIssueを自動closeさせない。
+
+Main、Worker、Reviewerを含むAI agentとSkillは、受入条件の充足状況にかかわらずRequirement Issueをcloseしない。IssueをcloseするGitHub Actionsなどの自動化も導入しない。設計PR、Task PR、Issue統合PRのmerge後もRequirement Issueはopenのまま維持し、すべての受入条件とその根拠を人間が確認した後に限り、人間が明示的にcloseする。
+
+設計PRとTask PRには、そのPRの範囲が寄与する受入条件、充足根拠、未対象または未充足の事項を記録する。Issue統合PRとAI agentの完了報告には、Requirement Issueの受入条件ごとの充足状況と根拠、未実施項目、残るリスクを示し、人間がIssue完了を判断できる状態にする。途中のPRやTaskだけを根拠にRequirement Issue全体を完了扱いにしない。
+
+GitHubへのリモート操作はGitHub連携だけを使用し、`git push`、`gh`、GitHub APIの直接呼び出しへ切り替えない。AI agentはPRをmergeしない。
 
 Task PR作成後は、要求Issue、現在の設計、Issue統合PR、Task file、Task PR、diff、レビュー・CI結果から別チャットで再開できる。Issue統合時は、要求Issue、現在の設計、Issue統合PR、取り込み済みTask PR、Task file、最新`develop`との差分、統合検証、受入条件の根拠から状態を復元する。
 

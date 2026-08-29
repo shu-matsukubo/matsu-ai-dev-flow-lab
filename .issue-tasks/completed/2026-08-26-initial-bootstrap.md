@@ -82,15 +82,6 @@ AI駆動開発フローを安全に育てるための最小なrepository、appli
 - independent review: strategy対象外
 - Main review: 成功。image内へ固定されていた `NODE_ENV=development` を削除し、runtime buildのproduction化を確認。企業CAをimageへ残さないBuildKit secret / read-only mount方式へ修正し、Git Bashのvolume path conversionも補正。npm lifecycle scriptは `allowScripts` でesbuildだけを明示した
 
-## flow feedback
-
-| category | symptom | impact | evidence | suggestion |
-|---|---|---|---|---|
-| verify | container内の `npm ci` が企業TLS interception CAを信頼せず失敗した | 初回Docker buildとsetup / refreshを実行できなかった | `UNABLE_TO_VERIFY_LEAF_SIGNATURE` を確認。公開CAをBuildKit secretで渡すと成功 | `NPM_CA_FILE` によるoptionalな公開CA注入を標準化し、image・repository・lockfileへ残さない（今回実装済み） |
-| verify | 初回verify時は全fileがuntrackedで、`git diff --check` が末尾の余分な空行を検出しなかった | staging後の最終reviewで追加整形とverify再実行が必要になった | `git diff --cached --check` が複数fileの `new blank line at EOF` を報告し、整形・再staging後に成功 | empty repository bootstrapでは、最終verify前に追跡予定fileをstagingしてdiff gateの対象にする |
-| other | project-level `.codex/agents` が存在するとCodex DesktopのWindows sandbox helper setup refreshが失敗した | 通常sandboxのterminal / patch操作が中断した | agent TOMLを退避すると復旧し、公式schema準拠と標準TOML parse成功後も配置時だけ再現 | Codex Desktop側でproject custom agentとWindows sandbox helperの組合せを調査する。repository設定自体は保持し、現環境の制約として報告する |
-| skill | 公式 `quick_validate.py` が実行環境のPyYAML不足とWindows CP932出力でそのまま動作しなかった | Skill形式確認に一時dependencyとUTF-8指定が必要だった | bundled Pythonへ一時PyYAMLを追加し `PYTHONUTF8=1` で7 Skillが成功 | validatorのdependency明示とWindows UTF-8既定化を検討する |
-
 ## commit
 
 - implementation: `82bce234edc2776e6762cc05b79b094f0a233a75`

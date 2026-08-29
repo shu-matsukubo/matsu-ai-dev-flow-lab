@@ -88,14 +88,6 @@ RequirementやDesign全文は複製せず、Source Issueと現在の `docs/` を
 - independent review: findingsなし（P0〜P3）。要求充足、既存ID維持、日本語表示、Issue Form schema、責務境界、scopeを確認
 - Main review: findingsなし。実差分、YAML実parse、構造assertion、独立review結果を確認し、Requirement #1のうちTask 1の承認scopeを満たすと判断
 
-## flow feedback
-
-| category | symptom | impact | evidence | suggestion |
-|---|---|---|---|---|
-| verify | repository内にYAML parser依存がなく、Issue Formの実parseを共通検証だけでは確認できない | Task固有の一時検証手順が必要になり、Reviewer時点では構文検証が未実施だった | bundled PythonにもPyYAMLがなく、Mainがrepository外の一時directoryへPyYAML 6.0.3を導入してparseした | Issue Formを継続運用する段階で、repository dependencyを増やさず検証できる共通schema checkの追加を別Taskとして評価する |
-| verify | Docker Desktop processは起動中だがLinux engine pipeがなく、共通品質ゲートを実行できない | `sh scripts/verify.sh` の成功確認をlocalで完了できない | `docker info` が `dockerDesktopLinuxEngine` pipe不存在で失敗し、verify scriptもdaemon未接続でexit 1 | Draft PRのCIで共通検証を確認し、local環境ではDocker engine復旧後に再実行する |
-| other | Windows sandbox helperのsetup refresh errorで通常のterminal / patch操作が一時中断した | Workerが承認済み代替手段を使用し、Mainの差分確認にもsandbox外実行が必要になった | `helper_unknown_error: setup refresh had errors` がWorkerとMainで再現した | 既存のinitial bootstrap Taskに記録済みのCodex Desktop / project custom agent組合せの調査結果へ、本Taskでの再現事例を追加する |
-
 ## commit
 
 - implementation: `06239d0ed7d10a8ee86979a62458a366d82e3bcc`（`feat: update requirement issue form`）

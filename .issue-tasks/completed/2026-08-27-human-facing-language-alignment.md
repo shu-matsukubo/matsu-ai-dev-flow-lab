@@ -22,7 +22,7 @@
 - `docs/architecture/system.md`、`docs/quality/testing.md`
 - `.agents/skills/*/SKILL.md`
 - `.codex/agents/*.toml`
-- `.tasks/TEMPLATE.md`
+- `.issue-tasks/TEMPLATE.md`
 - `.github/workflows/ci.yml` の人間向け表示名
 - `scripts/*.sh`、`scripts/lib/*.sh` の人間向けmessage
 - このタスク記録の実施・検証・レビュー・公開記録
@@ -39,7 +39,7 @@
 ## 対象外
 
 - merge済み設計の意味変更
-- `.tasks/completed/` の過去記録
+- `.issue-tasks/completed/` の過去記録
 - `.github/ISSUE_TEMPLATE/requirement.yml` の再変更
 - アプリケーション機能、UI、API契約、テスト仕様
 - Skill名、ファイル名、設定key、enum値、model identifier、branch名、commandのrename
@@ -106,15 +106,6 @@
 - セルフレビュー: 両Workerが担当差分と指定検証を確認。追加指摘を反映後、対象範囲外変更なし、Skill validator成功、設定・構文検証成功
 - 独立レビュー: P0〜P3の指摘なし。人間向け文言だけの変更であり、責務、停止条件、承認ゲート、機械値は維持されている。Main追加修正3箇所も追補レビューで指摘なし
 - Mainレビュー: 旧概念語、Task template整合、機械境界、scope、差分を確認。日本語表記の小さな不整合3箇所を修正し、追加検証後に指摘なし
-
-## フロー改善フィードバック
-
-| 区分 | 発生事象 | 影響 | 根拠 | 改善案 |
-|---|---|---|---|---|
-| `other` | Windows sandboxのsetup refresh errorで通常のshell、apply_patch、Reviewerのローカル読取が拒否された | 標準経路を使えず、承認付き直接実行とレビュー資料のメッセージ共有が必要になった | `helper_unknown_error: setup refresh had errors` がMainと2回のReviewer起動で再現 | setup refresh失敗時にread-only Reviewerとapply_patchが利用できる限定fallbackを用意する |
-| `verify` | `quick_validate.py` がWindows既定文字コードでUTF-8のSkillを読んだ | 初回検証が内容と無関係な `UnicodeDecodeError` になった | `-X utf8` を付けた同一validatorは7件すべて成功 | validatorの `read_text()` に `encoding="utf-8"` を指定する |
-| `verify` | bundled PythonにYAML parserがなく、既存検証をそのまま実行できなかった | 一時領域のPyYAMLを追加して検証する手順が必要になった | TOMLは標準libraryで検証できたがYAMLは追加moduleを使用 | 検証runtimeへYAML parserを含めるか、repositoryに再現可能な検証入口を用意する |
-| `verify` | Docker daemonへ接続できなかった | ローカル共通品質ゲートを完走できなかった | `sh scripts/verify.sh` が明示messageとexit 1で停止 | Docker Desktopを起動して再実行するか、Draft PRのGitHub Actions結果を確認する |
 
 ## コミット
 

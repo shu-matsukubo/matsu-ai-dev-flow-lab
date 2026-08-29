@@ -10,7 +10,7 @@
 - Issue統合PR: `#25`
 - Issue統合PRのベースブランチ: `develop`
 - タスクブランチ: `task/12-flow-feedback-migration`
-- Task PR: 未作成
+- Task PR: `#26`
 - Task PRのベースブランチ: `issue/12`
 - 承認記録: 2026-08-29のチャットでユーザーが「承認」
 
@@ -71,7 +71,7 @@ merge済み設計PR `#24` に基づき、Issue TaskとFlow Feedbackの保存構�
 ## 実装結果
 
 - 変更内容: `.tasks/`を`.issue-tasks/`へ移行し、既存28観測をfilename規則付きの`.flow-feedback/pending/`へ1件1fileで移行。AGENTS.md、Task template、関連SkillをMain単一writer責務へ整合。追補でrecord-flow-feedbackの正式field名、空directory維持用gitkeepを反映。
-- 残るリスク: Task PR公開、remote CI、Issue branchへのmergeは未実施。
+- 残るリスク: Draft Task PRの記録整理commitに対するremote CIと、Issue branchへのmergeは未実施。
 
 ## ローカル検証
 
@@ -82,7 +82,7 @@ merge済み設計PR `#24` に基づき、Issue TaskとFlow Feedbackの保存構�
 
 ## CI
 
-- 未確認（Task PR公開後にMainが確認し、PR本文と完了報告へ反映する）。
+- Draft PR `#26` のremote実装commit `c1a4ce0a309b25fdebfb9640c959b5d54537e0b6`: 成功（CI run `#46`）。
 
 ## Agent割り当て
 
@@ -106,17 +106,21 @@ merge済み設計PR `#24` に基づき、Issue TaskとFlow Feedbackの保存構�
 ## commit
 
 - local実装commit: `d2dd4ebcf25c5ec96f0ab7fea38e9f2ffa9669f0`
-- 公開用remote commit: Task PR公開後に記録する
+- remote実装commit: `c1a4ce0a309b25fdebfb9640c959b5d54537e0b6`
 
 ## Pull Request
 
-- 未作成（`$publish-task-pr` によるGitHub連携でDraft Task PRを公開する）
+- URL: `https://github.com/shu-matsukubo/matsu-ai-dev-flow-lab/pull/26`
+- 番号: `#26`
+- head: `task/12-flow-feedback-migration`
+- base: `issue/12`
+- draft: `true`
 
 ## 完了報告
 
 - このTaskが寄与する受入条件と根拠: `.issue-tasks/`のTaskライフサイクル、`.flow-feedback/`の1件1file・3状態directory・必須field、既存28観測の無判断移行、Main単一writerと通常Taskの禁止事項を、実装差分とTask固有検証で確認。Issue #12の実装対象受入条件へ寄与する。
 - 未対象または未充足の事項: Task範囲内の未充足なし。Task PRのIssue branchへのmerge、Issue統合レビュー、Requirement Issueのclose判断は人間と後続統合工程の責務。
-- 未実施項目: Draft Task PR公開とremote CI確認。
+- 未実施項目: この記録整理commitのremote CI確認、Task PRのIssue branchへのmerge、Issue統合工程。
 - 残るリスク: Task PR merge前のため変更はIssue branchへ未統合。Issue統合PRでは最新developを取り込み、要求全体の回帰検証と受入条件確認が必要。
 - Requirement Issueの状態: merge後もopen。全受入条件と根拠を確認した人間だけが明示的にcloseする
 - AI agentによるIssue close: 行わない

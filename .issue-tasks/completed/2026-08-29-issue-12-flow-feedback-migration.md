@@ -47,7 +47,7 @@ merge済み設計PR `#24` に基づき、Issue TaskとFlow Feedbackの保存構�
 | 依存対象 | 種類 | ゲート | 完了条件 | 現在状態と根拠 |
 |---|---|---|---|---|
 | 設計PR `#24` | hard | start | `develop`へmerge済み | 2026-08-28にmerge済み |
-| Issue統合PR `#25` | ordering | publish | Task PRから追跡可能 | Draft作成済み |
+| Issue統合PR `#25` | ordering | publish | Task PRから追跡可能 | Task取り込み・統合検証済み |
 
 ## 懸念事項
 
@@ -71,7 +71,7 @@ merge済み設計PR `#24` に基づき、Issue TaskとFlow Feedbackの保存構�
 ## 実装結果
 
 - 変更内容: `.tasks/`を`.issue-tasks/`へ移行し、既存28観測をfilename規則付きの`.flow-feedback/pending/`へ1件1fileで移行。AGENTS.md、Task template、関連SkillをMain単一writer責務へ整合。追補でrecord-flow-feedbackの正式field名、空directory維持用gitkeepを反映。
-- 残るリスク: Draft Task PRのIssue branchへのmergeと、Requirement Issue全体の統合工程は未実施。
+- 残るリスク: Issue統合PR `#25` の人間によるmergeと、Requirement Issueのclose判断は未実施。既知の実装リスクはなし。
 
 ## ローカル検証
 
@@ -79,11 +79,13 @@ merge済み設計PR `#24` に基づき、Issue TaskとFlow Feedbackの保存構�
 - 変更Skillの公式形式検証: 成功。repository外の一時PyYAMLを使用し、`quick_validate.py`をUTF-8 modeで4 Skillすべて通過。
 - `git diff --cached --check`: 成功。
 - `sh scripts/verify.sh`: Main再実行で成功（lint、typecheck、4 test、build、diff check）。
+- Issue統合検証: Task PR `#26` とIssue統合PR `#25` の55 file patchが全件一致。`develop`比較は`behind_by: 0`。Squash merge後と同一treeで共通品質ゲート、28観測1対1、全31 feedback構造、旧path、Task本文分離を再検証して成功。
 
 ## CI
 
 - Draft PR `#26` のremote実装commit `c1a4ce0a309b25fdebfb9640c959b5d54537e0b6`: 成功（CI run `#46`）。
-- Task記録整理後の最終remote headは、PR本文とMainの完了報告でCI成功を確認する。
+- Task PR `#26` の最終remote head `dcf3b806f414c7401682bfcfb77835b6bc9afcbc`: 成功（CI run `#48`）。
+- Issue branchのSquash merge commit `b49a6d3f66526142a5db192d0c04fafd85825baf`: 成功（Issue統合PR `#25`、CI run `#49`）。
 
 ## Agent割り当て
 
@@ -94,8 +96,8 @@ merge済み設計PR `#24` に基づき、Issue TaskとFlow Feedbackの保存構�
 ## レビュー結果
 
 - セルフレビュー: 実施済み。Reviewer P1/P2（命名、PR、Issue、field、状態metadata、責務文言、literal改行）を反映。
-- 独立レビュー: 初回指摘をすべて修正し、最終追補レビューで実装上の必須修正指摘なし。Task記録の完了情報更新だけをMainへ引き継いだ。
-- Mainレビュー: 指摘なし。Issue #12、設計PR #24、全差分、対象外、28件の1対1移行、責務境界、検証結果を直接確認。
+- 独立レビュー: Task段階の指摘をすべて修正。Squash merge後の統合レビューで、統合検証証跡と本記録のmerge後状態更新をP1として指摘され、CI run `#49`、19受入条件の根拠、本更新を反映。
+- Mainレビュー: 指摘なし。Issue #12、設計PR #24、Task PR `#26`、Issue統合PR `#25`、全差分、develop同期、対象外、28件の1対1移行、全31 feedback、責務境界、統合検証結果を直接確認。
 
 ## Flow Feedback参照
 
@@ -108,6 +110,7 @@ merge済み設計PR `#24` に基づき、Issue TaskとFlow Feedbackの保存構�
 
 - local実装commit: `d2dd4ebcf25c5ec96f0ab7fea38e9f2ffa9669f0`
 - remote実装commit: `c1a4ce0a309b25fdebfb9640c959b5d54537e0b6`
+- Issue branchへのSquash merge commit: `b49a6d3f66526142a5db192d0c04fafd85825baf`
 
 ## Pull Request
 
@@ -115,14 +118,16 @@ merge済み設計PR `#24` に基づき、Issue TaskとFlow Feedbackの保存構�
 - 番号: `#26`
 - head: `task/12-flow-feedback-migration`
 - base: `issue/12`
-- draft: `true`
+- state: `merged`
+- merge commit: `b49a6d3f66526142a5db192d0c04fafd85825baf`
+- merged at: `2026-08-29T04:29:08Z`
 
 ## 完了報告
 
 - このTaskが寄与する受入条件と根拠: `.issue-tasks/`のTaskライフサイクル、`.flow-feedback/`の1件1file・3状態directory・必須field、既存28観測の無判断移行、Main単一writerと通常Taskの禁止事項を、実装差分とTask固有検証で確認。Issue #12の実装対象受入条件へ寄与する。
-- 未対象または未充足の事項: Task範囲内の未充足なし。Task PRのIssue branchへのmerge、Issue統合レビュー、Requirement Issueのclose判断は人間と後続統合工程の責務。
-- 未実施項目: Task PRのIssue branchへのmerge、Issue統合工程。
-- 残るリスク: Task PR merge前のため変更はIssue branchへ未統合。Issue統合PRでは最新developを取り込み、要求全体の回帰検証と受入条件確認が必要。
+- 未対象または未充足の事項: Task範囲内の未充足なし。Issue統合PRのmergeとRequirement Issueのclose判断は人間の責務。
+- 未実施項目: Issue統合PR `#25` の人間による最終レビューと`develop`へのSquash merge、Issue close判断。
+- 残るリスク: 既知の実装リスクなし。Issue統合PRのmerge前であり、Issue #12はopenのまま維持する。
 - Requirement Issueの状態: merge後もopen。全受入条件と根拠を確認した人間だけが明示的にcloseする
 - AI agentによるIssue close: 行わない
 

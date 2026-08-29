@@ -25,7 +25,7 @@ merge済みの二階層PR設計と、Agentが実際に従う作業ガイド、Ta
 
 - `AGENTS.md`
 - `README.md`
-- `.tasks/TEMPLATE.md`
+- `.issue-tasks/TEMPLATE.md`
 - `.agents/skills/plan-tasks/SKILL.md`
 - `.agents/skills/coordinate-approved-tasks/SKILL.md`
 - `.agents/skills/publish-task-pr/SKILL.md`
@@ -118,12 +118,6 @@ merge済みの二階層PR設計と、Agentが実際に従う作業ガイド、Ta
 - セルフレビュー: Workerが対象8ファイル、旧前提除去、責務境界、対象外差分、secret・生成物なしを確認。独立ReviewerのP1を1行修正後、本文との整合と追加差分なしを再確認
 - 独立レビュー: 初回に`publish-task-pr` frontmatter descriptionの`develop`向け旧表記をP1として指摘。Worker修正後に再レビューしP1解消、追加のP0〜P3なし
 - Mainレビュー: Issue #14、設計PR #15後の`docs/`、Task記録、Issue統合PR #16、remote base、8ファイルの実diff、Worker / Reviewer結果、validator、共通品質ゲートを直接確認。P1修正後の未解消P0〜P3なし
-
-## フロー改善フィードバック
-
-| 区分 | 発生事象 | 影響 | 根拠 | 改善案 |
-|---|---|---|---|---|
-| `verify` | `skill-creator`の`quick_validate.py`を通常shellとCodex同梱Pythonからそのまま実行できなかった | Skill validatorの実施方法を追加調査し、一時依存導入とencoding指定が必要になった | Worker環境は`python` / `py`なし。Codex同梱Pythonは最初に`ModuleNotFoundError: yaml`、PyYAML設定後はcp932の`UnicodeDecodeError`。一時PyYAMLと`-X utf8`で5件成功 | Skill validator用の安定したrunner、PyYAML依存、UTF-8指定をruntimeまたは検証手順として提供する |
 
 ## commit
 

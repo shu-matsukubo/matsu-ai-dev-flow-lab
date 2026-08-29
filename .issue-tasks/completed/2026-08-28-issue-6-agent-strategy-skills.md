@@ -101,16 +101,6 @@ merge済みの設計PR `#11` で定義されたAgent構成の選択基準を、�
 - 独立レビュー: strategy対象外
 - Mainレビュー: 初回差分で、`parent-only`の選択基準不足と、軽微な変更を一律`worker-parent-review`対象にする設計不整合をmerge前必須修正として指摘。Worker修正後にIssue #6、設計PR #11、設計正本、Task記録、実差分、検証結果を直接確認し、未解消のP0〜P3指摘なし
 
-## フロー改善フィードバック
-
-問題がなければ「なし」。記録する場合は中央ファイルへ転記せずTaskごとに追記する。
-
-| 区分 | 発生事象 | 影響 | 根拠 | 改善案 |
-|---|---|---|---|---|
-| `verify` | 通常のshell実行がWindows sandboxのsetup refresh errorで拒否された | 作業ツリー確認とSkill本文のローカル読み取りを標準経路で開始できなかった | `helper_unknown_error: setup refresh had errors` が複数回再現 | setup refresh失敗時に、workspaceへ限定した承認付きread/write実行経路を案内する |
-| `verify` | Skill validatorのruntimeにPyYAMLがなく、Windows既定のcp932ではUTF-8本文も読めなかった | validatorがSkill内容の検証前に2段階で停止した | `ModuleNotFoundError: No module named 'yaml'` と `UnicodeDecodeError: 'cp932'` | validator runtimeへPyYAMLを含め、UTF-8を明示して実行する |
-| `verify` | Docker Desktop起動後もdaemonへ接続できなかった | ローカル共通品質ゲートを完走できなかった | `sh scripts/verify.sh`が明示messageとexit 1で停止し、engine pipeも未生成 | Draft PRのCIを確認し、ローカル結果は未成功として保持する |
-
 ## commit
 
 - local実装commit: `f43933a0d830bfbc6422de2f1af4f944118c9ccc`

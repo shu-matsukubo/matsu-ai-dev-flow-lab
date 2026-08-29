@@ -23,7 +23,7 @@
 ## 対象範囲
 
 - `AGENTS.md`
-- `.tasks/TEMPLATE.md`
+- `.issue-tasks/TEMPLATE.md`
 - `.agents/skills/check-design-impact/SKILL.md`
 - `.agents/skills/plan-tasks/SKILL.md`
 - `.agents/skills/coordinate-approved-tasks/SKILL.md`
@@ -109,16 +109,6 @@
 - セルフレビュー: WorkerがMain修正後の `origin/issue/7` からの最終差分を直接確認。要求・設計・承認範囲・既存責務・対象外差分・報告粒度・非close参照・AI close禁止についてP0〜P3の指摘なし
 - 独立レビュー: strategy対象外
 - Mainレビュー: Worker案に、Issue統合PRの受入条件証跡を抑制する矛盾と、設計PR merge前停止条件・設計PR分離責務の脱落をP1相当として検出し修正。修正後にIssue `#7`、設計PR `#19`、設計正本、Task記録、Issue統合PR `#20`、base差分、検証結果を直接確認し、未解消P0〜P3なし
-
-## フロー改善フィードバック
-
-問題がなければ「なし」。記録する場合は中央ファイルへ転記せずTaskごとに追記する。
-
-| 区分 | 発生事象 | 影響 | 根拠 | 改善案 |
-|---|---|---|---|---|
-| `other` | WorkerとMainの通常のcommand / `apply_patch` が `setup refresh had errors` で起動できなかった | Workerが直接編集・検証できず、差分設計の受け渡しとMainによる正規apply_patch実行が必要になった | Workerの2回の停止報告、Mainのsandbox内 `apply_patch` 失敗、sandbox外のCodex apply-patch入口で成功 | commandとapply_patchで同じ安全な再試行・承認経路を利用できるよう、workspace setup refreshの失敗時fallbackを検証する |
-| `verify` | Skill validatorのPython環境にPyYAMLが含まれていなかった | 5 Skillのvalidatorが開始前に失敗し、既存の一時依存を探索して再実行した | `quick_validate.py` の `ModuleNotFoundError: No module named 'yaml'` と、一時PyYAML設定後の5件成功 | validator用runnerへPyYAMLとUTF-8設定を安定して同梱し、一時依存探索を不要にする |
-| `skill` | 最新developと同じtreeのIssue branchではIssue統合Draft PRを作成できないため、内容変更を伴わない初期化commitが必要だった | 調整Skillの「承認後にIssue統合Draft PRを作成する」手順に未記載のbootstrap判断が発生した | `develop` と同じtreeの初期化commit `92f33ca1b9efc53eb769d160b8eec17229530a3a` を作成してDraft PR `#20` を作成 | 調整Skillへ内容変更を伴わないIssue branch初期化commitとlocal同期の条件を別要求として検討する |
 
 ## commit
 

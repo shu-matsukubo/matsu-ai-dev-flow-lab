@@ -96,16 +96,6 @@ merge済みの設計PR `#9` で定義された設計フェーズと実装計画�
 - 独立レビュー: 初回に「既存設計の明確化」が停止条件に含まれないP1を1件指摘。4ファイルの条件を修正後、追補レビューで解消を確認し、新たなP0〜P3指摘なし
 - Mainレビュー: Issue #5、設計PR #9、設計正本、Task記録、実差分、検証結果を直接確認。承認外変更、対象外ルール変更、未解消指摘なし
 
-## フロー改善フィードバック
-
-問題がなければ「なし」。記録する場合は中央ファイルへ転記せずTaskごとに追記する。
-
-| 区分 | 発生事象 | 影響 | 根拠 | 改善案 |
-|---|---|---|---|---|
-| `other` | Windows sandboxのsetup refresh errorで通常のshellと標準`apply_patch`が拒否された | MainとWorkerが標準経路で作業ツリー確認、編集、検証を開始できなかった | `helper_unknown_error: setup refresh had errors` がMainとWorkerで再現 | setup refresh失敗時に、対象workspaceへ限定したread/write実行経路を案内する |
-| `verify` | `quick_validate.py`の実行環境にPyYAMLがなかった | 初回validatorがSkill内容と無関係な `ModuleNotFoundError` で停止した | 一時ディレクトリへPyYAMLを追加した同一validatorは2件とも成功 | validatorのruntime依存へPyYAMLを含めるか、依存不足を明示する |
-| `verify` | Docker Desktop起動後もdaemonへ接続できなかった | ローカル共通品質ゲートを完走できなかった | `sh scripts/verify.sh` が明示messageとexit 1で停止し、engine pipeも未生成 | Draft PRのCIを確認し、ローカル結果は未成功として保持する |
-
 ## commit
 
 - local実装commit: `60fca8abc2c68023564a6b307291961c9b54aed7`

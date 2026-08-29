@@ -1,20 +1,20 @@
 ---
 name: record-flow-feedback
-description: Worker・Reviewer・Mainが作業中に観測したAI開発フロー上の問題を、競合する中央ファイルではなく該当タスクファイルへ構造化して記録する。
+description: Worker・Reviewer・Mainが観測したAI開発フロー上の問題を、Mainが1件1fileのFlow Feedbackとして記録する。
 ---
 
 # フローフィードバックの記録
 
-WorkerとReviewerはタスク粒度、承認、Skill、設計、検証、レビュー、不要手順などの問題をMainへ返す。中央集約ファイルや他タスクファイルを直接編集しない。
+WorkerとReviewerはタスク粒度、承認、Skill、設計、検証、レビュー、不要手順などの問題をMainへ返す。中央集約ファイルや他タスクファイルを直接編集しない。通常Taskでは既存feedbackの検索・整理・統合・判断・更新・削除・状態変更・移動を行わない。
 
-Mainは観測事実を確認し、該当する `.tasks/active/` または `.tasks/completed/` の `フロー改善フィードバック` へ次を記録する。
+Mainは観測事実を確認し、filename規則 `i<issue-id>-t<task-id>-f<feedback-id>.md` と必須8項目（発生元Issue、発生元Task、発生元PR、category、symptom、impact、evidence、suggestion）を満たす新規fileを `.flow-feedback/pending/` へ記録する。状態metadataは本文へ記録しない。既存feedbackは通常Taskで処理しない。
 
-- `区分`: 問題の種類
-- `発生事象`: 実際に起きた事象
-- `影響`: 手戻り、待ち時間、判断不確実性などの影響
-- `根拠`: command、レビュー往復、曖昧だった指示などの根拠
-- `改善案`: 次回検証できる最小の改善候補
+- `category`: 問題の種類
+- `symptom`: 実際に観測した事象
+- `impact`: 手戻り、待ち時間、判断不確実性などの影響
+- `evidence`: command、レビュー往復、曖昧だった指示などの根拠
+- `suggestion`: 次回検証できる最小の改善候補
 
-一般論や推測だけのフィードバック、個人情報、secret、要求 / 設計全文を記録しない。問題がなければ「なし」と明示する。タスクの対象範囲を変えない記録は記録整理として扱う。
+一般論や推測だけのフィードバック、個人情報、secret、要求 / 設計全文を記録しない。問題がなければfeedback fileを作成しない。タスクの対象範囲を変えない記録は記録整理として扱う。
 
-複数の完了済みタスクから傾向を調べる場合は読み取り集約とし、元タスクを改変しない。Skill、承認ゲート、AIフローの変更候補は自動適用せず、新しい要求と設計影響確認へ渡す。schedulerや自動集約基盤は導入しない。
+複数の完了済みタスクから傾向を調べる場合は読み取り集約とし、元タスクを改変しない。既存feedbackの処理は別のAIフロー改善Requirement Issueに限定する。Skill、承認ゲート、AIフローの変更候補は自動適用せず、新しい要求と設計影響確認へ渡す。schedulerや自動集約基盤は導入しない。

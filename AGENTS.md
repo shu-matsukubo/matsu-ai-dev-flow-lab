@@ -7,11 +7,11 @@
 - 要求: GitHub Issue（原則1要求1 Issue）
 - 設計: `docs/`
 - 実装: codeとautomated tests
-- 着手済みタスクの記録: `.tasks/active/`、完了後は `.tasks/completed/`
+- 着手済みタスクの記録: `.issue-tasks/active/`、完了後は `.issue-tasks/completed/`
 
 変更作業は、要求Issueを確認し、必ず `$check-design-impact` を実施する。設計変更または既存設計の明確化により設計PRが必要なチャットでは、影響分析と設計案の承認・設計PR作成までに責務を限定し、`$plan-tasks` や具体的なTask・実装計画へ進まず停止する。設計PRのmerge後は、そのチャットを完了し、別チャットで元Issue・最新の`develop`・最新の`docs/`から設計影響確認をやり直す。設計PRが不要と判断できた場合にだけ `$plan-tasks` へ進み、タスク計画はチャットで承認を得て、着手時にだけTask記録を作る。承認範囲外の改善やarchitecture判断は実装しない。
 
-実装はタスクごとのAgent構成に従い、`$coordinate-approved-tasks`、`$review-changes`、`$verify-changes`、`$publish-task-pr` を使用する。Worker / Reviewerのフロー改善フィードバックはMainへ返し、Mainが `$record-flow-feedback` でタスク記録へ記録する。役割別modelはSkillではなく `.codex/` が定義する。
+実装はタスクごとのAgent構成に従い、`$coordinate-approved-tasks`、`$review-changes`、`$verify-changes`、`$publish-task-pr` を使用する。Worker / Reviewerのフロー改善フィードバックはMainへ返し、Mainが `$record-flow-feedback` で必要な新規feedbackを `.flow-feedback/pending/` の1件1fileへ記録する。役割別modelはSkillではなく `.codex/` が定義する。
 
 共通検証入口は `sh scripts/verify.sh`。Dockerが利用できない場合は理由を報告し、成功扱いにしない。
 

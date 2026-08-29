@@ -103,16 +103,6 @@ Codex Desktopの「おまかせ承認」に相当する現行の正式設定をM
 - 独立レビュー: strategy対象外
 - Mainレビュー: Issue `#8`、設計正本、Task記録、Issue統合Draft PR `#22`、base差分、公式根拠、検証結果を直接確認。要求充足、対象外、安全境界、回帰、検証範囲について未解消P0〜P3なし
 
-## フロー改善フィードバック
-
-問題がなければ「なし」。記録する場合は中央ファイルへ転記せずTaskごとに追記する。
-
-| 区分 | 発生事象 | 影響 | 根拠 | 改善案 |
-|---|---|---|---|---|
-| `other` | WorkerとMainの通常command / apply-patch helperが`setup refresh had errors`で起動できなかった | Workerが直接編集できず、MainがWorker確定patchをsandbox外の正規apply-patch入口で機械的に適用する手戻りが発生した | Workerの2回の失敗報告、Mainの通常`apply_patch`失敗、`codex doctor`の`sandbox.helpers`に`helper_unknown_error` | commandとapply-patchが同じ安全な再試行経路を利用できるよう、sandbox helperの復旧または明示的fallbackを検証する |
-| `skill` | 最新`develop`と同じtreeの`issue/8`ではIssue統合Draft PRを作成できず、内容変更のない初期化commitが必要だった | Draft PR作成前に追加のcommit生成・ref更新・再試行が必要になった | GitHubの`No commits between develop and issue/8`、初期化commit `83b747320db12300da22b7825449ceae6c0c981a`、Draft PR `#22` | `coordinate-approved-tasks`へ、同一tree時の内容変更を伴わないIssue branch初期化条件を別要求として検討する |
-| `verify` | Windows PowerShellのPATHで正本commandの`sh`を直接起動できなかった | Mainの共通品質ゲート初回実行が処理開始前に失敗し、Git Bashの絶対pathで再実行が必要だった | `sh: The term 'sh' is not recognized`と、Git Bash経由再実行のexit 0 | Windowsで共通入口を呼ぶ標準的なGit Bash invocationを検証手順またはrunnerで提供する |
-
 ## commit
 
 - ローカル実装commit: `d6bfc60a0fc77e1a04a1a15cd092f30d10a2ee95`（tree `cf6f4125119e9b42330b3b77184867a7c8faa050`）

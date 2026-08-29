@@ -97,15 +97,6 @@
 - 独立レビュー: strategy対象外
 - Mainレビュー: Issue #14、設計、Task記録、実差分、検証結果、Issue branch / Issue統合PR状態を直接確認。実装差分にP0〜P3の指摘なし。Docker復旧後の共通品質ゲート成功を確認し、Task PR公開可能と判定
 
-## フロー改善フィードバック
-
-| 区分 | 発生事象 | 影響 | 根拠 | 改善案 |
-|---|---|---|---|---|
-| `skill` | 最新`develop`と同一commitのIssue branchからDraft PRを作成できなかった | 承認直後のIssue統合Draft PR作成が一度停止した | GitHubが`No commits between develop and issue/14`を返した | Issue統合Draft PRを即時作成する場合の内容変更を伴わない初期化commitを、調整Skillの開始手順へ明記する |
-| `skill` | remote Issue branchへ初期化commitを作成した後もlocal Issue branchとTask branchは初期化前commitを指した | local branch graphだけではTask branchがremote Issue branchの最新headから開始したことを表現できず、公開時にremote parentの再構成が必要になった | local `task/14-task-pr-ci`は`5340e3e`、remote `issue/14`は同一treeの`e9546b4` | 初期化commit作成後にlocal Issue branchへ同じ状態を同期してからTask branchを作成する手順を調整Skillへ明記する |
-| `verify` | Docker Desktop backendが古いruntime socketを削除できずcrashした | 共通品質ゲートを実行できず、Task PR公開を一時停止した | host logの`remove ... sailor-ingest.sock: The file cannot be accessed by the system`と複数回の`sh scripts/verify.sh`失敗。ユーザーによるDocker起動後の再実行は成功 | 共通検証前にDocker daemonのpreflightを行い、runtime socket障害時の安全な復旧またはOS再起動手順を環境運用として整理する |
-| `verify` | 最初のTask PRではCIが起動しないと見込んだが、実際にはCI run `#23`が起動して成功した | 公開時のPR本文とTask記録に誤った見込みを一時記載した | Task PR `#17`のhead `e560002`に対するGitHub Actions run `33120791471` | workflow triggerのbootstrap挙動は推測で確定せず、Draft PR作成後のrun実績を確認して記録する |
-
 ## commit
 
 - local implementation commit: `f50bd43f2b2346ad5985d9dea841eb9ac1d8d61b`

@@ -4,7 +4,7 @@
 - 要求分析書: [`requirements/27.md`](../../requirements/27.md)
 - Requirement Analysis PR: `#29`
 - 設計PR: `#28`
-- 状態: `active`
+- 状態: `completed`
 - タスクキー: `downstream-alignment`
 - 優先度: `normal`
 - Agent構成: `worker-reviewer-parent`
@@ -12,7 +12,7 @@
 - Issue統合PR: `#30`
 - Issue統合PRのベースブランチ: `develop`
 - タスクブランチ: `task/27-downstream-alignment`
-- Task PR: 未作成
+- Task PR: `#33`
 - Task PRのベースブランチ: `issue/27`
 - 承認記録: 2026-08-30の会話でIssue #27の3 Task計画を承認
 
@@ -74,13 +74,13 @@ Requirement Analysis PR merge後の設計影響確認、Task Planning、Task実�
 - [x] 非自動完了形式、人間だけが行うPR merge・branch削除・Issue完了の境界を維持する
 - [x] `docs/`、アプリケーションコード、依存関係、CI構成に対象外変更がない
 - [x] Workerセルフレビュー、独立Reviewer、Main最終レビューで重大な指摘がない
-- [ ] 共通検証とTask PRのCIが成功する
-- [ ] Draft Task PRを`issue/27`向けに公開する
+- [x] 共通検証とTask PRのCIが成功する
+- [x] Draft Task PRを`issue/27`向けに公開する
 
 ## 実装結果
 
 - 変更内容: AGENTS、README、Task記録Template、Worker / Reviewer prompt、7つの既存Skillを、merge済み要求分析書の正本、Requirement Analysis PRの承認ゲート、別チャット境界、受入条件IDの追跡へ整合した
-- 残るリスク: Task PR公開後のCIが未確認
+- 残るリスク: Task PRは未mergeで、Issue branchへの反映とIssue全体の統合検証は人間による取り込み後に残る
 
 ## ローカル検証
 
@@ -97,7 +97,7 @@ Requirement Analysis PR merge後の設計影響確認、Task Planning、Task実�
 
 ## CI
 
-- 未確認
+- GitHub Actions CI run #64（run id `33317663426`）: 成功
 
 ## Agent割り当て
 
@@ -118,11 +118,14 @@ Requirement Analysis PR merge後の設計影響確認、Task Planning、Task実�
 ## commit
 
 - local verification base: `bf705db`（remote `issue/27` head `664cae9a…`との対象blob一致を確認した公開対象外commit）
-- 実装commit: 未作成
+- local implementation commit: `3b8811360de299b2d76c5f21ae41958d4e49f3b6`
+- GitHub連携で公開したimplementation commit: `27bbe8f33b2f0dbf43198efd6cf82975b380cd34`
 
 ## Pull Request
 
-- 未作成
+- Draft Task PR: [#33](https://github.com/shu-matsukubo/matsu-ai-dev-flow-lab/pull/33)
+- head: `task/27-downstream-alignment`
+- base: `issue/27`
 
 ## 完了報告
 
@@ -134,11 +137,11 @@ Requirement Analysis PR merge後の設計影響確認、Task Planning、Task実�
   - AC-21: AGENTS、README、Task記録Template、Worker / Reviewer prompt、7つの関連Skillを新しい要求分析の正本と承認境界へ整合する
   - AC-22: 共通検証`sh scripts/verify.sh`、Task固有のTOML構文、Skill frontmatter、境界文言、変更scopeの検証が成功した
 - 未対象または未充足の事項: T27-01・T27-02の実装内容、最新`develop`取り込み後のAC-01〜AC-22のIssue全体統合検証
-- 未実施項目: Draft Task PR公開とそのCI確認
-- 残るリスク: Task PRのCIが未確認
+- 未実施項目: 最新`develop`取り込み後のAC-01〜AC-22のIssue全体統合検証
+- 残るリスク: Task PRは未mergeで、Issue branchへの反映は人間の取り込み待ち
 - Requirement Issueの状態: merge後もopen。全受入条件と根拠を確認した人間だけが明示的にcloseする
 - AI agentによるIssue close: 行わない
 
 ## 完了日時
 
-- 未完了
+- 2026-08-30

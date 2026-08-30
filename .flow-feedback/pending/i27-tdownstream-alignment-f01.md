@@ -1,8 +1,8 @@
 # Flow Feedback i27-tdownstream-alignment-f01
 
 - 発生元Issue: #27
-- 発生元Task: `.issue-tasks/active/2026-08-30-issue-27-downstream-alignment.md`
-- 発生元PR: なし（Task PR公開前）
+- 発生元Task: `.issue-tasks/completed/2026-08-30-issue-27-downstream-alignment.md`
+- 発生元PR: #33
 - category: tooling
 - symptom: T27-03 Workerが対象fileへ修正を適用しようとした際、`apply_patch` engineが`helper_unknown_error: setup refresh had errors`で継続して停止した
 - impact: Workerが承認済み実装を適用できず、分析結果をMainへ返してMainが同じ修正を引き継ぐ手戻りが生じた

@@ -12,7 +12,7 @@
 - Issue統合PR: `#30`
 - Issue統合PRのベースブランチ: `develop`
 - タスクブランチ: `task/27-issue-form`
-- Task PR: `未作成`
+- Task PR: `#31`
 - Task PRのベースブランチ: `issue/27`
 - 承認記録: `2026-08-30のIssue #27タスク計画承認`
 
@@ -96,17 +96,20 @@ Requirement Issue Formを、要求原文とIssue登録前の任意の補足だ�
 
 ## commit
 
-- 未作成
+- local commit: `757893bae0f3e10b2c44a3cd4f53323b4731f6a1`
+- GitHub連携で公開したcommit: `7a539660d75898be12622f544a147e6fcb7276bd`
 
 ## Pull Request
 
-- 未作成
+- Draft Task PR: [#31](https://github.com/shu-matsukubo/matsu-ai-dev-flow-lab/pull/31)
+- head: `task/27-issue-form`
+- base: `issue/27`
 
 ## 完了報告
 
 - このTaskが寄与する受入条件と根拠: AC-01からAC-05。必須の`original-request`、任意の`supplement`、要求分析を別file化する案内が根拠
 - 未対象または未充足の事項: AC-06以降は後続TaskとIssue統合で確認する
-- 未実施項目: GitHub上のIssue作成画面操作、commit、Task PR、CI
+- 未実施項目: GitHub上のIssue作成画面操作、CI
 - 残るリスク: GitHub UI固有の表示はTask PR上で確認が必要
 - Requirement Issueの状態: PR取り込み後もopen。全受入条件と根拠を確認した人間だけが明示的に完了する
 - AI agentによるIssue完了操作: 行わない

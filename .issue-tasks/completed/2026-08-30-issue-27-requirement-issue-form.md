@@ -78,7 +78,7 @@ Requirement Issue Formを、要求原文とIssue登録前の任意の補足だ�
 
 ## CI
 
-- 未確認
+- GitHub Actions CI run #58（run id `33302942161`）: 成功
 
 ## Agent割り当て
 
@@ -109,7 +109,7 @@ Requirement Issue Formを、要求原文とIssue登録前の任意の補足だ�
 
 - このTaskが寄与する受入条件と根拠: AC-01からAC-05。必須の`original-request`、任意の`supplement`、要求分析を別file化する案内が根拠
 - 未対象または未充足の事項: AC-06以降は後続TaskとIssue統合で確認する
-- 未実施項目: GitHub上のIssue作成画面操作、CI
+- 未実施項目: GitHub上のIssue作成画面操作
 - 残るリスク: GitHub UI固有の表示はTask PR上で確認が必要
 - Requirement Issueの状態: PR取り込み後もopen。全受入条件と根拠を確認した人間だけが明示的に完了する
 - AI agentによるIssue完了操作: 行わない

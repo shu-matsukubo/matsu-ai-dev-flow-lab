@@ -4,7 +4,7 @@
 - 要求分析書: [`requirements/27.md`](../../requirements/27.md)
 - Requirement Analysis PR: `#29`
 - 設計PR: `#28`
-- 状態: `active`
+- 状態: `completed`
 - タスクキー: `requirement-analysis`
 - 優先度: `normal`
 - Agent構成: `worker-reviewer-parent`
@@ -12,7 +12,7 @@
 - Issue統合PR: `#30`
 - Issue統合PRのベースブランチ: `develop`
 - タスクブランチ: `task/27-requirement-analysis`
-- Task PR: 未作成
+- Task PR: `#32`
 - Task PRのベースブランチ: `issue/27`
 - 承認記録: 2026-08-30の会話でIssue #27の3 Task計画を承認
 
@@ -62,13 +62,13 @@
 - [x] 確認履歴、機密情報保護、専用PR・merge前停止、非自動完了形式、改訂時のチャット境界をSkillに定める
 - [x] 対象外の後続Skill、運用ファイル、`docs/`、アプリケーションコードを変更しない
 - [x] 独立レビューの指摘を解消し、再レビューで重大な指摘がない
-- [ ] 共通検証とTask PRのCIが成功する
-- [ ] Draft Task PRを`issue/27`向けに公開する
+- [x] 共通検証とTask PRのCIが成功する
+- [x] Draft Task PRを`issue/27`向けに公開する
 
 ## 実装結果
 
 - 変更内容: 要求分析書Templateと`$analyze-requirement` Skillを追加し、要求分析と後続工程の責務境界を定義した
-- 残るリスク: Task PR公開後のCI確認とSkill固有validatorの成功根拠が未完了
+- 残るリスク: Skill固有validatorの成功根拠がない
 
 ## ローカル検証
 
@@ -81,7 +81,7 @@
 
 ## CI
 
-- 未確認（Task PR未作成）
+- GitHub Actions CI run #60（run id `33303615073`）: 成功
 
 ## Agent割り当て
 
@@ -101,21 +101,24 @@
 
 ## commit
 
-- 未作成
+- local implementation commit: `5e9e2193fcd50117a7a7ec860a7ee6d850976a53`
+- GitHub連携で公開したimplementation commit: `de33190f95f15dce8a1fd50bbc0ced3a43737aea`
 
 ## Pull Request
 
-- 未作成
+- Draft Task PR: [#32](https://github.com/shu-matsukubo/matsu-ai-dev-flow-lab/pull/32)
+- head: `task/27-requirement-analysis`
+- base: `issue/27`
 
 ## 完了報告
 
-- このTaskが寄与する受入条件と根拠: AC-05〜AC-14、AC-16、AC-18〜AC-20。TemplateとSkillの該当規定で充足予定
+- このTaskが寄与する受入条件と根拠: AC-05〜AC-14、AC-16、AC-18〜AC-20。Templateによる要求分析項目・安定ID・確認履歴と、Skillによる正本分離・探索・人間判断・専用PR・merge前停止・非自動完了の規定が根拠
 - 未対象または未充足の事項: T27-01担当のIssue Form、T27-03担当の後続運用整合、Issue全体の統合検証
-- 未実施項目: `$skill-creator`固有validatorの完走、Task PR公開、CI確認
+- 未実施項目: `$skill-creator`固有validatorの完走
 - 残るリスク: `quick_validate.py`を実行できておらず、Skill固有validatorの成功根拠がない
 - Requirement Issueの状態: merge後もopen。全受入条件と根拠を確認した人間だけが明示的にcloseする
 - AI agentによるIssue close: 行わない
 
 ## 完了日時
 
-- 未完了
+- 2026-08-30

@@ -8,60 +8,103 @@
 
 | 情報 | 正本 | 責務 |
 |---|---|---|
-| 要求 | GitHub Issue | 要求原文と、目的・要件・受入条件・必要な制約・対象外・未確定事項からなる要求分析 |
+| 要求原文と事前の思考材料 | GitHub Issue | 要求者から受け取った要求原文と、Issue登録前に人間から得られた補足を保持する |
+| 要求分析 | `requirements/<issue-id>.md` | Issueを入力として探索・比較し、人間との追加確認を経て確定した目的・要件・受入条件・制約・対象外・判断根拠・未確定事項・確認履歴を保持する |
 | 設計 | `docs/` | 現在有効なアーキテクチャ、責務境界、品質戦略、AI開発フロー |
 | 実装 | コードと自動テスト | 実際の振る舞いと正確な実装詳細 |
 | Issue Task | `.issue-tasks/active/` と `.issue-tasks/completed/` | Requirement Issueを分解して着手したTaskの実施・検証・レビュー記録 |
 | Flow Feedback | `.flow-feedback/pending/`、`.flow-feedback/resolved/`、`.flow-feedback/dismissed/` | AI開発フロー改善のための観測と処理状態。directory配置を状態の正本とする |
 
-タスク計画はチャット上の承認対象であり、永続的な仕様ではない。Task file（タスク記録）へ要求全文や設計全文を複製しない。
+タスク計画はチャット上の承認対象であり、永続的な仕様ではない。要求分析書、設計文書、Task fileの間で同じ内容を正本として重複させない。Task fileへ要求分析や設計の全文を複製しない。
 
 ## 基本フロー
 
-設計変更の有無で、設計影響確認後の責務を分岐する。
+要求分析、設計影響確認、実装を別の承認境界として扱う。
 
 ```text
-設計変更なし
-要求Issue -> 設計影響確認 -> タスク分解 -> 人間承認
-          -> Issue branch作成 -> Issue統合Draft PR
-          -> Task実装 -> レビュー -> 検証 -> Task PR -> Issue branch
-          -> 最新developをmerge -> 統合レビュー・検証 -> 受入条件確認
-          -> Issue統合PRをReady for review
-          -> 人間がdevelopへSquash merge
-          -> 人間が受入条件を確認してIssueを明示的にclose
+要求分析
+要求Issue（要求 + 任意の補足）
+  -> 要求分析
+  -> 必要な探索・選択肢比較・人間への確認
+  -> requirements/<issue-id>.md
+  -> Requirement Analysis PR
+  -> 人間が内容を確認してSquash merge
+  -> 要求分析チャット終了
 
-設計変更あり
-要求Issue -> 設計影響確認 -> 影響分析 -> 設計案提示 -> 人間承認
-          -> 設計PR -> merge -> 設計チャット終了
+Requirement Analysis PR merge後の別チャット（設計変更なし）
+要求Issue + merge済み要求分析書 + 最新develop + 最新docs
+  -> 設計影響確認 -> タスク分解 -> 人間承認
+  -> Issue branch作成 -> Issue統合Draft PR
+  -> Task実装 -> レビュー -> 検証 -> Task PR -> Issue branch
+  -> 最新developをmerge -> 統合レビュー・検証 -> 受入条件確認
+  -> Issue統合PRをReady for review
+  -> 人間がdevelopへSquash merge
+  -> 人間が受入条件を確認してIssueを明示的にclose
+
+Requirement Analysis PR merge後の別チャット（設計変更あり）
+要求Issue + merge済み要求分析書 + 最新develop + 最新docs
+  -> 設計影響確認 -> 影響分析 -> 設計案提示 -> 人間承認
+  -> 設計PR -> merge -> 設計チャット終了
 
 設計PR merge後の別チャット
-要求Issue + 最新のdevelop + 最新のdocs
-          -> 設計影響確認
-          +-- 追加の設計変更なし -> タスク分解 -> 人間承認 -> 実装
-          +-- 追加の設計変更あり -> 上記の「設計変更あり」へ
+要求Issue + merge済み要求分析書 + 最新develop + 最新docs
+  -> 設計影響確認
+  +-- 追加の設計変更なし -> タスク分解 -> 人間承認 -> 実装
+  +-- 追加の設計変更あり -> 上記の設計変更ありの経路へ
 ```
 
-設計影響の検討は必須だが、設計文書の変更は毎回必須ではない。
+merge済み要求分析書がない状態では設計影響確認やタスク分解へ進まない。要求分析PRと設計PRはそれぞれ独立した人間承認境界とし、どちらのmergeでもRequirement Issueをcloseしない。設計影響の検討は必須だが、設計文書の変更は毎回必須ではない。
 
 ## 要求Issue
 
-原則1要求1 Issueとし、重複を許容する。要求Issueは、要求者から受け取った「要求」と、その内容を明確化した「要求分析」を分離して保持する。Issue Formでは最上段の項目名を「要求」とし、その内容には要求原文をコピーして保存する。
+原則1要求1 Issueとし、重複を許容する。Requirement Issueは要求分析前の入力を保持し、要求分析の正本にはしない。Issue Formは次の2項目を中心とする。
 
-| 区分 | 項目 | 必須 | 内容 |
-|---|---|---|---|
-| 要求 | 原文 | 必須 | 要求者から受け取った内容を、AIによる要約や解釈へ置き換えず、原則として内容を変えずに記載する |
-| 要求分析 | 目的 | 必須 | なぜ必要なのか、何ができる状態になればよいのかを簡潔に整理する |
-| 要求分析 | 要件 | 必須 | 実装方法ではなく、満たす必要がある具体的な条件を整理する |
-| 要求分析 | 受入条件 | 必須 | 要求達成を客観的に判断できる条件を、可能な限りチェックリストとして整理する |
-| 要求分析 | 制約 | 任意 | 互換性、セキュリティ、利用範囲など、要求分析時点で明らかな制約を整理する |
-| 要求分析 | 対象外 | 任意 | 今回の要求で扱わない範囲を整理する |
-| 要求分析 | 未確定事項 | 任意 | 要求として未確定で、後続の確認が必要な事項だけを整理する |
+| 項目 | 必須 | 内容 |
+|---|---|---|
+| 要求 | 必須 | 要求者から受け取った内容を、AIによる要約や解釈へ置き換えず、原則として内容を変えずに記載する |
+| 補足 | 任意 | Issue登録前の会話・壁打ちで得られた背景、意図、優先順位、検討案、採用・棄却理由、懸念、未確定事項などの思考材料を自由記述で残す |
 
-要求分析は要求原文の単なる言い換えにしない。要件や制約で実装方法を決定せず、設計段階で判断する事項を要求自体の未確定事項と混同しない。
+補足を完成された仕様書や要求分析として整形することを要求せず、補足なしで要求だけを登録できる。人間へ新しい定型文書の手入力を求めず、人間は壁打ち、必要な判断、承認へ集中し、記録の構造化はAIが担う。
 
-要求Issueには、利用するフレームワークやライブラリ、API endpoint、DB column、対象ファイル、実装手順、Agent構成、タスク一覧などの設計・実装・タスク情報を混在させない。これらは必要に応じて、`docs/`、設計影響確認、タスク分解、`.issue-tasks/`、実装で扱う。
+Issueの補足はIssue登録前までの思考材料である。要求分析中に発生した質問と回答は要求分析書の確認履歴へ記録し、同じ正本へ混在させない。
 
-既存コードや既存Issueですでに受入条件を満たす場合は、新しい実装をせず根拠を示して完了できる。
+Requirement Issueには、完成した要求分析、利用するフレームワークやライブラリ、API endpoint、DB column、対象ファイル、実装手順、Agent構成、タスク一覧などの設計・実装・タスク情報を混在させない。これらはそれぞれ、要求分析書、`docs/`、設計影響確認、タスク分解、`.issue-tasks/`、実装で扱う。
+
+## 要求分析
+
+Requirement Issue登録後、`$analyze-requirement`を使用してIssueの要求と補足を読み、`requirements/<issue-id>.md`を作成する。共通構造は`requirements/TEMPLATE.md`を正本とし、ファイル名はIssue番号だけを使用してIssue titleの変更によるrenameを避ける。
+
+要求分析書は少なくとも次を記録できる構造を持つ。
+
+| 項目 | 内容 |
+|---|---|
+| 元Issue | 要求原文と補足を保持するRequirement Issueへの参照 |
+| 目的 | なぜ必要か、何ができる状態になればよいか |
+| 要件 | 実装方法ではなく、満たす必要がある振る舞いと条件 |
+| 受入条件 | 要求達成を客観的に確認できる条件 |
+| 制約 | 互換性、セキュリティ、運用など、要求として守る条件 |
+| 対象外 | 今回の要求で扱わない範囲 |
+| 重要な人間判断 | 検討した主要な選択肢、採用・棄却した判断、理由 |
+| 未確定事項 | 明示的に残す不確実性、または設計工程へ委ねる事項 |
+| 確認履歴 | 要求分析中に人間へ確認した質問、回答、確定した判断 |
+
+要求分析はIssue本文の単純な整形や言い換えにしない。必要に応じて前提、解釈候補、複数案、利点・欠点、影響、トレードオフを整理する。要求者による判断が必要な事項をAIの推論だけで確定せず、Issueの補足から人間判断を確認できない場合は必ず人間へ質問する。AI自身の提案や推測を、人間が判断済みの事項として扱わない。
+
+要求範囲や受入条件の確定に必要な人間判断が未回答のまま、要求分析を確定しない。未確定事項には、人間が未回答の重要判断を隠して残すのではなく、人間が明示的に後続へ委ねた事項や、要求分析時点では解消できない外部条件を記録する。
+
+確認履歴はチャット全文の保存ではない。何が未確定で、何を質問し、どの回答によって何が確定したかを必要十分に要約する。個人情報、secret、credential、実案件固有情報、判断に不要な会話はGitへ記録しない。
+
+### Requirement Analysis PR
+
+要求分析書は最新の`develop`をbaseとする専用PRで公開する。PRはRequirement Issueを`Refs #<number>`などの非close形式で参照し、要求分析の内容、主要な判断、未確定事項を人間が確認できる状態にする。AI agentはPRをmergeせず、人間が承認してmergeするまで設計影響確認へ進まない。
+
+Requirement Analysis PRのmerge後は要求分析チャットを終了する。後続は別チャットでRequirement Issue、merge済み要求分析書、最新の`develop`、最新の`docs/`を読み直して開始し、過去チャットを正本にしない。
+
+要求分析書は実装進捗のチェックリストとして更新しない。要求や受入条件そのものを変更する必要が生じた場合だけ、後続工程を止め、専用のRequirement Analysis PRで改訂する。改訂merge後は別チャットで設計影響確認から再開する。
+
+このフローの導入時点で要求分析書が存在しないopen Issueは一括移行せず、そのIssueの次の後続工程へ進む前に要求分析とRequirement Analysis PRを通す。完了済みIssueを遡って移行しない。
+
+既存コードや既存Issueですでに受入条件を満たす場合は、新しい実装をせず、要求分析書の各受入条件に対する根拠を示して完了できる。
 
 ## 人間向け文章の言語
 
@@ -73,7 +116,7 @@
 
 ## 設計影響確認
 
-タスク分解前に `$check-design-impact` を使用し、現在のIssue、`develop`、`docs/`、実装を根拠として次を確認する。
+Requirement Analysis PRのmerge後に`$check-design-impact`を使用する。Requirement Issue、merge済みの`requirements/<issue-id>.md`、現在の`develop`、`docs/`、関連コードとテストを読み、次を確認する。
 
 - frontend / backendの責務
 - サービス境界と依存方向
@@ -85,21 +128,23 @@
 - AI開発フロー
 - Agent / Skill責務
 
+Issueは要求原文と事前の思考材料を確認する入力として使い、目的、要件、受入条件、制約、対象外、人間判断の正本にはmerge済み要求分析書を使う。要求分析書が存在しない、またはRequirement Analysis PRが未mergeの場合は設計影響確認を開始せず、要求分析工程へ戻る。
+
 設計判断に必要な影響分析には、責務境界、既存契約、互換性、セキュリティ、データ、品質ゲート、関連ルール間の整合性への影響確認を含める。これは禁止される実装計画ではない。
 
-設計変更が必要と判断したチャットでは、後続の具体的なTask、実装対象ファイル、作業順序、実装手順、Agent割り当てを決めず、`$plan-tasks` を使用しない。設計上必然的に生じる影響範囲は説明できるが、具体的な実装計画へ落とし込まない。
+設計変更が必要と判断したチャットでは、後続の具体的なTask、実装対象ファイル、作業順序、実装手順、Agent割り当てを決めず、`$plan-tasks`を使用しない。設計上必然的に生じる影響範囲は説明できるが、具体的な実装計画へ落とし込まない。
 
 影響がなく、設計文書の変更も不要なら、その理由と根拠を簡潔に示してタスク分解へ進む。単なる事実訂正や明確化も設計PRとして実装と分離でき、設計PRを作成する場合は同じチャット分離の規則を適用する。
 
-新しいアーキテクチャ判断、既存アーキテクチャの変更、新しいサービスや依存関係、認証方式、永続化方式、API契約方式、テスト戦略の大幅変更、新しい設計文書やtop-level文書カテゴリ、AI開発フローの重要変更が必要なら、勝手に決めず選択肢・影響・推奨案を人間へ提示する。承認後に元Issueを `Refs #<number>` で参照する設計PRを作り、mergeまで実装を開始しない。設計PRは要求Issueをcloseしない。
+新しいアーキテクチャ判断、既存アーキテクチャの変更、新しいサービスや依存関係、認証方式、永続化方式、API契約方式、テスト戦略の大幅変更、新しい設計文書やtop-level文書カテゴリ、AI開発フローの重要変更が必要なら、勝手に決めず選択肢・影響・推奨案を人間へ提示する。承認後に元Issueを`Refs #<number>`で参照する設計PRを作り、mergeまで実装を開始しない。設計PRは要求Issueをcloseしない。
 
-設計PR作成後はタスク分解や実装へ進まず、人間によるmergeを待つ。merge後はその設計チャットを完了する。実装は別チャットで元の要求Issueを改めて入力し、最新の`develop`と`docs/`から設計影響確認をやり直して再開する。
+設計PR作成後はタスク分解や実装へ進まず、人間によるmergeを待つ。merge後はその設計チャットを完了する。実装は別チャットでRequirement Issue、merge済み要求分析書、最新の`develop`、最新の`docs/`を改めて入力し、設計影響確認から再開する。
 
 ## タスク分解と承認ゲート
 
-設計PRが不要と判断した場合だけ、そのチャットで `$plan-tasks` へ進む。設計PRが必要だった場合は、そのPRがmergeされた後に別の実装チャットを開始し、要求Issue、最新の`develop`、最新の`docs/`から設計影響を再評価する。追加の設計変更が不要と判断できた場合に初めて `$plan-tasks` を使用する。
+Requirement Analysis PRがmerge済みであることを前提とする。設計PRが不要と判断した場合だけ、その設計影響確認を行ったチャットで`$plan-tasks`へ進む。設計PRが必要だった場合は、そのPRがmergeされた後に別の実装チャットを開始し、Requirement Issue、merge済み要求分析書、最新の`develop`、最新の`docs/`から設計影響を再評価する。追加の設計変更が不要と判断できた場合に初めて`$plan-tasks`を使用する。
 
-`$plan-tasks` では1 Task = 1責務のレビュー可能な計画をチャットへ提示する。各Taskは目的、対象範囲、作業内容、対象外、依存、懸念事項、完了条件、優先度、Agent構成、必須レビュー経路を持つ。人間の明示承認前に書き込みを開始しない。
+`$plan-tasks`ではmerge済み要求分析書の目的、要件、受入条件、制約、対象外を根拠に、1 Task = 1責務のレビュー可能な計画をチャットへ提示する。各Taskは目的、対象範囲、作業内容、対象外、依存、懸念事項、完了条件、優先度、Agent構成、必須レビュー経路を持つ。人間の明示承認前に書き込みを開始しない。
 
 Agent構成（`agent strategy`）は次から選ぶ。通常は `worker-parent-review` を既定とし、Task固有の事情から別の構成が適切な場合だけ切り替える。
 
@@ -146,9 +191,10 @@ develop
 
 | 対象 | 責務 |
 |---|---|
-| Requirement Issue | 要求と要求分析の正本 |
+| Requirement Issue | 要求原文とIssue登録前の補足、および要求を追跡するGitHub上の識別子 |
+| Requirement Analysis | 目的、要件、受入条件、制約、対象外、人間判断、未確定事項、確認履歴の正本 |
 | Design | 現在有効な設計の正本 |
-| Issue統合PR | 1つのRequirement Issueによる実装成果を`develop`へ統合し、要求全体の状態を追跡・レビューする入口 |
+| Issue統合PR | 1つのRequirement Issueによる実装成果を`develop`へ統合し、要求分析書の受入条件を追跡・レビューする入口 |
 | Task / Task PR | Requirement Issue内部の実装・レビュー・検証単位 |
 | コードと自動テスト | 実際の振る舞いと正確な実装詳細の正本 |
 
@@ -179,10 +225,11 @@ AI agentはTask PRおよびIssue統合PRをmergeせず、PRの作成・更新、
 Issue統合Draft PRには、本文を複製せず、次の正本と状態を辿れる参照を記録する。
 
 - 対応するRequirement Issue
+- merge済み要求分析書とRequirement Analysis PR
 - 関連するDesignと設計PR
 - 対応するTask、Task file、Task PRとその状態
 - Requirement Issue全体の検証状況と未実施項目
-- 受入条件ごとの充足根拠
+- 要求分析書の受入条件ごとの充足根拠
 - 最新`develop`の取り込みと、重要な競合・判断の記録
 
 全Taskが完了し、最新の`develop`を取り込んだ状態で必要な統合・回帰検証と受入条件確認が完了した後に、Issue統合PRをReady for reviewへ変更する。Draft状態やPR本文を要求・設計・実装の新しい正本にはせず、各正本と永続的な作業状態を結ぶ索引として扱う。
@@ -191,7 +238,7 @@ Issue統合Draft PRには、本文を複製せず、次の正本と状態を辿�
 
 未着手のタスク計画はGitへ保存しない。Taskへ着手した時点で `.issue-tasks/TEMPLATE.md` から `.issue-tasks/active/<date>-<task>.md` を作り、実装と同じTask branch / Task PRへ含める。Task fileだけのPull Requestは作らない。
 
-Task fileは元Issue、Issue branch、Issue統合PRと現在の設計を参照し、実施結果、検証、CI、Agent割り当て、レビュー、commit、Task PRを記録する。Flow Feedback本文はTask fileへ記録せず、追跡が必要な場合だけ対応するfeedback fileへの参照を持たせる。完了時に `.issue-tasks/completed/` へ移し、同じTask PRの成果としてIssue branchへ取り込む。Task fileだけを後から別branchや別PRで更新しない。
+Task fileは元Issue、merge済み要求分析書、Issue branch、Issue統合PRと現在の設計を参照し、実施結果、検証、CI、Agent割り当て、レビュー、commit、Task PRを記録する。Flow Feedback本文はTask fileへ記録せず、追跡が必要な場合だけ対応するfeedback fileへの参照を持たせる。完了時に `.issue-tasks/completed/` へ移し、同じTask PRの成果としてIssue branchへ取り込む。Task fileだけを後から別branchや別PRで更新しない。
 
 ## Main / Worker / Reviewer
 
@@ -203,34 +250,39 @@ modelとreasoning effortは `.codex/` の責務であり、Skillへ記載しな�
 
 ## レビューと検証
 
-WorkerまたはMainは実装後にセルフレビューを行う。承認済みAgent構成のレビュー経路を満たした後、MainがIssue、設計、Task file、実際のdiff、検証結果を直接確認する。指摘は正しさ、安全性、回帰、責務境界、検証不足を重要度順に扱い、好みだけの指摘を避ける。
+WorkerまたはMainは実装後にセルフレビューを行う。承認済みAgent構成のレビュー経路を満たした後、MainがIssue、merge済み要求分析書、設計、Task file、実際のdiff、検証結果を直接確認する。指摘は正しさ、安全性、回帰、責務境界、検証不足を重要度順に扱い、好みだけの指摘を避ける。
 
 検証は `$verify-changes` を使い、共通入口 `sh scripts/verify.sh` でlint、typecheck、Unit Test、build、`git diff --check`を実行する。リスクに応じたTask固有検証を追加し、未実施・失敗は理由と残るリスクを記録して成功扱いにしない。
 
 ## Pull RequestとIssue完了
 
-通常の実装は、1 Requirement Issue = 1 Issue branch = 1 Issue統合PR、1 Task = 1 Task branch = 1 Task PRの二階層とする。Task PRは対応するIssue branch、Issue統合PRは`develop`をbaseにする。設計PRはこの実装用branch構造から分離する。
+通常の実装は、1 Requirement Issue = 1 Issue branch = 1 Issue統合PR、1 Task = 1 Task branch = 1 Task PRの二階層とする。Task PRは対応するIssue branch、Issue統合PRは`develop`をbaseにする。Requirement Analysis PRと設計PRはこの実装用branch構造から分離し、`develop`をbaseにする。
 
-設計PR、Task PR、Issue統合PRの本文では、対応するRequirement Issueを `Refs #<number>` または通常のリンクなど、closeを伴わない形式で参照する。`Closes`、`Fixes`、`Resolves`およびGitHubが同等に扱う自動closeキーワードは使用しない。Requirement Issueとの追跡関係は維持しながら、どのPRのmergeでもIssueを自動closeさせない。
+Requirement Analysis PR、設計PR、Task PR、Issue統合PRの本文では、対応するRequirement Issueを`Refs #<number>`または通常のリンクなど、closeを伴わない形式で参照する。`Closes`、`Fixes`、`Resolves`およびGitHubが同等に扱う自動closeキーワードは使用しない。Requirement Issueとの追跡関係は維持しながら、どのPRのmergeでもIssueを自動closeさせない。
 
-Main、Worker、Reviewerを含むAI agentとSkillは、受入条件の充足状況にかかわらずRequirement Issueをcloseしない。IssueをcloseするGitHub Actionsなどの自動化も導入しない。設計PR、Task PR、Issue統合PRのmerge後もRequirement Issueはopenのまま維持し、すべての受入条件とその根拠を人間が確認した後に限り、人間が明示的にcloseする。
+Main、Worker、Reviewerを含むAI agentとSkillは、受入条件の充足状況にかかわらずRequirement Issueをcloseしない。IssueをcloseするGitHub Actionsなどの自動化も導入しない。すべてのPR merge後もRequirement Issueはopenのまま維持し、要求分析書の全受入条件とその根拠を人間が確認した後に限り、人間が明示的にcloseする。
 
-設計PRとTask PRには、そのPRの範囲が寄与する受入条件、充足根拠、未対象または未充足の事項を記録する。Issue統合PRとAI agentの完了報告には、Requirement Issueの受入条件ごとの充足状況と根拠、未実施項目、残るリスクを示し、人間がIssue完了を判断できる状態にする。途中のPRやTaskだけを根拠にRequirement Issue全体を完了扱いにしない。
+Requirement Analysis PRは、要求分析の内容、主要な選択肢と判断、確認履歴、未確定事項を人間が承認する境界である。設計PRとTask PRには、そのPRの範囲が要求分析書のどの受入条件へ寄与するか、根拠、未対象または未充足の事項を記録する。Issue統合PRとAI agentの完了報告には、要求分析書の受入条件を1件ずつ確認した充足状況と根拠、未実施項目、残るリスクを示し、人間がIssue完了を判断できる状態にする。途中のPRやTaskだけを根拠にRequirement Issue全体を完了扱いにしない。
+
+要求分析書自体を実装進捗の記録場所にせず、受入条件の達成状況と根拠はIssue統合PRへ記録する。
 
 GitHubへのリモート操作はGitHub連携だけを使用し、`git push`、`gh`、GitHub APIの直接呼び出しへ切り替えない。AI agentはPRをmergeしない。
 
-Task PR作成後は、要求Issue、現在の設計、Issue統合PR、Task file、Task PR、diff、レビュー・CI結果から別チャットで再開できる。Issue統合時は、要求Issue、現在の設計、Issue統合PR、取り込み済みTask PR、Task file、最新`develop`との差分、統合検証、受入条件の根拠から状態を復元する。
+Task PR作成後は、Requirement Issue、merge済み要求分析書、現在の設計、Issue統合PR、Task file、Task PR、diff、レビュー・CI結果から別チャットで再開できる。Issue統合時は、Requirement Issue、merge済み要求分析書、現在の設計、Issue統合PR、取り込み済みTask PR、Task file、最新`develop`との差分、統合検証、受入条件の根拠から状態を復元する。
 
 ## チャットと永続状態の境界
 
+- 要求分析チャットはRequirement Issueの要求と補足から開始し、必要な探索、選択肢比較、人間への質問、回答の記録、要求分析書とRequirement Analysis PRの作成までを担う。
+- Requirement Analysis PR作成後は設計影響確認へ進まず、人間によるmergeを待つ。merge後に要求分析チャットを完了する。
+- 設計影響確認は別チャットでRequirement Issue、merge済み要求分析書、最新の`develop`、最新の`docs/`を読み直して開始する。要求分析書がない場合は要求分析工程へ戻る。
 - 設計PRが不要な場合は、その設計影響確認を行ったチャットでタスク分解へ進める。
 - 設計変更または既存設計の明確化により設計PRが必要な場合は、そのチャットの責務を影響分析、設計案の承認、設計PRの作成までに限定し、後続のタスク分解や具体的な実装計画を行わない。
 - 設計PR作成後は後続へ進まず、merge後にその設計チャットを完了する。
-- 実装は別チャットで元の要求Issueを改めて入力し、最新の`develop`と`docs/`を正本として設計影響確認から再開する。
-- 過去チャット上の未永続なタスク計画や実装計画を復元・引き継がず、現在の正本から必要な計画を作る。
+- 実装は別チャットでRequirement Issue、merge済み要求分析書、最新の`develop`、最新の`docs/`を改めて入力し、設計影響確認から再開する。
+- 過去チャット上の未永続な要求分析、タスク計画、実装計画を復元・引き継がず、現在の正本から必要な判断と計画を作る。
 - タスク分解の承認後、Issue branchとIssue統合Draft PRを作成し、最初のTask PRを公開するまでは同じチャットで継続する。
-- Task PR後は要求Issue、現在の設計、Issue統合PR、Task file、Task PR、diff、レビュー・CI結果から別チャットで復元できる。
-- Issue統合レビューは、要求Issue、現在の設計、Issue統合PR、取り込み済みTask PR、Task file、最新`develop`との差分と検証結果から別チャットでも復元できる。
+- Task PR後はRequirement Issue、merge済み要求分析書、現在の設計、Issue統合PR、Task file、Task PR、diff、レビュー・CI結果から別チャットで復元できる。
+- Issue統合レビューは、Requirement Issue、merge済み要求分析書、現在の設計、Issue統合PR、取り込み済みTask PR、Task file、最新`develop`との差分と検証結果から別チャットでも復元できる。
 - 未着手のタスク計画は復元対象にせず、必要なら現在状態から再計画する。
 
 過去チャットの記憶だけを判断根拠にしない。
@@ -294,7 +346,7 @@ AIフロー改善は通常Taskとは別のRequirement Issueとして行い、そ
 
 各feedbackは次のいずれかとして処理する。
 
-- 改善が必要: 通常の設計影響確認、必要な設計承認、タスク分解、実装、レビュー、検証を通し、改善が完了した後に`resolved/`へ移動する
+- 改善が必要: 通常の要求分析、設計影響確認、必要な設計承認、タスク分解、実装、レビュー、検証を通し、改善が完了した後に`resolved/`へ移動する
 - 対応不要: 根拠を確認して記録した後に`dismissed/`へ移動する
 
 分析とレビューには複数Agentを利用してよいが、永続状態を変更するwriterは1つに限定する。少なくとも、`.flow-feedback/`内の既存fileの更新・移動、SkillやAI開発フロー文書、改善対象となる共通fileを複数Agentが並行して直接変更しない。lock file、lease、DB、schedulerなどの排他制御基盤は導入しない。
@@ -303,7 +355,7 @@ AIフロー改善は通常Taskとは別のRequirement Issueとして行い、そ
 
 Flow Feedbackの完全収集は保証しない。観測漏れを許容し、mergeされず完全に破棄されたTask、branch、Pull Requestだけに存在したfeedbackを救済する特殊フローは導入しない。必要な問題が繰り返し発生する場合は、将来のTaskから再度観測されることを許容する。
 
-中央`feedback.md`、外部DB、GitHub Actionsによる自動集約、scheduler、重複排除、自動改善は導入しない。改善自体がAI開発フローやSkill責務を変える場合は、新しい要求と設計影響確認を通す。
+中央`feedback.md`、外部DB、GitHub Actionsによる自動集約、scheduler、重複排除、自動改善は導入しない。改善自体がAI開発フローやSkill責務を変える場合は、新しいRequirement Issue、要求分析、設計影響確認を通す。
 
 ### 既存Task記録からの移行
 

@@ -1,6 +1,8 @@
 # タスク名
 
 - 元Issue: `#<number>`
+- 要求分析書: `requirements/<issue-id>.md`
+- Requirement Analysis PR: `#<number>`
 - 設計PR: `なし` / `#<number>`
 - 状態: `active`
 - タスクキー: `<承認済みPlan内で一意のkey>`
@@ -14,7 +16,7 @@
 - Task PRのベースブランチ: `issue/<issue-id>`
 - 承認記録: `<承認日時または会話内の識別情報>`
 
-要求や設計全文は複製せず、元Issueと現在の `docs/` を参照する。このファイルは着手済み作業の実施記録である。
+要求や設計全文は複製せず、元Issue、merge済み要求分析書、現在の `docs/` を参照する。このファイルは着手済み作業の実施記録である。
 
 ## 目的
 
@@ -38,7 +40,7 @@
 
 | 依存対象 | 種類 | ゲート | 完了条件 | 現在状態と根拠 |
 |---|---|---|---|---|
-| `<タスク / PR / 設計PR>` | `<hard / soft / ordering>` | `<start / complete / publish / merge>` | `<条件>` | `<状態、URLまたはpath>` |
+| `<タスク / Requirement Analysis PR / 設計PR>` | `<hard / soft / ordering>` | `<start / complete / publish / merge>` | `<条件>` | `<状態、URLまたはpath>` |
 
 ## 懸念事項
 
@@ -85,7 +87,7 @@
 
 ## 完了報告
 
-- このTaskが寄与する受入条件と根拠: 未確認
+- このTaskが寄与する要求分析書の受入条件ID（例: `AC-01`）と根拠: 未確認
 - 未対象または未充足の事項: 未確認
 - 未実施項目: 未確認
 - 残るリスク: 未確認

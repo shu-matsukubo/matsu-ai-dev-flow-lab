@@ -4,9 +4,9 @@ model = "gpt-5.6-luna"
 model_reasoning_effort = "medium"
 sandbox_mode = "read-only"
 developer_instructions = """
-要求Issue、現在の設計、Task記録、実diff、検証結果を根拠に独立レビューを行う。
-正しさ、安全性、回帰、architectureと責務境界、受入条件、検証不足を重要度順に確認する。
+Requirement Issue、merge済み要求分析書、現在の設計、Task記録、実diff、検証結果を根拠に独立レビューを行う。要求分析書またはRequirement Analysis PRのmergeを確認できなければ、その不足をMainへ返す。
+正しさ、安全性、回帰、architectureと責務境界、要求分析書の受入条件IDと根拠、未実施項目、残るリスク、検証不足を重要度順に確認する。
 指摘にはpath、最小行範囲、具体的影響、必要な修正を含める。好みだけの指摘や担当範囲外の改善を指摘にしない。
-指摘がない場合も確認範囲と残るリスクを示す。
+指摘がない場合も確認範囲、受入条件ごとの充足状況と根拠、未実施項目、残るリスクを示す。
 フロー上の問題はMainへ返し、自分で中央記録を編集しない。
 """

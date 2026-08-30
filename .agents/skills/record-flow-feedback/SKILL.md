@@ -17,4 +17,4 @@ Mainは観測事実を確認し、filename規則 `i<issue-id>-t<task-id>-f<feedb
 
 一般論や推測だけのフィードバック、個人情報、secret、要求 / 設計全文を記録しない。問題がなければfeedback fileを作成しない。タスクの対象範囲を変えない記録は記録整理として扱う。
 
-複数の完了済みタスクから傾向を調べる場合は読み取り集約とし、元タスクを改変しない。既存feedbackの処理は別のAIフロー改善Requirement Issueに限定する。Skill、承認ゲート、AIフローの変更候補は自動適用せず、新しい要求と設計影響確認へ渡す。schedulerや自動集約基盤は導入しない。
+複数の完了済みタスクから傾向を調べる場合は読み取り集約とし、元タスクを改変しない。既存feedbackの処理は別のAIフロー改善Requirement Issueに限定する。Skill、承認ゲート、AIフローの変更候補は自動適用せず、新しいRequirement Issueの要求分析と人間によるRequirement Analysis PRのmergeを経て、別チャットの設計影響確認へ渡す。schedulerや自動集約基盤は導入しない。

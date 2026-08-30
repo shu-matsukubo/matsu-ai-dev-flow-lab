@@ -1,69 +1,28 @@
 name: 要求
-description: 1つの要求と、その要求分析を記録する
+description: 1つの要求原文と、Issue登録前の任意の補足を記録する
 title: "[要求] "
 body:
   - type: textarea
     id: original-request
     attributes:
       label: 要求
-      description: 要求原文を、内容を変えずにそのままコピーしてください。
-      placeholder: 要求原文をそのまま貼り付けてください。
+      description: 要求者から受け取った要求原文を、AIによる要約や解釈へ置き換えず、原則として内容を変えずにコピーしてください。
+      placeholder: 要求者から受け取った要求原文をそのまま貼り付けてください。
     validations:
       required: true
   - type: markdown
     attributes:
       value: |
-        ## 要求分析
-
-        要求原文をもとに、以下の項目を記載してください。実装方法や作業手順ではなく、実現したい結果と判断基準を記載します。
+        要求分析はIssue登録後にCodexが別ファイルとして作成します。このIssueへ完成した要求分析を記載する必要はありません。
   - type: textarea
-    id: purpose
+    id: supplement
     attributes:
-      label: 目的
-      description: この要求で実現したい結果や、解決したい課題を記載してください。
-      placeholder: 利用者または開発フローがどのような状態になるべきか
-    validations:
-      required: true
-  - type: textarea
-    id: requirements
-    attributes:
-      label: 要件
-      description: 要求を満たすために必要な振る舞いや条件を箇条書きで記載してください。
+      label: 補足
+      description: Issue登録前の会話や壁打ちで得られた思考材料があれば、自由に記載してください。完成した仕様書や要求分析へ整形する必要はありません。
       placeholder: |
-        - 必要な振る舞い
-        - 守るべき条件
-    validations:
-      required: true
-  - type: textarea
-    id: acceptance-criteria
-    attributes:
-      label: 受入条件
-      description: 要求が満たされたことを客観的に確認できる条件をチェックリストで記載してください。
-      placeholder: |
-        - [ ] 確認可能な条件
-    validations:
-      required: true
-  - type: textarea
-    id: constraints
-    attributes:
-      label: 制約
-      description: あらかじめ守る必要がある制約があれば記載してください。
-      placeholder: 技術・運用・期限などの制約
-    validations:
-      required: false
-  - type: textarea
-    id: out-of-scope
-    attributes:
-      label: 対象外
-      description: 今回の要求では扱わない事項があれば記載してください。
-      placeholder: 今回は扱わない事項
-    validations:
-      required: false
-  - type: textarea
-    id: undecided-items
-    attributes:
-      label: 未確定事項
-      description: まだ判断や確認が必要な事項があれば記載してください。
-      placeholder: 追加の確認や判断が必要な事項
+        例:
+        - 背景や意図、優先順位
+        - 検討した案と採用・棄却した理由
+        - 懸念や、まだ決めていない事項
     validations:
       required: false

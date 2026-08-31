@@ -242,7 +242,7 @@ Task fileは元Issue、merge済み要求分析書、Issue branch、Issue統合PR
 
 ## Main / Worker / Reviewer
 
-- Main: タスク分解、承認境界、Agent割り当て、アーキテクチャ判断、統合判断と調整、最終レビュー、最終判断、およびFlow Feedbackの観測確認と新規記録を所有する。
+- Main: タスク分解、承認境界、Agent割り当て、アーキテクチャ判断、統合判断と調整、最終レビュー、最終判断、およびFlow Feedbackの観測確認と新規記録を所有する。承認済みのFlow Feedback処理では、処理対象、評価の統合、人間承認の境界、既存fileと共通fileの単一writer責務を所有する。
 - Worker: 割り当て範囲の実装、必要な検証、セルフレビューを行い、結果・疑問・フロー改善フィードバックをMainへ返す。
 - Reviewer: Workerから独立して、要求充足、回帰、アーキテクチャや責務境界の違反、検証不足を確認し、指摘とフロー改善フィードバックをMainへ返す。
 
@@ -283,6 +283,8 @@ Task PR作成後は、Requirement Issue、merge済み要求分析書、現在の
 - タスク分解の承認後、Issue branchとIssue統合Draft PRを作成し、最初のTask PRを公開するまでは同じチャットで継続する。
 - Task PR後はRequirement Issue、merge済み要求分析書、現在の設計、Issue統合PR、Task file、Task PR、diff、レビュー・CI結果から別チャットで復元できる。
 - Issue統合レビューは、Requirement Issue、merge済み要求分析書、現在の設計、Issue統合PR、取り込み済みTask PR、Task file、最新`develop`との差分と検証結果から別チャットでも復元できる。
+- Flow Feedback処理は専用Requirement Issue、merge済み要求分析書、現在の設計、処理対象の`pending/` file、Task file、Pull Request、評価案への人間承認から別チャットでも復元できる。
+- 改善Requirement Issueまたは別Issueへ引き継いだfeedbackは、そのIssueの最終結果が確定するまで`pending/`を維持する。引き継ぎ先は別チャットで通常フローを開始する。
 - 未着手のタスク計画は復元対象にせず、必要なら現在状態から再計画する。
 
 過去チャットの記憶だけを判断根拠にしない。
@@ -340,22 +342,79 @@ Worker / ReviewerはAI開発フロー上の問題を観測した場合、Task本
 
 同種の問題が複数Taskで観測されても自動統合せず、それぞれを独立した観測として保持する。
 
-### AIフロー改善作業
+### Flow Feedback処理
 
-AIフロー改善は通常Taskとは別のRequirement Issueとして行い、その時点の`.flow-feedback/pending/`をまとめて確認できる。feedbackごとにRequirement Issueを大量作成せず、同種または関連する複数feedbackを1つの改善Requirementで扱ってよい。ただし、元feedback fileは統合または削除しない。
+Flow Feedbackの一括処理は、通常Taskでの新規観測記録や改善実装から分離し、専用のRequirement Issueを単位として行う。1回の処理Issueで複数の`pending/` fileを扱い、feedback 1件ごとのIssue作成を前提にしない。処理Issueも既存の要求分析、設計影響確認、必要な設計承認、タスク承認、二階層PR、レビュー、検証、Issue完了の境界を省略しない。
 
-各feedbackは次のいずれかとして処理する。
+`$record-flow-feedback`は通常Taskで新しい観測を記録する責務だけを持ち、既存feedbackを処理しない。`$process-flow-feedback`は承認済みのFlow Feedback処理Taskでだけ使用し、既存feedbackの一括収集、評価案の作成、人間承認後の処理記録、file移動、Requirement Issueへの引き継ぎを担う。通常Taskから`$process-flow-feedback`を使用しない。
 
-- 改善が必要: 通常の要求分析、設計影響確認、必要な設計承認、タスク分解、実装、レビュー、検証を通し、改善が完了した後に`resolved/`へ移動する
-- 対応不要: 根拠を確認して記録した後に`dismissed/`へ移動する
+#### 処理対象と評価
 
-分析とレビューには複数Agentを利用してよいが、永続状態を変更するwriterは1つに限定する。少なくとも、`.flow-feedback/`内の既存fileの更新・移動、SkillやAI開発フロー文書、改善対象となる共通fileを複数Agentが並行して直接変更しない。lock file、lease、DB、schedulerなどの排他制御基盤は導入しない。
+処理開始時に対象とする`pending/` file群を識別し、その集合を処理単位として固定する。対象確定後に追加されたfeedbackを暗黙に処理範囲へ含めず、別の処理単位へ残す。
 
+各feedbackについて、次を確認する。
+
+- 必須項目、発生元Issue、Task、PR、観測根拠
+- 現在有効な要求分析、設計、実装、テストとの整合性
+- 同じ原因または改善候補を持つ他のfeedbackとの関係
+- 重複、既存対応、前提変更、既に解消済みの内容
+- 対応効果、影響範囲、独立した承認や優先順位判断の必要性
+
+複数Agentを評価へ利用する場合も、WorkerとReviewerは読み取り分析と提案に限定し、Mainが評価を統合する。既存feedback、AI開発フロー文書、Skill、その他の共通fileを変更するwriterはMainだけに限定する。
+
+Mainは各feedbackの分類、判断根拠、関連feedbackのまとめ方、作成または参照するRequirement Issueを評価案として提示する。人間が評価案を承認するまで、既存feedbackの更新・移動、引き継ぎ先Requirement Issueの作成・更新、改善実装を行わない。分類、まとめ方、対象範囲を変更する場合は再承認を受ける。
+
+#### 処理記録と正本
+
+元の観測内容はfeedback fileに維持し、処理のたびに必要十分な記録を同じfileへ追記する。処理記録は少なくとも次を辿れるようにする。
+
+- Flow Feedback処理のRequirement Issue、Task、PR
+- 「対応する」「対応不要」「別Issueとして扱う」の分類
+- 分類と最終結果の根拠
+- 関連するfeedback file
+- まとめて扱う改善Requirement Issueまたは独立した別Issue
+- 必要な対応の完了、または対応不要の確定を示す最終結果
+
+分類や関連Issueは判断履歴であり、fileの処理状態ではない。処理状態は`pending/`、`resolved/`、`dismissed/`の配置だけを正本とし、本文へ`status`などの状態metadataを追加しない。中央一覧fileを新設せず、IssueやTask fileへfeedback本文を大量に複製しない。IssueとTaskはfeedback fileへの参照を持ち、feedback fileは処理Issueと引き継ぎ先Issueへの参照を持つ。
+
+#### 分類と状態遷移
+
+| 分類 | 処理 | fileの状態 |
+|---|---|---|
+| 対応する | 関連するfeedbackを責務、影響範囲、依存関係から可能な範囲でまとめ、改善Requirement Issueへ引き継ぐ。引き継ぎ先でも通常の要求分析以降の承認境界を通す | 必要な対応の最終結果が確定するまで`pending/` |
+| 対応不要 | 重複、既存対応、前提変更、効果とコストなどの根拠を記録する | 根拠を記録した同じ変更で`dismissed/`へ移動 |
+| 別Issueとして扱う | 大きな設計変更、独立した要求、異なる承認や優先順位判断が必要な内容を独立したRequirement Issueへ引き継ぐ | Issueを作成しただけでは完了とせず`pending/` |
+
+改善Requirement Issueまたは別Issueで必要な対応が完了し、その根拠を確認できた場合は、最終結果を記録して`resolved/`へ移動する。引き継ぎ先で対応不要と確定した場合は、その根拠を記録して`dismissed/`へ移動する。関連Issueが未完了、結果が確認できない、またはIssueを作成しただけの場合は`pending/`を維持する。Flow Feedback処理Issue自体の完了を、引き継いだfeedbackの処理完了とは扱わない。
+
+元の観測fileは統合または削除しない。同じ改善Requirement Issueへ複数feedbackを引き継ぐ場合も、各fileから共通のIssueを辿れる状態を維持する。
+
+#### 既存フローとの統合
+
+```text
+Flow Feedback処理用Requirement Issue
+  -> 要求分析 -> Requirement Analysis PR -> 人間がmerge
+  -> 別チャットで設計影響確認
+  -> 必要な設計承認 -> タスク承認
+  -> $process-flow-feedbackでpending群を収集・評価
+  -> 人間が評価案を承認
+  +-- 対応不要 -> 根拠を記録 -> dismissed/
+  +-- 対応する -> まとめた改善Requirement Issue -> 通常フロー
+  |                                      +-- 対応完了 -> resolved/
+  |                                      +-- 対応不要 -> dismissed/
+  +-- 別Issue -> 独立Requirement Issue -> 通常フロー
+                                         +-- 対応完了 -> resolved/
+                                         +-- 対応不要 -> dismissed/
+```
+
+引き継ぎ先のRequirement Issueは要求原文とIssue登録前の補足だけを保持し、feedback fileの詳細を複製せず参照で結ぶ。要求分析書、設計、Task、Task PR、Issue統合PRの責務は既存フローと同じとする。AI agentは処理Issue、引き継ぎ先Issue、Pull Requestをmergeまたはcloseしない。
+
+共通品質ゲートは`sh scripts/verify.sh`を維持する。Flow Feedback処理の変更リスクに応じて、対象file集合、命名規則、必須項目、状態metadataの不在、処理記録、Issue参照、移動前後の欠落・重複を確認する追加検証を選ぶ。CI gate、外部DB、scheduler、lock service、自動Issue作成、自動改善は追加しない。
 ### 収集範囲
 
 Flow Feedbackの完全収集は保証しない。観測漏れを許容し、mergeされず完全に破棄されたTask、branch、Pull Requestだけに存在したfeedbackを救済する特殊フローは導入しない。必要な問題が繰り返し発生する場合は、将来のTaskから再度観測されることを許容する。
 
-中央`feedback.md`、外部DB、GitHub Actionsによる自動集約、scheduler、重複排除、自動改善は導入しない。改善自体がAI開発フローやSkill責務を変える場合は、新しいRequirement Issue、要求分析、設計影響確認を通す。
+中央`feedback.md`、外部DB、GitHub Actionsによる自動集約、scheduler、重複排除、feedbackごとの自動Issue作成、自動改善は導入しない。改善自体がAI開発フローやSkill責務を変える場合は、新しいRequirement Issue、要求分析、設計影響確認を通す。
 
 ### 既存Task記録からの移行
 

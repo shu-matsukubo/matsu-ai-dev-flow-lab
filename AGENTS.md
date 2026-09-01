@@ -16,6 +16,10 @@ Requirement Issue登録後は `$analyze-requirement` を使用し、要求と任
 
 実装はタスクごとのAgent構成に従い、`$coordinate-approved-tasks`、`$review-changes`、`$verify-changes`、`$publish-task-pr` を使用する。Worker / Reviewerのフロー改善フィードバックはMainへ返し、Mainが `$record-flow-feedback` で必要な新規feedbackを `.flow-feedback/pending/` の1件1fileへ記録する。役割別modelはSkillではなく `.codex/` が定義する。
 
+通常Taskは新規Flow Feedbackの記録までとし、既存feedbackを評価・更新・移動しない。既存feedbackの一括処理は、専用Requirement Issue、merge済み要求分析書、設計ゲート、承認済みTaskを通した場合だけ `$process-flow-feedback` を使用する。専用処理TaskではWorker / Reviewerを読み取り分析と提案に限定し、既存feedbackと共通fileのwriterはMainだけとする。
+
+Mainは処理対象、分類、判断根拠、関連feedbackのまとめ方、引き継ぎ先Requirement Issueを評価案として人間へ提示する。人間が評価案を承認するまで既存feedbackの更新・移動、引き継ぎ先Issueの作成・更新、改善実装を行わず、承認後もdirectory配置による3状態と通常の二階層PR、レビュー、検証の境界を維持する。
+
 共通検証入口は `sh scripts/verify.sh`。Dockerが利用できない場合は理由を報告し、成功扱いにしない。
 
 通常の実装は、1 Requirement Issue = 1 `issue/<issue-id>` branch = 1 Issue統合Draft PR、1 Task = 1 `task/<issue-id>-<task-id>` branch = 1 Draft Task PRの二階層とする。Task計画の人間承認後に最新の `develop` からIssue branchとIssue統合Draft PRを作成し、各Taskは着手時点の最新Issue branchから開始する。Task PRのbaseは対応するIssue branch、Issue統合PRのbaseは `develop` とする。Task記録には元Issue、要求分析書、Requirement Analysis PR、設計PR、Issue branch、Issue統合PR、Task branch、Task PRを記録する。設計PRは実装から分離し、元Issueを `Refs #<number>` で参照する。

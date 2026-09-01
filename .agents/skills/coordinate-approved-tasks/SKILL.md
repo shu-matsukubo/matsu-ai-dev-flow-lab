@@ -17,6 +17,10 @@ Skillはmodelを選ばない。Mainは承認済み構成の範囲内で、責務
 
 WorkerへIssue、merge済み要求分析書、現在の設計、タスクファイル、担当範囲、対象外、統合点、完了条件、必要な検証を渡す。Workerは実装、受入条件との対応、検証、セルフレビュー、疑問、未実施項目、残るリスク、フロー改善フィードバックをMainへ返す。ReviewerはIssue、要求分析書、設計、統合差分、検証結果から独立レビューし、受入条件ごとの根拠、指摘、未実施項目、残るリスク、フロー改善フィードバックをMainへ返す。
 
+承認済みTaskがFlow Feedback処理専用の場合は `$process-flow-feedback` を使用する。Mainが対象`pending/`集合をTask記録へ固定し、Worker / Reviewerは読み取り分析と提案だけを行う。Mainは評価を統合して分類、根拠、関連feedbackのまとめ方、引き継ぎ先Requirement Issueを人間へ提示し、その承認まで既存feedbackの更新・移動、Issue作成・更新、改善実装を行わない。承認後の既存feedback、Task記録、Skillなどの共通file変更もMainだけが行う。対象、分類、まとめ方、引き継ぎ先を変える場合は再承認へ戻る。
+
+通常TaskではWorkerが承認範囲の実装を担い、既存feedbackの検索、評価、更新、移動に `$process-flow-feedback` を使用しない。専用処理TaskのMain単一writer責務を通常Taskへ一般化しない。
+
 承認外の改善、新しい依存関係、アーキテクチャ判断、対象範囲変更が必要なら実装を広げず再承認へ戻る。要求または受入条件そのものの変更が必要ならTaskを止め、専用Requirement Analysis PRによる改訂へ戻る。Mainは報告だけに依存せず実diffと検証結果を確認し、`$review-changes` と `$verify-changes` の結果をタスクファイルへ記録する。必要な新規feedback fileは `$record-flow-feedback` でMainが記録する。既存feedbackは通常Taskで処理しない。
 
 合格後はタスクファイルを `.issue-tasks/completed/` へ移し、`$publish-task-pr` で実装とタスク記録を同じDraft Pull Requestへ公開する。Issue統合Draft PRとTask PRはRequirement Issueを `Refs #<number>` などの非close形式で参照し、本文に `Closes`、`Fixes`、`Resolves` およびGitHubが同等に扱う自動close keywordを使用しない。Task PRには担当範囲が寄与する要求分析書の受入条件ID、根拠、未対象または未充足の事項を記録する。Main、Worker、Reviewerは受入条件を満たしたと判断してもRequirement Issueをcloseしない。

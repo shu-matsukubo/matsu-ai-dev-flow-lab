@@ -3,6 +3,10 @@ name: coordinate-approved-tasks
 description: 人間が承認したタスクを、承認範囲、依存関係、Agent構成を保ちながら実装、レビュー、検証、タスク記録、Draft PRまで統括する。
 ---
 
+## 開始ゲートと引き渡し
+
+Mainは各作業指示の開始時に最新Issueの6種類のステータスラベルを確認し、`AI：作業可能`だけと現在のチャット指示がある場合に限りWorkerへ実装を委譲する。未付与・人間承認待ち・複数競合・永続情報との不整合では変更せず停止する。Mainは自己付与せず、Worker・Reviewerはラベルを変更しない。各工程完了時の人間承認待ちへの切り替え、再取得確認、同一指示内停止はMainだけが行う。
+
 # 承認済みタスクの調整
 
 承認済み計画、Requirement Issue、merge済み要求分析書、Requirement Analysis PR、現在の設計、タスクのbaseを確認する。要求分析書が存在しない、またはRequirement Analysis PRが未mergeなら実装を開始しない。計画承認後、Mainは最新の `develop` から `issue/<issue-id>` branchとIssue統合Draft PR（baseは `develop`）を作成する。着手時に `.issue-tasks/TEMPLATE.md` から `.issue-tasks/active/` へタスクファイルを作り、その時点の最新Issue branchから `task/<issue-id>-<task-id>` branchを開始する。Task記録にはIssue、要求分析書、Requirement Analysis PR、設計PR、Issue branch、Issue統合PR、Task branch、Task PRの追跡参照を持たせ、実装と同じTask PRへ含める。

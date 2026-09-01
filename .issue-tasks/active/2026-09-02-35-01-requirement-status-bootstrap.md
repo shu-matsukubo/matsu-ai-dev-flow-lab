@@ -12,7 +12,7 @@
 - Issue統合PR: `#42`
 - Issue統合PRのベースブランチ: `develop`
 - タスクブランチ: `task/35-01`
-- Task PR: 未作成
+- Task PR: `#44`
 - Task PRのベースブランチ: `issue/35`
 - 承認記録: 2026-09-02、本チャットで要求者がタスク計画を「承認」と明示し、Issue #35を`AI：作業可能`へ切り替えた
 
@@ -66,7 +66,7 @@ Requirement Issueの入口をGitHub上の設計と一致させ、新規Issueを`
 - [x] Requirement Issue Formが`人間：要求承認待ち`を既定ラベルとして指定する
 - [x] Issueイベント書き込みActionsやAI自動起動を追加していない
 - [ ] 変更差分と外部状態の根拠をMainが確認する
-- [ ] 共通品質ゲートとTask固有検証の結果を記録する
+- [x] 共通品質ゲートとTask固有検証の結果を記録する
 
 ## 実装結果
 
@@ -85,7 +85,8 @@ Requirement Issueの入口をGitHub上の設計と一致させ、新規Issueを`
 
 ## CI
 
-- 未確認
+- GitHub Actions CI run [#86](https://github.com/shu-matsukubo/matsu-ai-dev-flow-lab/actions/runs/33569977860): `verify` jobと`品質検証` stepが`success`
+- 実行対象head: `644d94e155549333f6e167f89f3dd60f2c53cdfc`
 
 ## Agent割り当て
 
@@ -95,7 +96,7 @@ Requirement Issueの入口をGitHub上の設計と一致させ、新規Issueを`
 
 - セルフレビュー: Issue Formのtop-level位置、完全一致ラベル名、対象外workflow変更がないことを確認。コード差分に指摘なし。外部設定は未完了
 - 独立レビュー: strategy対象外
-- Mainレビュー: remote差分と公式仕様を直接確認。既定branch変更・全6ラベル確認待ちのため最終合格は保留
+- Mainレビュー: remote差分と公式仕様を直接確認。Draft PR #44がbase `issue/35`、head `task/35-01`であることとCI run #86 successを確認。既定branch変更・全6ラベル確認待ちのため最終合格は保留
 
 ## Flow Feedback参照
 
@@ -110,17 +111,21 @@ Requirement Issueの入口をGitHub上の設計と一致させ、新規Issueを`
 - Task記録開始commit: `d3e88d67bcb030c9030e88c03f7e05f6d2232436`
 - Issue Form実装commit: `a3b065b7a9060299123033e1d24e8dc32eb916f7`
 - Flow Feedback記録commit: `6b9980b831c0f1aef90b7ebe40f06c87bc767bb7`
-- 記録更新commit: この更新
+- 記録更新commit: GitHub連携による記録更新commit群（Draft PR #44公開済み、mergeは未実施）
 
 ## Pull Request
 
-- 未作成
+- 外部設定完了待ちDraft Task PR: [#44](https://github.com/shu-matsukubo/matsu-ai-dev-flow-lab/pull/44)
+- base: `issue/35`
+- head: `task/35-01`
+- Draft: `true`
+- merge: AI agentは実施しない
 
 ## 完了報告
 
 - このTaskが寄与する要求分析書の受入条件IDと根拠: `AC-01`、`AC-03`、`AC-06`、`AC-17`。根拠は実装・検証後に記録する
 - 未対象または未充足の事項: AI開始ゲート、承認引き渡し、自動検証は後続Task
-- 未実施項目: repository既定branchの`develop`への変更、全6ラベルの機械確認、Docker共通品質ゲート、CI
+- 未実施項目: repository既定branchの`develop`への変更、全6ラベルの機械確認、ローカルrunner上の共通品質ゲート。GitHub Actions上の共通品質ゲートは成功済み
 - 残るリスク: Issue Formが`develop`へmergeされ既定branchが切り替わるまで新規Issueへの初期付与は有効にならない
 - Requirement Issueの状態: merge後もopen。全受入条件と根拠を確認した人間だけが明示的にcloseする
 - AI agentによるIssue close: 行わない

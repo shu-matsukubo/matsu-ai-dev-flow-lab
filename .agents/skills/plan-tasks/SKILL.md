@@ -28,6 +28,10 @@ Agent構成は次から選ぶ。通常の既定構成は `worker-parent-review` 
 
 どの構成でも、Workerを使用する場合のセルフレビューとMainによる実差分・検証結果の確認、最終レビュー、最終判断は省略しない。独立ReviewerはMainの最終レビューを代替しない。
 
+Flow Feedback処理専用Taskを計画する場合は、処理開始時に対象`pending/`集合を固定する方法、評価案への人間承認を変更前に待つ停止条件、Main単一writer、3分類・3状態、引き継ぎ先Issueの最終結果まで`pending/`を維持する完了条件を明記する。Task計画の承認と、Task開始後の評価案への承認を同一視しない。
+
+専用処理Taskでも既存のAgent構成名を使用するが、Worker / Reviewerを使う場合の担当は読み取り分析と提案に限定し、既存feedback、Task記録、Skillなどの共通fileを変更する実装担当はMainとする。通常TaskのWorker実装責務を専用処理Taskへそのまま適用しない。
+
 計画をチャットへ提示し、人間の明示承認を待つ。未着手計画をGitへ保存しない。承認後、実際にタスクへ着手するときだけ `.issue-tasks/TEMPLATE.md` から `.issue-tasks/active/<date>-<task>.md` を作る。タスクファイルだけを先にcommitまたはPull Request化しない。
 
 承認後、Mainは最新の `develop` から `issue/<issue-id>` branchと、`develop`をbaseとするIssue統合Draft PRを作成する。Issue統合Draft PRはRequirement Issue、要求分析書、Requirement Analysis PR、設計、Task、検証、受入条件、`develop` 同期状態を辿る索引とする。各Taskは着手時点の最新Issue branchから `task/<issue-id>-<task-id>` branchを作り、対応するIssue branchをbaseとするTask PRで公開する。

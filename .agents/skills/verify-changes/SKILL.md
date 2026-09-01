@@ -9,6 +9,8 @@ Requirement Issue、merge済み要求分析書、Requirement Analysis PR、現�
 
 共通品質ゲートはESLint、TypeScript typecheck、ユニットテスト、build、`git diff --check`を含む。変更リスクが共通品質ゲートだけで覆えない場合は、対象を絞った追加テスト、起動確認、契約確認など最小十分な検証を選ぶ。大きなテスト戦略変更が必要なら実装せず設計影響確認へ戻る。
 
+Flow Feedback処理Taskでは、Task記録へ固定した対象file集合と実差分を照合する。filenameと必須8項目、状態metadataの不在、処理記録とIssue参照、1観測1file、移動前後の欠落・重複、分類とdirectory配置の整合を追加確認する。Issueを作成しただけのfile、関連Issueが未完了のfile、最終結果を確認できないfileは`pending/`を維持し、必要な対応の完了時だけ`resolved/`、対応不要の確定時だけ`dismissed/`であることを確認する。
+
 Dockerが存在しない、daemonへ接続できない、依存関係や外部状態が不足する場合は、scriptのmessageと原因を報告して停止する。host実行などの代替確認を行った場合もDocker品質ゲート成功とは扱わない。
 
 失敗が承認対象範囲内の実装原因なら修正して再実行する。環境・外部要因または対象範囲外なら、command、失敗・未実施理由、代替確認、残るリスクをタスクファイルへ記録する。最後に`git status`とbaseからのdiffを確認し、意図しない生成物、lockfile、secret、未追跡fileがないことを確認する。

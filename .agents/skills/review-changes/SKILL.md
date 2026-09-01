@@ -7,6 +7,10 @@ description: 承認済み実装diffを要求充足、正しさ、回帰、アー
 
 Requirement Issue、merge済み要求分析書、Requirement Analysis PR、現在の`docs/`、タスクファイル、対応するIssue統合PR、baseからの実差分、ローカル検証結果を直接読む。要求分析書が存在しない、またはRequirement Analysis PRが未mergeならレビューを完了扱いにせずMainへ返す。Agentの報告や過去チャットだけを根拠にしない。対象PRがRequirement Issueを `Refs #<number>` などの非close形式で参照し、本文に `Closes`、`Fixes`、`Resolves` およびGitHubが同等に扱う自動close keywordを含まないことを確認する。Task PRではTaskの承認範囲・完了条件、担当範囲が寄与する要求分析書の受入条件IDと根拠、未対象または未充足の事項、Issue branchへの安全な取り込みを確認する。Issue統合PRでは全Task、最新`develop`同期、要求分析書の全受入条件と統合・回帰、各条件の根拠、未実施項目、残るリスクを確認する。レビューで受入条件充足を認めても、Issueをcloseしない。
 
+Flow Feedback処理Taskでは、固定した対象集合、評価案への人間承認、分類と根拠、関連feedbackのまとめ方、引き継ぎ先Issue、Main単一writerを直接確認する。人間承認前の既存feedback変更やIssue作成・更新、対象外fileの混入、元fileの統合・削除、状態metadataや新directory、Issue作成だけでの`resolved/`移動を必須指摘とする。
+
+処理記録と相互参照から、処理Issue、Task、PR、発生元、関連feedback、引き継ぎ先Issue、確定済みの最終結果を辿れることを確認する。Worker / Reviewer自身は既存feedbackや共通fileを変更しない。
+
 次を重要度順に確認する。
 
 - 要求分析書の目的、要件、受入条件とTaskの完了条件を満たすか

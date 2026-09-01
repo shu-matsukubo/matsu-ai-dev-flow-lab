@@ -63,19 +63,25 @@ Requirement Issueの入口をGitHub上の設計と一致させ、新規Issueを`
 
 - [ ] 6種類のラベルが表記どおり存在する
 - [ ] repositoryの既定branchが`develop`である
-- [ ] Requirement Issue Formが`人間：要求承認待ち`を既定ラベルとして指定する
-- [ ] Issueイベント書き込みActionsやAI自動起動を追加していない
+- [x] Requirement Issue Formが`人間：要求承認待ち`を既定ラベルとして指定する
+- [x] Issueイベント書き込みActionsやAI自動起動を追加していない
 - [ ] 変更差分と外部状態の根拠をMainが確認する
 - [ ] 共通品質ゲートとTask固有検証の結果を記録する
 
 ## 実装結果
 
-- 変更内容: 未実施
-- 残るリスク: 未確認
+- 変更内容: `.github/ISSUE_TEMPLATE/requirement.yml`のtop-level `labels`へ`人間：要求承認待ち`を追加した。GitHub公式仕様で`labels`が自動付与用の配列であり、既存ラベルだけが付与されることを確認した
+- remote差分: Issue Form 1行追加、Task記録、Flow Feedback 1件だけ。workflow変更なし
+- 外部状態: repositoryの既定branchは現在`main`。`develop`への変更は要求者へ依頼済み
+- ラベル確認: 要求者が6件作成済みと明示。Issue #35で`AI：作業可能`と`人間：タスク承認待ち`が利用可能であることは実遷移で確認済み。全6件の機械一覧取得は未実施
+- 残るリスク: 既定branch変更と6ラベルの完全な機械確認が完了するまでTaskを完了扱いにできない
 
 ## ローカル検証
 
-- 未実施
+- `sh scripts/verify.sh`: 未実施。workspace command runnerが`windows sandbox failed: helper_unknown_error: setup refresh had errors`で起動せず、成功扱いにしていない
+- GitHub remote file再取得: 成功。Issue Formの`labels: ["人間：要求承認待ち"]`を確認
+- `issue/35...task/35-01`比較: 成功。Issue Form 1file・1行の実装変更とTask記録・Flow Feedbackだけを確認
+- GitHub公式Issue Form仕様照合: 成功。top-level `labels`は自動付与用の配列で、存在しないラベルは付与されない仕様
 
 ## CI
 
@@ -87,13 +93,13 @@ Requirement Issueの入口をGitHub上の設計と一致させ、新規Issueを`
 
 ## レビュー結果
 
-- セルフレビュー: 未実施
+- セルフレビュー: Issue Formのtop-level位置、完全一致ラベル名、対象外workflow変更がないことを確認。コード差分に指摘なし。外部設定は未完了
 - 独立レビュー: strategy対象外
-- Mainレビュー: 未実施
+- Mainレビュー: remote差分と公式仕様を直接確認。既定branch変更・全6ラベル確認待ちのため最終合格は保留
 
 ## Flow Feedback参照
 
-- 未確認
+- `.flow-feedback/pending/i35-t01-f01.md`
 
 ## Flow Feedback処理
 
@@ -101,8 +107,10 @@ Requirement Issueの入口をGitHub上の設計と一致させ、新規Issueを`
 
 ## commit
 
-- Task記録開始commit: 作成結果を確認後に記録
-- 実装commit: 未作成
+- Task記録開始commit: `d3e88d67bcb030c9030e88c03f7e05f6d2232436`
+- Issue Form実装commit: `a3b065b7a9060299123033e1d24e8dc32eb916f7`
+- Flow Feedback記録commit: `6b9980b831c0f1aef90b7ebe40f06c87bc767bb7`
+- 記録更新commit: この更新
 
 ## Pull Request
 
@@ -112,8 +120,8 @@ Requirement Issueの入口をGitHub上の設計と一致させ、新規Issueを`
 
 - このTaskが寄与する要求分析書の受入条件IDと根拠: `AC-01`、`AC-03`、`AC-06`、`AC-17`。根拠は実装・検証後に記録する
 - 未対象または未充足の事項: AI開始ゲート、承認引き渡し、自動検証は後続Task
-- 未実施項目: 実装、検証、GitHub外部状態確認
-- 残るリスク: 未確認
+- 未実施項目: repository既定branchの`develop`への変更、全6ラベルの機械確認、Docker共通品質ゲート、CI
+- 残るリスク: Issue Formが`develop`へmergeされ既定branchが切り替わるまで新規Issueへの初期付与は有効にならない
 - Requirement Issueの状態: merge後もopen。全受入条件と根拠を確認した人間だけが明示的にcloseする
 - AI agentによるIssue close: 行わない
 

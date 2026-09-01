@@ -3,6 +3,10 @@ name: review-changes
 description: 承認済み実装diffを要求充足、正しさ、回帰、アーキテクチャと責務境界、安全性、検証不足の順にレビューする。
 ---
 
+## 開始ゲートとレビュー境界
+
+レビュー開始前にMainが最新Issueのステータスを確認し、`AI：作業可能`だけと現在のチャット指示、必要な永続情報が揃う場合に限りレビューする。未付与・人間承認待ち・複数競合・不整合ではレビュー成果物やコメント、ラベル変更を行わず停止する。Reviewerはステータスを変更せず、工程完了時の引き渡しはMainだけが行う。
+
 # 実装レビュー
 
 Requirement Issue、merge済み要求分析書、Requirement Analysis PR、現在の`docs/`、タスクファイル、対応するIssue統合PR、baseからの実差分、ローカル検証結果を直接読む。要求分析書が存在しない、またはRequirement Analysis PRが未mergeならレビューを完了扱いにせずMainへ返す。Agentの報告や過去チャットだけを根拠にしない。対象PRがRequirement Issueを `Refs #<number>` などの非close形式で参照し、本文に `Closes`、`Fixes`、`Resolves` およびGitHubが同等に扱う自動close keywordを含まないことを確認する。Task PRではTaskの承認範囲・完了条件、担当範囲が寄与する要求分析書の受入条件IDと根拠、未対象または未充足の事項、Issue branchへの安全な取り込みを確認する。Issue統合PRでは全Task、最新`develop`同期、要求分析書の全受入条件と統合・回帰、各条件の根拠、未実施項目、残るリスクを確認する。レビューで受入条件充足を認めても、Issueをcloseしない。

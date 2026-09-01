@@ -3,6 +3,10 @@ name: publish-task-pr
 description: レビュー・検証済みタスクを、禁止されたpushやCLIへfallbackせずGitHub連携だけでtask branchへ公開し、対応するIssue branch向けDraft Task PRを作成する。
 ---
 
+## 開始ゲートと公開前の引き渡し
+
+公開作業の開始前にMainが最新Issueのステータスと永続情報を確認し、`AI：作業可能`だけで現在のチャット指示がある場合に限り進める。未付与・人間承認待ち・複数競合・不整合ではremoteやfileを変更せず停止する。Task PR公開後の`人間：最終成果物承認待ち`への切り替えはMainだけが行い、Worker・Reviewerはステータスを変更しない。
+
 # Pull Requestの公開
 
 タスクファイル、Requirement Issue、merge済み要求分析書、Requirement Analysis PR、承認範囲、必須レビュー、検証、local commit、branch、base、`git status`、baseからのdiff、secret混入がないことを確認する。要求分析書が存在しない、またはRequirement Analysis PRが未mergeなら公開しない。Task branchは対応するIssue branchから作成し、Task PRはそのIssue branchをbaseとする。1 Task = 1 Draft Task PRとし、タスクファイルと実装を同じPRへ含める。Issue統合Draft PRのURLとTask PRのURLをTask記録から相互に追跡できる状態にする。

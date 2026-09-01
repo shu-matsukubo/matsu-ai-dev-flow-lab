@@ -1,6 +1,7 @@
 name: 要求
 description: 1つの要求原文と、Issue登録前の任意の補足を記録する
 title: "[要求] "
+labels: ["人間：要求承認待ち"]
 body:
   - type: textarea
     id: original-request

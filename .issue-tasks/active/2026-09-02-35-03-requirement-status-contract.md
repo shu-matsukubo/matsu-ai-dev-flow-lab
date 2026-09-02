@@ -1,0 +1,134 @@
+# ステータスラベルフローの契約検証を追加する
+
+- 元Issue: `#35`
+- 要求分析書: `requirements/35.md`
+- Requirement Analysis PR: `#40`
+- 設計PR: `#41`（初版）、`#45`（修正版・最新）
+- 状態: `active`
+- タスクキー: `35-03`
+- 優先度: `high`
+- Agent構成: `worker-parent-review`
+- Issue branch: `issue/35`
+- Issue統合PR: `#42`
+- Issue統合PRのベースブランチ: `develop`
+- タスクブランチ: `task/35-03`
+- Task PR: 未作成
+- Task PRのベースブランチ: `issue/35`
+- 承認記録: 2026-09-02、要求者が設計PR #45後の修正版タスク計画を承認し、Task PR #43・#44をmerge後、本チャットで「マージしたので続けてください」と指示した
+
+要求や設計全文は複製せず、元Issue、merge済み要求分析書、現在の `docs/` を参照する。このファイルは着手済み作業の実施記録である。
+
+## 目的
+
+Requirement Issueのステータスラベル、Issue Form、AI開始ゲート、安全停止、人間への引き渡し、branch責務について、repository内の設定・作業ガイド・Skill間の契約不整合を共通テスト入口で検出できるようにする。
+
+## 対象範囲
+
+- Node.js標準機能によるrepository内の静的契約テスト
+- rootの既存`npm test`から契約テストを実行する設定
+- Requirement Issue Form、`AGENTS.md`、関連8 Skill、AI開発フロー設計の相互整合確認
+- Task記録とDraft Task PR
+
+## 作業内容
+
+- 指定された6種類のステータスラベル名が設計上の一覧と一致することを確認する
+- Requirement Issue Formの初期ラベルが`人間：要求承認待ち`であることを確認する
+- repository既定branch `main`と、作業開始点・Issue統合base `develop`の責務を確認する
+- `AI：作業可能`だけかつ現在のチャット指示がある場合の開始条件を確認する
+- 人間承認待ち、未付与、複数競合、永続情報不整合で停止する規則を確認する
+- 各工程の引き渡し先、以前のステータスを残さない更新、非ステータスラベル保持、再取得確認を検証する
+- IssueイベントによるAI自動起動、PR自動merge、Issue自動closeを追加していないことを確認する
+- 共通品質ゲートと変更リスクに応じた契約テスト結果を記録する
+
+## 対象外
+
+- GitHub上のラベル作成・変更
+- `develop`から`main`への反映
+- `main`反映後のIssue Form実動作確認
+- GitHub上の全6ラベル一覧取得
+- AIの自動実行、PRの自動merge、Issueの自動close
+- 新しい依存関係、GitHub Actions workflow、Frontend、Backend、API、認証、DBの変更
+- 既存Flow Feedbackの評価・更新・移動
+
+## 依存関係
+
+| 依存対象 | 種類 | ゲート | 完了条件 | 現在状態と根拠 |
+|---|---|---|---|---|
+| Requirement Analysis PR #40 | hard | start | `develop`へmerge済み | merge commit `b395f9764b8eb64ec2db3fd0103b340ace5fb507` |
+| 設計PR #41・#45 | hard | start | `develop`へmerge済み | 最新設計は#45、merge commit `0e1604e397b942e9880c7880e95b79db9fd943f5` |
+| Task PR #44（35-01） | hard | start | `issue/35`へmerge済み | merge commit `b0cdd2326346a0c2379a871eee9fbc35f4d12c7f` |
+| Task PR #43（35-02） | hard | start | `issue/35`へmerge済み | merge commit `38a80d530600039e3a8c3e32c17479df109fac79` |
+| Issue #35開始ゲート | hard | start | `AI：作業可能`だけかつ現在のチャット指示あり | 2026-09-02にGitHubから再取得して確認 |
+
+## 懸念事項
+
+- 文書の自然な言い換えへ過度に依存する脆い検証を避け、重要な機械値と責務境界に絞る
+- repository外部のラベル一覧、既定branch、Issue Form実動作は静的テストだけでは保証できない
+- local command runner障害が継続する場合、ローカル共通品質ゲートを成功扱いにしない
+- Task 35-01・35-02の実装fileを承認範囲外で修正しない
+
+## 完了条件
+
+- [ ] 追加依存なしで契約テストが実装される
+- [ ] rootの`npm test`から契約テストと既存workspace testが実行される
+- [ ] 6ラベル、Issue Form初期値、branch責務の静的契約を確認できる
+- [ ] AI開始条件、安全停止、工程復元、引き渡し、Main単独責務の静的契約を確認できる
+- [ ] Issueイベントによる自動実行、PR自動merge、Issue自動closeを追加していないことを確認できる
+- [ ] WorkerのセルフレビューとMainの直接レビューが完了する
+- [ ] 共通品質ゲートとTask固有検証の成功・失敗・未実施・残るリスクが記録される
+- [ ] Task記録を`.issue-tasks/completed/`へ移し、`issue/35`向けDraft Task PRを作成する
+
+## 実装結果
+
+- 変更内容: 実装中
+- 残るリスク: 未確認
+
+## ローカル検証
+
+- 未実施
+
+## CI
+
+- 未確認
+
+## Agent割り当て
+
+- Worker: 未割り当て
+- Main: Task記録、統合調整、直接レビュー、最終判断、Draft PR公開を担当
+
+## レビュー結果
+
+- セルフレビュー: 未実施
+- 独立レビュー: `worker-parent-review`のため対象外
+- Mainレビュー: 未実施
+
+## Flow Feedback参照
+
+- 新規観測がある場合だけMainが記録する
+
+## Flow Feedback処理
+
+対象外
+
+## commit
+
+- Task branch開始点: `38a80d530600039e3a8c3e32c17479df109fac79`
+- Task記録開始commit: 未作成
+- 実装commit: 未作成
+
+## Pull Request
+
+- 未作成
+
+## 完了報告
+
+- このTaskが寄与する要求分析書の受入条件IDと根拠: `AC-01`〜`AC-18`の静的契約と、特に`AC-18`の追加検証へ寄与する
+- 未対象または未充足の事項: GitHub外部状態、`main`反映後のIssue Form実動作、Issue全体の最終受入判定
+- 未実施項目: 実装・レビュー・検証
+- 残るリスク: 未確認
+- Requirement Issueの状態: merge後もopen。全受入条件と根拠を確認した人間だけが明示的にcloseする
+- AI agentによるIssue close: 行わない
+
+## 完了日時
+
+- 未完了

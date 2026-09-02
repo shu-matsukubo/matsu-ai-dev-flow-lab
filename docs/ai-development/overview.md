@@ -86,7 +86,7 @@ Requirement Issueでは次の6種類だけをステータスラベルとして�
 
 定常状態では6種類のうち1種類だけを付与し、ステータス以外のラベルは併用できる。ステータスラベルは作業権と次の承認対象を示す補助的な永続情報であり、要求、要求分析、設計、Task、Pull Request、検証結果の正本を置き換えない。
 
-repositoryの既定branchは`develop`とし、Requirement Issue Formを含むGitHub上の開発運用設定を現在の`develop`と一致させる。6種類のラベルはIssue Formを有効にする前にrepository labelとして用意し、Requirement Issue Formの既定ラベルによって新規Issueへ`人間：要求承認待ち`を自動付与する。初期付与のためのIssue event orchestrationや、ラベル変更だけを契機とするAIの自動起動は導入しない。
+repositoryの既定branchは`main`とし、開発作業の起点とIssue統合PRのbaseは`develop`とする。6種類のラベルはIssue Formを有効にする前にrepository labelとして用意し、Requirement Issue Formの既定ラベルによって新規Issueへ`人間：要求承認待ち`を自動付与する。Requirement Issue Formは既定branch上の内容がGitHubで利用されるため、変更を`develop`へ取り込んだだけでは有効化完了と扱わない。人間が管理する`develop`から`main`への反映後に、初期ラベルを含む外部動作を確認する。Issue単位で`main`へ直接backportせず、初期付与のためのIssue event orchestrationや、ラベル変更だけを契機とするAIの自動起動も導入しない。
 
 ラベルの未作成、Issue Formの付与失敗、手動操作の不備によりステータスが未付与または競合した場合は、自動補正によってAIへ作業権を与えず、安全側に停止する。導入前に完了したIssueへ遡及付与せず、導入後に後続作業を行うopen Issueは人間が作業開始前に有効なステータスへ整える。
 
@@ -229,7 +229,11 @@ Agent構成（`agent strategy`）は次から選ぶ。通常は `worker-parent-r
 実装のGit / GitHub上の統合境界はRequirement Issue単位とする。Taskは要求内部のレビュー可能な作業単位として維持するが、Taskの途中成果を直接`develop`へ入れず、Issue branchを共通の親・統合点として扱う。
 
 ```text
-develop
+main（repository既定branch）
+  ^
+  | 人間が管理するdevelopからの反映
+  |
+develop（開発統合branch）
   |
   +-- issue/<issue-id>
         |
@@ -253,7 +257,7 @@ develop
 
 ### branchとPull Requestの開始
 
-タスク分解が人間に承認された後、最新の`develop`から`issue/<issue-id>` branchを作成し、`develop`をbaseとするIssue統合PRをDraftで作成する。Issue統合Draft PRは、Task実装の完了を待たず、要求全体の進行状態をGitHub上から復元する入口として早い段階で用意する。
+タスク分解が人間に承認された後、最新の`develop`から`issue/<issue-id>` branchを作成し、`develop`をbaseとするIssue統合PRをDraftで作成する。repositoryの既定branchが`main`であっても、Requirement Issueの作業branchを`main`から開始しない。PR作成時はGitHub UIの既定候補に依存せず、Issue統合PRのbaseが`develop`、Task PRのbaseが対応するIssue branchであることを明示的に確認する。Issue統合Draft PRは、Task実装の完了を待たず、要求全体の進行状態をGitHub上から復元する入口として早い段階で用意する。
 
 各Taskは、そのTaskを開始する時点の最新Issue branchから`task/<issue-id>-<task-id>` branchを作成する。Task PRは対応するIssue branchをbaseとするDraftで公開し、`develop`を直接baseにしない。Task fileは従来どおりTaskの実装と同じbranch・Task PRへ含める。
 
@@ -269,7 +273,7 @@ Issue branchを常に最新の`develop`へ追従させることは要求しな�
 
 ### mergeとbranchの終了
 
-Task PRとIssue統合PRはいずれもSquash mergeを基本とする。Task PRをIssue branchへmergeした後、不要になったTask branchは削除してよい。Issue統合PRを`develop`へmergeした後、不要になったIssue branchは削除してよい。
+Task PRとIssue統合PRはいずれもSquash mergeを基本とする。Task PRをIssue branchへmergeした後、不要になったTask branchは削除してよい。Issue統合PRを`develop`へmergeした後、不要になったIssue branchは削除してよい。`develop`から`main`への反映は個別Task PRやIssue統合PRから分離し、人間が管理する。Issue単位のbranchから`main`へ直接backportしない。既定branchだけで有効になるGitHub設定を変更したRequirement Issueは、`main`への反映と外部動作の確認前に該当する受入条件を充足扱いにしない。
 
 AI agentはTask PRおよびIssue統合PRをmergeせず、PRの作成・更新、レビュー、検証、状態確認と判断根拠の記録までを担う。AI agentはRequirement Issueをcloseしない。Squash merge、branch削除、Requirement Issueのcloseは人間が行い、Issue統合PRのmergeによってcloseを自動化しない。
 
@@ -309,7 +313,7 @@ WorkerまたはMainは実装後にセルフレビューを行う。承認済みA
 
 ステータスラベルフローを変更するTaskでは、共通品質ゲートに加えて少なくとも次を確認する。
 
-- 6種類のラベル名、Requirement Issue Formの初期ラベル、repositoryの既定branchが設計と一致する
+- 6種類のラベル名、Requirement Issue Formの初期ラベル、repositoryの既定branchが`main`であること、作業branchとIssue統合PRが`develop`を起点・baseとしていること、Issue Formが`main`へ反映された後の外部動作が設計と一致する
 - `AI：作業可能`だけの場合、各人間承認待ち、未付与、複数競合の場合の開始判定が設計どおりである
 - 各工程の引き渡しで以前のステータスを残さず、ステータス以外のラベルを保持する
 - 設計変更不要時のIssueコメント、各工程での停止、永続情報との不整合時の停止を確認できる

@@ -80,8 +80,8 @@ Requirement Issueのステータスラベル、Issue Form、AI開始ゲート、
 
 ## 実装結果
 
-- 変更内容: 実装中
-- 残るリスク: 未確認
+- 変更内容: `tests/requirement-status-contract.test.mjs`にNode.js標準の静的契約テストを追加し、rootの`npm test`から契約テストとworkspace testを順に実行するよう`package.json`を更新した
+- 残るリスク: Docker品質ゲートとGitHub外部状態は未確認
 
 ## ローカル検証
 
@@ -89,16 +89,16 @@ Requirement Issueのステータスラベル、Issue Form、AI開始ゲート、
 
 ## CI
 
-- 未確認
+- 未確認（Task PR作成後のGitHub Actionsで実行予定）
 
 ## Agent割り当て
 
-- Worker: 未割り当て
+- Worker: 実装、セルフレビュー、GitHub連携による差分確認
 - Main: Task記録、統合調整、直接レビュー、最終判断、Draft PR公開を担当
 
 ## レビュー結果
 
-- セルフレビュー: 未実施
+- セルフレビュー: 実施。契約テストの対象を機械値・表・明確な責務記述に限定し、対象外の外部状態・workflow・依存追加を変更していないことを確認
 - 独立レビュー: `worker-parent-review`のため対象外
 - Mainレビュー: 未実施
 
@@ -113,8 +113,8 @@ Requirement Issueのステータスラベル、Issue Form、AI開始ゲート、
 ## commit
 
 - Task branch開始点: `38a80d530600039e3a8c3e32c17479df109fac79`
-- Task記録開始commit: 未作成
-- 実装commit: 未作成
+- Task記録開始commit: `5628eb4ae73090a020d38689a535ce5ba97757eb`
+- 実装commit: `da4772d556ddf3028b23ce877217753ac414299d`（テスト追加）、`e65640bb75b089ea06fc08dbb9f57be4e1fb14e9`（root test連携）、`a5a05b50f30c14acc8334d6bfb554c31ca187717`（ラベル抽出範囲の修正）
 
 ## Pull Request
 

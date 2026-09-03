@@ -88,16 +88,23 @@ const workflowOnContent = (workflow) => {
   return block.join("\n");
 };
 
+const issueEventNames = new Set(["issues", "issue_comment"]);
+const normalizeEvent = (value) => value.trim().replace(/^["']|["']$/g, "");
 const hasIssueEvent = (onContent) => {
   const lines = onContent.split(/\r?\n/).map((line) => line.replace(/#.*/, ""));
   const significant = lines.filter((line) => /\S/.test(line));
   if (significant.length === 0) return false;
+  if (significant.length === 1) {
+    const inline = significant[0].trim();
+    if (/^\[.*\]$/.test(inline)) return inline.slice(1, -1).split(",").some((item) => issueEventNames.has(normalizeEvent(item)));
+    if (/^\{.*\}$/.test(inline)) return inline.slice(1, -1).split(",").some((item) => issueEventNames.has(normalizeEvent(item.split(":")[0])));
+    return issueEventNames.has(normalizeEvent(inline));
+  }
   const minIndent = Math.min(...significant.map((line) => line.search(/\S/)));
   return significant.filter((line) => line.search(/\S/) === minIndent).some((line) => {
     const value = line.trim();
     return /^-\s*["']?(?:issues|issue_comment)["']?\s*$/.test(value)
-      || /^["']?(?:issues|issue_comment)["']?\s*:/.test(value)
-      || /^(?:\[|["']?)(?:issues|issue_comment)(?:["']?\]|\s*$)/.test(value);
+      || /^["']?(?:issues|issue_comment)["']?\s*:/.test(value);
   });
 };
 
@@ -123,14 +130,16 @@ test("workflowのonブロック検出は複数行とinline形式を正しく扱�
   assert.match(workflowOnContent(inlineIssueName), /issue_comment/);
 });
 
-test("workflowのIssueイベントpredicateはon直下だけを判定する", () => {
+test("workflowのIssueイベントpredicateはinline形式とon直下だけを判定する", () => {
   const safe = "name: safe\non:\n  pull_request:\n    branches: [issues]\n";
   const safeList = "name: safe\non:\n  pull_request:\n    branches:\n      - issues\n";
   const multilineIssue = "name: issue\non:\n  pull_request:\n  issues:\n    types: [opened]\n";
   const sequenceIssue = "name: issue\non:\n  - pull_request\n  - issue_comment\n";
   const quotedIssue = "name: issue\non:\n  'issues':\n";
-  const inlineIssue = "name: issue\non: [issues]\n";
-  const inlineQuotedIssue = "name: issue\non: 'issue_comment'\n";
+  const inlineIssue = "name: issue\non: [push, issues]\n";
+  const inlineQuotedIssue = "name: issue\non: [push, \"issue_comment\"]\n";
+  const inlineSafe = "name: safe\non: [push, pull_request]\n";
+  const flowMappingIssue = "name: issue\non: {push: null, issues: null}\n";
   assert.equal(hasIssueEvent(workflowOnContent(safe)), false);
   assert.equal(hasIssueEvent(workflowOnContent(safeList)), false);
   assert.equal(hasIssueEvent(workflowOnContent(multilineIssue)), true);
@@ -138,7 +147,8 @@ test("workflowのIssueイベントpredicateはon直下だけを判定する", ()
   assert.equal(hasIssueEvent(workflowOnContent(quotedIssue)), true);
   assert.equal(hasIssueEvent(workflowOnContent(inlineIssue)), true);
   assert.equal(hasIssueEvent(workflowOnContent(inlineQuotedIssue)), true);
-  assert.equal(hasIssueEvent(workflowOnContent("on:\n  pull_request:\n  # issues: opened\n")), false);
+  assert.equal(hasIssueEvent(workflowOnContent(inlineSafe)), false);
+  assert.equal(hasIssueEvent(workflowOnContent(flowMappingIssue)), true);
 });
 
 test("workflowにIssue起動を追加していない", async () => {

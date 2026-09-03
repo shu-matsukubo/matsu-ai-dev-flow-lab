@@ -98,9 +98,9 @@ Requirement Issueのステータスラベル、Issue Form、AI開始ゲート、
 
 ## レビュー結果
 
-- セルフレビュー: 実施。契約テストの対象を機械値・表・明確な責務記述に限定し、対象外の外部状態・workflow・依存追加を変更していないことを確認
+- セルフレビュー: Main指摘（P1-1〜P1-5、P2）を確認し、regexの単一escape、明示test path、要求分析書と設計表の6ラベル比較、正本に限定したbranch責務、Skill責務別の開始・停止確認、workflow全file確認、工程別引き渡しmappingを修正・照合した
 - 独立レビュー: `worker-parent-review`のため対象外
-- Mainレビュー: 未実施
+- Mainレビュー: 修正後確認待ち
 
 ## Flow Feedback参照
 
@@ -114,7 +114,7 @@ Requirement Issueのステータスラベル、Issue Form、AI開始ゲート、
 
 - Task branch開始点: `38a80d530600039e3a8c3e32c17479df109fac79`
 - Task記録開始commit: `5628eb4ae73090a020d38689a535ce5ba97757eb`
-- 実装commit: `da4772d556ddf3028b23ce877217753ac414299d`（テスト追加）、`e65640bb75b089ea06fc08dbb9f57be4e1fb14e9`（root test連携）、`a5a05b50f30c14acc8334d6bfb554c31ca187717`（ラベル抽出範囲の修正）
+- 実装commit: `da4772d556ddf3028b23ce877217753ac414299d`（テスト追加）、`e65640bb75b089ea06fc08dbb9f57be4e1fb14e9`（root test連携）、`a5a05b50f30c14acc8334d6bfb554c31ca187717`（ラベル抽出範囲の修正）、`01c6759278321727c911981ac9271e2351b3e312`（Main指摘に対応する契約テスト再実装）、`807b8d7f5cfa2e82d5b58b840c37079e14832953`（root test path明示）
 
 ## Pull Request
 
@@ -124,8 +124,8 @@ Requirement Issueのステータスラベル、Issue Form、AI開始ゲート、
 
 - このTaskが寄与する要求分析書の受入条件IDと根拠: `AC-01`〜`AC-18`の静的契約と、特に`AC-18`の追加検証へ寄与する
 - 未対象または未充足の事項: GitHub外部状態、`main`反映後のIssue Form実動作、Issue全体の最終受入判定
-- 未実施項目: 実装・レビュー・検証
-- 残るリスク: 未確認
+- 未実施項目: ローカルV8 compile、`sh scripts/verify.sh`、GitHub Actions（Task PR未作成のため）
+- 残るリスク: CIでのcompile・全expectation実行結果、Docker品質ゲート、GitHub外部状態は未確認
 - Requirement Issueの状態: merge後もopen。全受入条件と根拠を確認した人間だけが明示的にcloseする
 - AI agentによるIssue close: 行わない
 

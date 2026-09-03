@@ -100,7 +100,7 @@ Requirement Issueのステータスラベル、Issue Form、AI開始ゲート、
 
 - セルフレビュー: Main指摘（P1-1〜P1-5、P2）を確認し、regexの単一escape、明示test path、要求分析書と設計表の行単位6ラベル比較、正本に限定したbranch責務、Skill責務別の開始・停止確認、workflow全file確認、工程別引き渡しmappingを修正・照合した。再取得したsourceのregexは各escapeがU+005C 1個で、backslash+実改行はないことを確認した
 - 独立レビュー: `worker-parent-review`のため対象外
-- Mainレビュー: P1-1/P1-2/P2の追加修正を反映。再レビュー待ち
+- Mainレビュー: P1-1/P1-2/P2の追加修正を反映。workflow契約の最終P1指摘も反映し、再レビュー待ち
 
 ## Flow Feedback参照
 
@@ -114,7 +114,7 @@ Requirement Issueのステータスラベル、Issue Form、AI開始ゲート、
 
 - Task branch開始点: `38a80d530600039e3a8c3e32c17479df109fac79`
 - Task記録開始commit: `5628eb4ae73090a020d38689a535ce5ba97757eb`
-- 実装commit: `da4772d556ddf3028b23ce877217753ac414299d`（テスト追加）、`e65640bb75b089ea06fc08dbb9f57be4e1fb14e9`（root test連携）、`a5a05b50f30c14acc8334d6bfb554c31ca187717`（ラベル抽出範囲の修正）、`01c6759278321727c911981ac9271e2351b3e312`（Main指摘に対応する契約テスト再実装）、`807b8d7f5cfa2e82d5b58b840c37079e14832953`（root test path明示）、`bf3e051be383d1ef1661f99729486fd5bad91345`（単一escape化・ラベル捕捉修正）、`3dc59c9bb319e1e8777418e41c5c722cc7ea56c3`（設計表の行単位捕捉）、`41b5b21696eb8e65183d899eba65c8217ff90b87`（Main再レビュー指摘への責務別・workflow限定修正）
+- 実装commit: `da4772d556ddf3028b23ce877217753ac414299d`（テスト追加）、`e65640bb75b089ea06fc08dbb9f57be4e1fb14e9`（root test連携）、`a5a05b50f30c14acc8334d6bfb554c31ca187717`（ラベル抽出範囲の修正）、`01c6759278321727c911981ac9271e2351b3e312`（Main指摘に対応する契約テスト再実装）、`807b8d7f5cfa2e82d5b58b840c37079e14832953`（root test path明示）、`bf3e051be383d1ef1661f99729486fd5bad91345`（単一escape化・ラベル捕捉修正）、`3dc59c9bb319e1e8777418e41c5c722cc7ea56c3`（設計表の行単位捕捉）、`41b5b21696eb8e65183d899eba65c8217ff90b87`（Main再レビュー指摘への責務別・workflow限定修正）、`aa25c42dc30c14f50259b4549b416721a00daa23`（overview/AGENTS分離・onブロック検査）、`b7afbaaad4fde8b650ffc1e3ba1097fdc7e86378`（workflow regexの単一escape修正）
 
 ## Pull Request
 
@@ -124,7 +124,7 @@ Requirement Issueのステータスラベル、Issue Form、AI開始ゲート、
 
 - このTaskが寄与する要求分析書の受入条件IDと根拠: `AC-01`〜`AC-18`の静的契約と、特に`AC-18`の追加検証へ寄与する
 - 未対象または未充足の事項: GitHub外部状態、`main`反映後のIssue Form実動作、Issue全体の最終受入判定
-- 未実施項目: ローカルV8 compile相当、`sh scripts/verify.sh`、GitHub Actions（Task PR未作成のため）。source再取得によるescape文字数・正規表現・expectationの手作業照合は実施。Main再レビュー指摘の責務別文言・設計不要時停止文言・workflow限定条件も再照合
+- 未実施項目: ローカルV8 compile相当、`sh scripts/verify.sh`、GitHub Actions（Task PR未作成のため）。source再取得によるescape文字数・正規表現・expectationの手作業照合は実施。Main再レビュー指摘の責務別文言・設計不要時停止文言・workflow限定条件も再照合。overview/AGENTSの自動実行禁止文言を個別に照合し、onブロック検査のdead codeを除去
 - 残るリスク: CIでのcompile・全expectation実行結果、Docker品質ゲート、GitHub外部状態は未確認
 - Requirement Issueの状態: merge後もopen。全受入条件と根拠を確認した人間だけが明示的にcloseする
 - AI agentによるIssue close: 行わない

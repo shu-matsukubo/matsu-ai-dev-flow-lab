@@ -11,7 +11,7 @@ const requiredSkills = ["analyze-requirement", "check-design-impact", "coordinat
 const handoffSkills = ["coordinate-approved-tasks", "publish-task-pr", "review-changes", "verify-changes"];
 
 const extractRequirementLabels = (text) => [...text.matchAll(/^  - `([^`]+)`$/gm)].map((match) => match[1]);
-const extractDesignLabels = (text) => [...text.matchAll(/^\\| `([^`]+)` \\|/gm)].map((match) => match[1]);
+const extractDesignLabels = (text) => [...text.matchAll(/^[|] `([^`]+)` [|]/gm)].map((match) => match[1]);
 const assertExactLabels = (actual, sourceName) => {
   assert.deepEqual(actual, statusLabels, sourceName);
   assert.equal(new Set(actual).size, statusLabels.length, sourceName + " has duplicates");

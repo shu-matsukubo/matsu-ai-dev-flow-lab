@@ -58,7 +58,7 @@ Requirement Issueのステータスラベル、Issue Form、AI開始ゲート、
 | 設計PR #41・#45 | hard | start | `develop`へmerge済み | 最新設計は#45、merge commit `0e1604e397b942e9880c7880e95b79db9fd943f5` |
 | Task PR #44（35-01） | hard | start | `issue/35`へmerge済み | merge commit `b0cdd2326346a0c2379a871eee9fbc35f4d12c7f` |
 | Task PR #43（35-02） | hard | start | `issue/35`へmerge済み | merge commit `38a80d530600039e3a8c3e32c17479df109fac79` |
-| Issue #35開始ゲート | hard | start | `AI：作業可能`だけかつ現在のチャット指示あり | 2026-09-02にGitHubから再取得して確認 |
+| Issue #35開始ゲート | hard | start | `AI：作業可能`だけかつ現在のチャット指示あり | 2026-09-03にGitHubから再取得し、openかつ`AI：作業可能`単独を確認 |
 
 ## 懸念事項
 
@@ -85,7 +85,9 @@ Requirement Issueのステータスラベル、Issue Form、AI開始ゲート、
 
 ## ローカル検証
 
-- 未実施
+- `sh scripts/verify.sh`: 未実施。local command runnerが`helper_unknown_error: setup refresh had errors`で起動できず、local checkoutもTask branchではないため、Task差分の共通品質ゲート成功とは扱わない
+- 代替確認: GitHub上のremote sourceを再取得し、V8によるテストファイルのcompile相当確認に成功。要求・設計・Issue Form・`AGENTS.md`・8 Skillへ主要assert相当を適用し、workflow predicateのsafe/unsafe疑似ケース、現行workflow、base差分を照合した
+- 残る検証: Draft Task PR上のGitHub Actionsで`sh scripts/verify.sh`と全expectationを実行する
 
 ## CI
 
@@ -100,7 +102,7 @@ Requirement Issueのステータスラベル、Issue Form、AI開始ゲート、
 
 - セルフレビュー: Main指摘（P1-1〜P1-5、P2）を確認し、regexの単一escape、明示test path、要求分析書と設計表の行単位6ラベル比較、正本に限定したbranch責務、Skill責務別の開始・停止確認、workflow全file確認、工程別引き渡しmappingを修正・照合した。再取得したsourceのregexは各escapeがU+005C 1個で、backslash+実改行はないことを確認した
 - 独立レビュー: `worker-parent-review`のため対象外
-- Mainレビュー: P1-1/P1-2/P2の追加修正を反映。workflow契約の最終P1指摘を反映。line-based onブロックhelperと疑似workflow回帰テストを追加し、on直下イベントのみを判定するworkflow event predicateへ修正し、nested filter値とinline配列の各位置を正しく扱う回帰テストを追加。backport責務の同値表現修正を反映。Main側全assert照合で他28件とworkflow predicateケースpass済み、最終再レビュー待ち
+- Mainレビュー: 要求充足、正しさ、回帰、責務境界、安全性、検証不足の順に再確認した。指摘したP1/P2はすべて修正済み。V8 compile相当、全主要assert相当、workflowのsafe/unsafe疑似ケース、現行workflow、`issue/35`との差分3file限定・behind 0を再照合し、P0〜P3の残存指摘なし
 
 ## Flow Feedback参照
 
@@ -124,7 +126,7 @@ Requirement Issueのステータスラベル、Issue Form、AI開始ゲート、
 
 - このTaskが寄与する要求分析書の受入条件IDと根拠: `AC-01`〜`AC-18`の静的契約と、特に`AC-18`の追加検証へ寄与する
 - 未対象または未充足の事項: GitHub外部状態、`main`反映後のIssue Form実動作、Issue全体の最終受入判定
-- 未実施項目: ローカルV8 compile相当、`sh scripts/verify.sh`、GitHub Actions（Task PR未作成のため）。source再取得によるescape文字数・正規表現・expectationの手作業照合は実施。Main再レビュー指摘の責務別文言・設計不要時停止文言・workflow限定条件も再照合。overview/AGENTSの自動実行禁止文言を個別に照合し、onブロック検査のdead codeを除去。workflowは次トップレベルキーまで行単位で抽出し、複数行・inline形式・block sequenceのIssue eventを共通predicateで判定する疑似workflow回帰expectationを追加し、コメント内tokenを除外。nested `branches`内のtokenを誤検出しないこと、on直下のmapping/sequence・inline scalar/array・quoted token・flow mappingを検出することを確認
+- 未実施項目: `sh scripts/verify.sh`、GitHub Actions（Task PR未作成のため）。V8 compile相当とsource再取得によるescape文字数・正規表現・expectationの照合は実施。Main再レビュー指摘の責務別文言・設計不要時停止文言・workflow限定条件も再照合。overview/AGENTSの自動実行禁止文言を個別に照合し、onブロック検査のdead codeを除去。workflowは次トップレベルキーまで行単位で抽出し、複数行・inline形式・block sequenceのIssue eventを共通predicateで判定する疑似workflow回帰expectationを追加し、コメント内tokenを除外。nested `branches`内のtokenを誤検出しないこと、on直下のmapping/sequence・inline scalar/array・quoted token・flow mappingを検出することを確認
 - 残るリスク: CIでのcompile・全expectation実行結果、Docker品質ゲート、GitHub外部状態は未確認
 - Requirement Issueの状態: merge後もopen。全受入条件と根拠を確認した人間だけが明示的にcloseする
 - AI agentによるIssue close: 行わない

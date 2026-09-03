@@ -100,7 +100,7 @@ Requirement Issueのステータスラベル、Issue Form、AI開始ゲート、
 
 - セルフレビュー: Main指摘（P1-1〜P1-5、P2）を確認し、regexの単一escape、明示test path、要求分析書と設計表の行単位6ラベル比較、正本に限定したbranch責務、Skill責務別の開始・停止確認、workflow全file確認、工程別引き渡しmappingを修正・照合した。再取得したsourceのregexは各escapeがU+005C 1個で、backslash+実改行はないことを確認した
 - 独立レビュー: `worker-parent-review`のため対象外
-- Mainレビュー: P1-1/P1-2/P2の追加修正を反映。workflow契約の最終P1指摘を反映。line-based onブロックhelperと疑似workflow回帰テストを追加し、on直下イベントのみを判定するworkflow event predicateへ修正し、nested filter値とinline配列の各位置を正しく扱う回帰テストを追加。再レビュー待ち
+- Mainレビュー: P1-1/P1-2/P2の追加修正を反映。workflow契約の最終P1指摘を反映。line-based onブロックhelperと疑似workflow回帰テストを追加し、on直下イベントのみを判定するworkflow event predicateへ修正し、nested filter値とinline配列の各位置を正しく扱う回帰テストを追加。backport責務の同値表現修正を反映。Main側全assert照合で他28件とworkflow predicateケースpass済み、最終再レビュー待ち
 
 ## Flow Feedback参照
 
@@ -114,7 +114,7 @@ Requirement Issueのステータスラベル、Issue Form、AI開始ゲート、
 
 - Task branch開始点: `38a80d530600039e3a8c3e32c17479df109fac79`
 - Task記録開始commit: `5628eb4ae73090a020d38689a535ce5ba97757eb`
-- 実装commit: `da4772d556ddf3028b23ce877217753ac414299d`（テスト追加）、`e65640bb75b089ea06fc08dbb9f57be4e1fb14e9`（root test連携）、`a5a05b50f30c14acc8334d6bfb554c31ca187717`（ラベル抽出範囲の修正）、`01c6759278321727c911981ac9271e2351b3e312`（Main指摘に対応する契約テスト再実装）、`807b8d7f5cfa2e82d5b58b840c37079e14832953`（root test path明示）、`bf3e051be383d1ef1661f99729486fd5bad91345`（単一escape化・ラベル捕捉修正）、`3dc59c9bb319e1e8777418e41c5c722cc7ea56c3`（設計表の行単位捕捉）、`41b5b21696eb8e65183d899eba65c8217ff90b87`（Main再レビュー指摘への責務別・workflow限定修正）、`aa25c42dc30c14f50259b4549b416721a00daa23`（overview/AGENTS分離・onブロック検査）、`b7afbaaad4fde8b650ffc1e3ba1097fdc7e86378`（workflow regexの単一escape修正）、`3b8fa5fe2ccd21abe61e9b4f74ef5f0505a18f10`（onブロックhelperと回帰テスト追加）、`0750fdf790b111904c57ce6d3f08b837a179475c`（helper escape修正）、`061469549b61d56fa2f3626a8fe28eb574b25971`（workflow testへhelper適用）、`3d82b5c79b6acf483ea7d76ee697e93195af9a1c`（Issue event predicateと複数形式の回帰検証）、`2a6350a7afdf8c78c45ea29445ff509a8b578566`（on直下判定・nested値回帰検証）、`44bf0f543763c000864dbb3c7f2cc691c05168dd`（inline配列・flow mappingのイベント判定）
+- 実装commit: `da4772d556ddf3028b23ce877217753ac414299d`（テスト追加）、`e65640bb75b089ea06fc08dbb9f57be4e1fb14e9`（root test連携）、`a5a05b50f30c14acc8334d6bfb554c31ca187717`（ラベル抽出範囲の修正）、`01c6759278321727c911981ac9271e2351b3e312`（Main指摘に対応する契約テスト再実装）、`807b8d7f5cfa2e82d5b58b840c37079e14832953`（root test path明示）、`bf3e051be383d1ef1661f99729486fd5bad91345`（単一escape化・ラベル捕捉修正）、`3dc59c9bb319e1e8777418e41c5c722cc7ea56c3`（設計表の行単位捕捉）、`41b5b21696eb8e65183d899eba65c8217ff90b87`（Main再レビュー指摘への責務別・workflow限定修正）、`aa25c42dc30c14f50259b4549b416721a00daa23`（overview/AGENTS分離・onブロック検査）、`b7afbaaad4fde8b650ffc1e3ba1097fdc7e86378`（workflow regexの単一escape修正）、`3b8fa5fe2ccd21abe61e9b4f74ef5f0505a18f10`（onブロックhelperと回帰テスト追加）、`0750fdf790b111904c57ce6d3f08b837a179475c`（helper escape修正）、`061469549b61d56fa2f3626a8fe28eb574b25971`（workflow testへhelper適用）、`3d82b5c79b6acf483ea7d76ee697e93195af9a1c`（Issue event predicateと複数形式の回帰検証）、`2a6350a7afdf8c78c45ea29445ff509a8b578566`（on直下判定・nested値回帰検証）、`44bf0f543763c000864dbb3c7f2cc691c05168dd`（inline配列・flow mappingのイベント判定）、`c2c44c9461a607d807b960f3b3650779ed54a88d`（backport責務の同値表現対応）
 
 ## Pull Request
 

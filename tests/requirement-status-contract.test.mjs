@@ -90,8 +90,8 @@ test("workflowにIssue起動を追加していない", async () => {
   assert.ok(files.length > 0);
   for (const path of files) {
     const workflow = await readFile(path, "utf8");
-    const onBlock = workflow.match(/^on:\s*\n([\\s\\S]*?)(?=^\\S|$)/m)?.[1] ?? "";
-    assert.doesNotMatch(onBlock, /^\\s*(?:issues|issue_comment)\\s*:/m, path);
+    const onBlock = workflow.match(/^on:\s*\n([\s\S]*?)(?=^\S|$)/m)?.[1] ?? "";
+    assert.doesNotMatch(onBlock, /^\s*(?:issues|issue_comment)\s*:/m, path);
   }
   const overview = await read("docs/ai-development/overview.md");
   assert.match(overview, /ラベル変更だけを契機とするAIの自動起動/);

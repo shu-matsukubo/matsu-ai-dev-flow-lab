@@ -9,7 +9,7 @@ const read = (relativePath) => readFile(join(root, relativePath), "utf8");
 const statusLabels = ["人間：要求承認待ち", "AI：作業可能", "人間：要求分析承認待ち", "人間：基本設計承認待ち", "人間：タスク承認待ち", "人間：最終成果物承認待ち"];
 const requiredSkills = ["analyze-requirement", "check-design-impact", "coordinate-approved-tasks", "plan-tasks", "process-flow-feedback", "publish-task-pr", "review-changes", "verify-changes"];
 
-const extractRequirementLabels = (text) => [...text.matchAll(/^  - `([^`]+)`$/gm)].map((match) => match[1]);
+const extractRequirementLabels = (text) => [...text.matchAll(/^ {2}- `([^`]+)`$/gm)].map((match) => match[1]);
 const extractDesignLabels = (text) => [...text.matchAll(/^[|] `([^`]+)` [|]/gm)].map((match) => match[1]);
 const assertExactLabels = (actual, sourceName) => {
   assert.deepEqual(actual, statusLabels, sourceName);
@@ -124,7 +124,7 @@ test("workflowのonブロック検出は複数行とinline形式を正しく扱�
   const multilineIssue = "name: issue\non:\n  pull_request:\n  issues:\n    types: [opened]\njobs:\n  verify:\n";
   const inlineIssue = "name: issue\non: [issues]\njobs:\n  verify:\n";
   const inlineIssueName = "name: issue\non: issue_comment\njobs:\n  verify:\n";
-  assert.doesNotMatch(workflowOnContent(safe), /(?:^|[\s,\[])(?:issues|issue_comment)(?:$|[\s,\]])/m);
+  assert.doesNotMatch(workflowOnContent(safe), /issues|issue_comment/);
   assert.match(workflowOnContent(multilineIssue), /^\s*issues\s*:/m);
   assert.match(workflowOnContent(inlineIssue), /issues/);
   assert.match(workflowOnContent(inlineIssueName), /issue_comment/);

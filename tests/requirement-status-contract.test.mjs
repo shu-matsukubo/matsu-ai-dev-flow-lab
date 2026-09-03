@@ -94,7 +94,7 @@ const hasIssueEvent = (onContent) => {
   const lines = onContent.split(/\r?\n/).map((line) => line.replace(/#.*/, ""));
   const significant = lines.filter((line) => /\S/.test(line));
   if (significant.length === 0) return false;
-  if (significant.length === 1) {
+  if (significant.length === 1 && significant[0].search(/\S/) === 0) {
     const inline = significant[0].trim();
     if (/^\[.*\]$/.test(inline)) return inline.slice(1, -1).split(",").some((item) => issueEventNames.has(normalizeEvent(item)));
     if (/^\{.*\}$/.test(inline)) return inline.slice(1, -1).split(",").some((item) => issueEventNames.has(normalizeEvent(item.split(":")[0])));
@@ -136,7 +136,7 @@ test("workflowのIssueイベントpredicateはinline形式とon直下だけを�
   const multilineIssue = "name: issue\non:\n  pull_request:\n  issues:\n    types: [opened]\n";
   const sequenceIssue = "name: issue\non:\n  - pull_request\n  - issue_comment\n";
   const quotedIssue = "name: issue\non:\n  'issues':\n";
-  const inlineIssue = "name: issue\non: [push, issues]\n";
+  const singleBlockIssue = "name: issue\non:\n  issues:\n";\n  const inlineIssue = "name: issue\non: [push, issues]\n";
   const inlineQuotedIssue = "name: issue\non: [push, \"issue_comment\"]\n";
   const inlineSafe = "name: safe\non: [push, pull_request]\n";
   const flowMappingIssue = "name: issue\non: {push: null, issues: null}\n";
@@ -144,7 +144,7 @@ test("workflowのIssueイベントpredicateはinline形式とon直下だけを�
   assert.equal(hasIssueEvent(workflowOnContent(safeList)), false);
   assert.equal(hasIssueEvent(workflowOnContent(multilineIssue)), true);
   assert.equal(hasIssueEvent(workflowOnContent(sequenceIssue)), true);
-  assert.equal(hasIssueEvent(workflowOnContent(quotedIssue)), true);
+  assert.equal(hasIssueEvent(workflowOnContent(quotedIssue)), true);\n  assert.equal(hasIssueEvent(workflowOnContent(singleBlockIssue)), true);
   assert.equal(hasIssueEvent(workflowOnContent(inlineIssue)), true);
   assert.equal(hasIssueEvent(workflowOnContent(inlineQuotedIssue)), true);
   assert.equal(hasIssueEvent(workflowOnContent(inlineSafe)), false);

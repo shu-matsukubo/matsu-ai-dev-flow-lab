@@ -1,4 +1,4 @@
-import assert from "node:assert/strict";
+im\n\nconst hasIssueEvent = (onContent) => onContent.split(/\\r?\\n/).some((line) => /(?:^|[\\s,\\[-])(issues|issue_comment)(?=\\s|[,\\]:]|$)/.test(line.replace(/#.*/, "")));port assert from "node:assert/strict";
 import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { test } from "node:test";

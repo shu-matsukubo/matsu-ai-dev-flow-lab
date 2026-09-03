@@ -3,6 +3,10 @@ name: verify-changes
 description: 実装後またはレビュー修正後に、共通検証入口と変更リスクに応じた追加検証を実行し、成功・失敗・未実施・残るリスクを記録する。
 ---
 
+## 開始ゲートと検証境界
+
+検証開始前にMainが最新Issueのステータスを確認し、`AI：作業可能`だけと現在のチャット指示、必要な永続情報が揃う場合に限り検証する。未付与・人間承認待ち・複数競合・不整合では成果物やラベルを変更せず停止する。検証完了後の人間承認待ちへの切り替えはMainだけが行い、Worker・Reviewerはステータスを変更しない。
+
 # 検証
 
 Requirement Issue、merge済み要求分析書、Requirement Analysis PR、現在の設計、タスクファイル、対応するIssue統合PR、実diff、`docs/quality/testing.md` を確認する。要求分析書が存在しない、またはRequirement Analysis PRが未mergeなら検証を完了扱いにしない。Task PRではTaskの変更リスク、要求分析書の受入条件IDとの対応、Issue branchへの取り込み可能性を、Issue統合PRでは全Task完了後に最新`develop`をmergeした状態でRequirement Issue全体の統合・回帰と要求分析書の全受入条件を確認する。repository全体の共通品質ゲートは `sh scripts/verify.sh` を使用し、Skillへ個別commandを複製しない。

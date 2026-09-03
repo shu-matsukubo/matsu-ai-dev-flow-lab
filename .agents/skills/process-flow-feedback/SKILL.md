@@ -3,6 +3,10 @@ name: process-flow-feedback
 description: 承認済みの専用Flow Feedback処理Taskで、対象feedback群を評価し、人間承認後にMainが処理記録、Requirement Issueへの引き継ぎ、最終結果に応じたfile移動を行う。
 ---
 
+## 開始ゲートと責務境界
+
+Flow Feedback処理Taskを含むRequirement Issue作業では、Mainが開始前に最新ステータスを確認し、`AI：作業可能`だけと現在のチャット指示がある場合に限り開始する。Worker・Reviewerは既存feedback、共通file、ステータスを変更せず、Mainだけが承認後の引き渡しと処理記録を行う。人間承認待ち、未付与、複数競合、永続情報との不整合では安全側に停止する。
+
 # Flow Feedback処理
 
 通常Taskでの新規観測記録には使用しない。既存feedbackの処理は、専用Requirement Issue、merge済み要求分析書、設計ゲート、人間が承認した専用Taskを通して行う。いずれかを確認できなければ開始せず、必要な工程へ戻す。

@@ -1,4 +1,4 @@
-im\n\nconst hasIssueEvent = (onContent) => onContent.split(/\\r?\\n/).some((line) => /(?:^|[\\s,\\[-])(issues|issue_comment)(?=\\s|[,\\]:]|$)/.test(line.replace(/#.*/, "")));port assert from "node:assert/strict";
+import assert from "node:assert/strict";
 import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { test } from "node:test";
@@ -104,6 +104,17 @@ async function workflowFiles(directory) {
 test("workflowのonブロック検出は複数行とinline形式を正しく扱う", () => {
   const safe = "name: safe\non:\n  pull_request:\n    branches: [develop]\npermissions:\n  contents: read\n";
   const multilineIssue = "name: issue\non:\n  pull_request:\n  issues:\n    types: [opened]\njobs:\n  verify:\n";
+  const inlineIssue = "name: issue\non: [issues]\njobs:\n  verify:\n";
+  const inlineIssueName = "name: issue\non: issue_comment\njobs:\n  verify:\n";
+  assert.doesNotMatch(workflowOnContent(safe), /(?:^|[\s,\[])(?:issues|issue_comment)(?:$|[\s,\]])/m);
+  assert.match(workflowOnContent(multilineIssue), /^\s*issues\s*:/m);
+  assert.match(workflowOnContent(inlineIssue), /issues/);
+  assert.match(workflowOnContent(inlineIssueName), /issue_comment/);
+});
+
+test("workflowのIssueイベントpredicateは安全な形式だけを許可する", () => {
+  const safe = "name: safe\non:\n  pull_request:\n    branches: [develop]\npermissions:\n  contents: read\n";
+  const multilineIssue = "name: issue\non:\n  pull_request:\n  issues:\n    types: [opened]\njobs:\n  verify:\n";
   const sequenceIssue = "name: issue\non:\n  - pull_request\n  - issue_comment\njobs:\n  verify:\n";
   const inlineIssue = "name: issue\non: [issues]\njobs:\n  verify:\n";
   const inlineIssueName = "name: issue\non: issue_comment\njobs:\n  verify:\n";
@@ -114,13 +125,13 @@ test("workflowのonブロック検出は複数行とinline形式を正しく扱�
   assert.equal(hasIssueEvent(workflowOnContent(inlineIssueName)), true);
   assert.equal(hasIssueEvent(workflowOnContent("on:\n  pull_request:\n  # issues: opened\n")), false);
 });
-
 test("workflowにIssue起動を追加していない", async () => {
   const files = await workflowFiles(join(root, ".github/workflows"));
   assert.ok(files.length > 0);
   for (const path of files) {
     const workflow = await readFile(path, "utf8");
     const onBlock = workflowOnContent(workflow);
+    assert.equal(hasIssueEvent(onBlock), false, path);
     assert.doesNotMatch(onBlock, /^\s*(?:issues|issue_comment)\s*:/m, path);
   }
   const overview = await read("docs/ai-development/overview.md");

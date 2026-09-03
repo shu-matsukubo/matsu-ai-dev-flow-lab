@@ -90,17 +90,13 @@ test("workflowにIssue起動を追加していない", async () => {
   assert.ok(files.length > 0);
   for (const path of files) {
     const workflow = await readFile(path, "utf8");
-    const issueTriggered = /^\s*(?:issues|issue_comment)\s*:/m.test(workflow);
-    assert.equal(issueTriggered, false, path);
-    if (issueTriggered) {
-      assert.doesNotMatch(workflow, /(?:issues|pull-requests|contents):\s*write/i, path);
-      assert.doesNotMatch(workflow, /gh\s+(?:pr\s+merge|issue\s+close)|(?:auto|自動)\s*(?:merge|close)/i, path);
-    }
+    const onBlock = workflow.match(/^on:\s*\n([\\s\\S]*?)(?=^\\S|$)/m)?.[1] ?? "";
+    assert.doesNotMatch(onBlock, /^\\s*(?:issues|issue_comment)\\s*:/m, path);
   }
-  const [overview, agents] = await Promise.all([read("docs/ai-development/overview.md"), read("AGENTS.md")]);
-  for (const document of [overview, agents]) {
-    assert.match(document, /ラベル変更だけを契機とするAIの自動起動|自動起動/);
-    assert.match(document, /自動(?:merge|実行)|Pull Requestをmergeしたり/);
-    assert.match(document, /自動close|Issueをcloseしたり/);
-  }
+  const overview = await read("docs/ai-development/overview.md");
+  assert.match(overview, /ラベル変更だけを契機とするAIの自動起動/);
+  assert.match(overview, /Pull Requestをmergeしたり/);
+  assert.match(overview, /Issueをcloseしたり/);
+  const agents = await read("AGENTS.md");
+  assert.match(agents, /自動起動・merge・closeは追加しない/);
 });

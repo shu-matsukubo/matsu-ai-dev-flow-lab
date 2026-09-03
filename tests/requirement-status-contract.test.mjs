@@ -8,7 +8,6 @@ const read = (relativePath) => readFile(join(root, relativePath), "utf8");
 
 const statusLabels = ["人間：要求承認待ち", "AI：作業可能", "人間：要求分析承認待ち", "人間：基本設計承認待ち", "人間：タスク承認待ち", "人間：最終成果物承認待ち"];
 const requiredSkills = ["analyze-requirement", "check-design-impact", "coordinate-approved-tasks", "plan-tasks", "process-flow-feedback", "publish-task-pr", "review-changes", "verify-changes"];
-const handoffSkills = ["coordinate-approved-tasks", "publish-task-pr", "review-changes", "verify-changes"];
 
 const extractRequirementLabels = (text) => [...text.matchAll(/^  - `([^`]+)`$/gm)].map((match) => match[1]);
 const extractDesignLabels = (text) => [...text.matchAll(/^[|] `([^`]+)` [|]/gm)].map((match) => match[1]);
@@ -47,11 +46,14 @@ test("各Skillの開始・停止契約とMain単独の引き渡し責務を確�
   }
   const agents = await read("AGENTS.md");
   for (const token of ["永続情報から次工程", "以前のステータスを残さず", "非ステータスラベルを保持", "変更後のIssueを再取得", "Mainだけ"]) assert.match(agents, new RegExp(token));
-  for (const skill of handoffSkills) {
-    const document = await read(".agents/skills/" + skill + "/SKILL.md");
-    assert.match(document, /Worker[・\/]Reviewer/);
-    assert.match(document, /ステータスを変更しない/);
-  }
+  const handoffContracts = [
+    ["AGENTS.md", "Worker、Reviewer、補助Skillはステータスを変更しない"],
+    [".agents/skills/coordinate-approved-tasks/SKILL.md", "Worker・Reviewerはラベルを変更しない"],
+    [".agents/skills/publish-task-pr/SKILL.md", "Worker・Reviewerはステータスを変更しない"],
+    [".agents/skills/review-changes/SKILL.md", "Reviewerはステータスを変更せず"],
+    [".agents/skills/verify-changes/SKILL.md", "Worker・Reviewerはステータスを変更しない"],
+  ];
+  for (const [path, contract] of handoffContracts) assert.match(await read(path), new RegExp(contract));
 });
 
 test("工程別の人間承認引き渡し先が正確である", async () => {
@@ -69,7 +71,7 @@ test("工程別の人間承認引き渡し先が正確である", async () => {
   assert.match(designGate, /Requirement Issueへコメント|根拠コメント/);
   assert.match(designGate, /同じ指示|同一指示/);
   assert.match(designGate, /Task Planning|タスク計画/);
-  assert.match(designGate, /進まず停止|続けず停止/);
+  assert.match(designGate, /同じ作業指示でタスク分解へ進まない|同じ指示でTask Planningへ進まない/);
 });
 
 async function workflowFiles(directory) {
@@ -83,13 +85,22 @@ async function workflowFiles(directory) {
   return files;
 }
 
-test("workflowにIssue起動・write権限・自動merge/closeを追加していない", async () => {
+test("workflowにIssue起動を追加していない", async () => {
   const files = await workflowFiles(join(root, ".github/workflows"));
   assert.ok(files.length > 0);
   for (const path of files) {
     const workflow = await readFile(path, "utf8");
-    assert.doesNotMatch(workflow, /^\s*(?:issues|issue_comment)\s*:/m, path);
-    assert.doesNotMatch(workflow, /(?:issues|pull-requests|contents):\s*write/i, path);
-    assert.doesNotMatch(workflow, /gh\s+(?:pr\s+merge|issue\s+close)|(?:auto|自動)\s*(?:merge|close)/i, path);
+    const issueTriggered = /^\s*(?:issues|issue_comment)\s*:/m.test(workflow);
+    assert.equal(issueTriggered, false, path);
+    if (issueTriggered) {
+      assert.doesNotMatch(workflow, /(?:issues|pull-requests|contents):\s*write/i, path);
+      assert.doesNotMatch(workflow, /gh\s+(?:pr\s+merge|issue\s+close)|(?:auto|自動)\s*(?:merge|close)/i, path);
+    }
+  }
+  const [overview, agents] = await Promise.all([read("docs/ai-development/overview.md"), read("AGENTS.md")]);
+  for (const document of [overview, agents]) {
+    assert.match(document, /ラベル変更だけを契機とするAIの自動起動|自動起動/);
+    assert.match(document, /自動(?:merge|実行)|Pull Requestをmergeしたり/);
+    assert.match(document, /自動close|Issueをcloseしたり/);
   }
 });

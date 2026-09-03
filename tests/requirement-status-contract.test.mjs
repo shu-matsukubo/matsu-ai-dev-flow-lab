@@ -75,17 +75,17 @@ test("工程別の人間承認引き渡し先が正確である", async () => {
 });
 
 const workflowOnContent = (workflow) => {
-  const lines = workflow.split(/\\r?\\n/);
-  const onIndex = lines.findIndex((line) => /^on:\\s*(.*)$/.test(line));
+  const lines = workflow.split(/\r?\n/);
+  const onIndex = lines.findIndex((line) => /^on:\s*(.*)$/.test(line));
   if (onIndex < 0) return "";
-  const inline = lines[onIndex].replace(/^on:\\s*/, "");
+  const inline = lines[onIndex].replace(/^on:\s*/, "");
   if (inline) return inline;
   const block = [];
   for (const line of lines.slice(onIndex + 1)) {
-    if (/^\\S/.test(line) && !/^\\s*(?:#|$)/.test(line)) break;
+    if (/^\S/.test(line) && !/^\s*(?:#|$)/.test(line)) break;
     block.push(line);
   }
-  return block.join("\\n");
+  return block.join("\n");
 };
 
 async function workflowFiles(directory) {
@@ -100,12 +100,12 @@ async function workflowFiles(directory) {
 }
 
 test("workflowのonブロック検出は複数行とinline形式を正しく扱う", () => {
-  const safe = "name: safe\\non:\\n  pull_request:\\n    branches: [develop]\\npermissions:\\n  contents: read\\n";
-  const multilineIssue = "name: issue\\non:\\n  pull_request:\\n  issues:\\n    types: [opened]\\njobs:\\n  verify:\\n";
-  const inlineIssue = "name: issue\\non: [issues]\\njobs:\\n  verify:\\n";
-  const inlineIssueName = "name: issue\\non: issue_comment\\njobs:\\n  verify:\\n";
-  assert.doesNotMatch(workflowOnContent(safe), /(?:^|[\\s,\\[])(?:issues|issue_comment)(?:$|[\\s,\\]])/m);
-  assert.match(workflowOnContent(multilineIssue), /^\\s*issues\\s*:/m);
+  const safe = "name: safe\non:\n  pull_request:\n    branches: [develop]\npermissions:\n  contents: read\n";
+  const multilineIssue = "name: issue\non:\n  pull_request:\n  issues:\n    types: [opened]\njobs:\n  verify:\n";
+  const inlineIssue = "name: issue\non: [issues]\njobs:\n  verify:\n";
+  const inlineIssueName = "name: issue\non: issue_comment\njobs:\n  verify:\n";
+  assert.doesNotMatch(workflowOnContent(safe), /(?:^|[\s,\[])(?:issues|issue_comment)(?:$|[\s,\]])/m);
+  assert.match(workflowOnContent(multilineIssue), /^\s*issues\s*:/m);
   assert.match(workflowOnContent(inlineIssue), /issues/);
   assert.match(workflowOnContent(inlineIssueName), /issue_comment/);
 });

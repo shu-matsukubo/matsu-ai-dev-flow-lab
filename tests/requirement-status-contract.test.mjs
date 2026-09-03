@@ -88,7 +88,9 @@ const workflowOnContent = (workflow) => {
   return block.join("\n");
 };
 
-const hasIssueEvent = (onContent) => onContent.split(/\r?\n/).some((line) => /(?:^|[\s,\[-])(issues|issue_comment)(?=\s|[,\]:]|$)/.test(line.replace(/#.*/, "")));\n\nasync function workflowFiles(directory) {
+const hasIssueEvent = (onContent) => onContent.split(/\r?\n/).some((line) => /(?:^|[\s,\[-])(issues|issue_comment)(?=\s|[,\]:]|$)/.test(line.replace(/#.*/, "")));
+
+async function workflowFiles(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
   const files = [];
   for (const entry of entries) {

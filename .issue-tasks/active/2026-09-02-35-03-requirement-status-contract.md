@@ -12,7 +12,7 @@
 - Issue統合PR: `#42`
 - Issue統合PRのベースブランチ: `develop`
 - タスクブランチ: `task/35-03`
-- Task PR: 未作成
+- Task PR: `#48`
 - Task PRのベースブランチ: `issue/35`
 - 承認記録: 2026-09-02、要求者が設計PR #45後の修正版タスク計画を承認し、Task PR #43・#44をmerge後、本チャットで「マージしたので続けてください」と指示した
 
@@ -91,7 +91,7 @@ Requirement Issueのステータスラベル、Issue Form、AI開始ゲート、
 
 ## CI
 
-- 未確認（Task PR作成後のGitHub Actionsで実行予定）
+- Draft Task PR #48を作成。Task PR metadata記録後のheadでGitHub Actionsを確認する
 
 ## Agent割り当て
 
@@ -120,13 +120,18 @@ Requirement Issueのステータスラベル、Issue Form、AI開始ゲート、
 
 ## Pull Request
 
-- 未作成
+- Draft Task PR: [#48](https://github.com/shu-matsukubo/matsu-ai-dev-flow-lab/pull/48)
+- base: `issue/35`
+- head: `task/35-03`
+- Draft: `true`
+- 作成時head: `e85f47eee4d016698a4d1dc6c56770779d96a58e`
+- merge: AI agentは実施しない
 
 ## 完了報告
 
 - このTaskが寄与する要求分析書の受入条件IDと根拠: `AC-01`〜`AC-18`の静的契約と、特に`AC-18`の追加検証へ寄与する
 - 未対象または未充足の事項: GitHub外部状態、`main`反映後のIssue Form実動作、Issue全体の最終受入判定
-- 未実施項目: `sh scripts/verify.sh`、GitHub Actions（Task PR未作成のため）。V8 compile相当とsource再取得によるescape文字数・正規表現・expectationの照合は実施。Main再レビュー指摘の責務別文言・設計不要時停止文言・workflow限定条件も再照合。overview/AGENTSの自動実行禁止文言を個別に照合し、onブロック検査のdead codeを除去。workflowは次トップレベルキーまで行単位で抽出し、複数行・inline形式・block sequenceのIssue eventを共通predicateで判定する疑似workflow回帰expectationを追加し、コメント内tokenを除外。nested `branches`内のtokenを誤検出しないこと、on直下のmapping/sequence・inline scalar/array・quoted token・flow mappingを検出することを確認
+- 未実施項目: local runner上の`sh scripts/verify.sh`、GitHub Actions（Task PR #48作成直後で実行結果待ち）。V8 compile相当とsource再取得によるescape文字数・正規表現・expectationの照合は実施。Main再レビュー指摘の責務別文言・設計不要時停止文言・workflow限定条件も再照合。overview/AGENTSの自動実行禁止文言を個別に照合し、onブロック検査のdead codeを除去。workflowは次トップレベルキーまで行単位で抽出し、複数行・inline形式・block sequenceのIssue eventを共通predicateで判定する疑似workflow回帰expectationを追加し、コメント内tokenを除外。nested `branches`内のtokenを誤検出しないこと、on直下のmapping/sequence・inline scalar/array・quoted token・flow mappingを検出することを確認
 - 残るリスク: CIでのcompile・全expectation実行結果、Docker品質ゲート、GitHub外部状態は未確認
 - Requirement Issueの状態: merge後もopen。全受入条件と根拠を確認した人間だけが明示的にcloseする
 - AI agentによるIssue close: 行わない

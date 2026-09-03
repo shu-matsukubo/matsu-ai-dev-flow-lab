@@ -88,7 +88,7 @@ const workflowOnContent = (workflow) => {
   return block.join("\n");
 };
 
-async function workflowFiles(directory) {
+const hasIssueEvent = (onContent) => onContent.split(/\r?\n/).some((line) => /(?:^|[\s,\[-])(issues|issue_comment)(?=\s|[,\]:]|$)/.test(line.replace(/#.*/, "")));\n\nasync function workflowFiles(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
   const files = [];
   for (const entry of entries) {
@@ -102,12 +102,15 @@ async function workflowFiles(directory) {
 test("workflowのonブロック検出は複数行とinline形式を正しく扱う", () => {
   const safe = "name: safe\non:\n  pull_request:\n    branches: [develop]\npermissions:\n  contents: read\n";
   const multilineIssue = "name: issue\non:\n  pull_request:\n  issues:\n    types: [opened]\njobs:\n  verify:\n";
+  const sequenceIssue = "name: issue\non:\n  - pull_request\n  - issue_comment\njobs:\n  verify:\n";
   const inlineIssue = "name: issue\non: [issues]\njobs:\n  verify:\n";
   const inlineIssueName = "name: issue\non: issue_comment\njobs:\n  verify:\n";
-  assert.doesNotMatch(workflowOnContent(safe), /(?:^|[\s,\[])(?:issues|issue_comment)(?:$|[\s,\]])/m);
-  assert.match(workflowOnContent(multilineIssue), /^\s*issues\s*:/m);
-  assert.match(workflowOnContent(inlineIssue), /issues/);
-  assert.match(workflowOnContent(inlineIssueName), /issue_comment/);
+  assert.equal(hasIssueEvent(workflowOnContent(safe)), false);
+  assert.equal(hasIssueEvent(workflowOnContent(multilineIssue)), true);
+  assert.equal(hasIssueEvent(workflowOnContent(sequenceIssue)), true);
+  assert.equal(hasIssueEvent(workflowOnContent(inlineIssue)), true);
+  assert.equal(hasIssueEvent(workflowOnContent(inlineIssueName)), true);
+  assert.equal(hasIssueEvent(workflowOnContent("on:\n  pull_request:\n  # issues: opened\n")), false);
 });
 
 test("workflowにIssue起動を追加していない", async () => {

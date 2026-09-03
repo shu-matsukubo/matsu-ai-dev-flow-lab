@@ -35,7 +35,7 @@ test("既定mainとdevelopのbranch責務を設計の正本どおり確認する
   assert.match(overview, /repositoryの既定branchは`main`/);
   assert.match(overview, /開発作業の起点とIssue統合PRのbaseは`develop`/);
   assert.match(overview, /人間が管理する`develop`から`main`への反映後/);
-  assert.match(overview, /Issue単位で`main`へ直接backportしない/);
+  assert.match(overview, /Issue単位(?:で|のbranchから)`main`へ直接backport(?:せず|しない)/);
   assert.doesNotMatch(overview, /既定branchは`develop`/);
 });
 

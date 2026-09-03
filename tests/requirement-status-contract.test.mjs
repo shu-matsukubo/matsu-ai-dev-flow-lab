@@ -74,6 +74,20 @@ test("工程別の人間承認引き渡し先が正確である", async () => {
   assert.match(designGate, /同じ作業指示でタスク分解へ進まない|同じ指示でTask Planningへ進まない/);
 });
 
+const workflowOnContent = (workflow) => {
+  const lines = workflow.split(/\\r?\\n/);
+  const onIndex = lines.findIndex((line) => /^on:\\s*(.*)$/.test(line));
+  if (onIndex < 0) return "";
+  const inline = lines[onIndex].replace(/^on:\\s*/, "");
+  if (inline) return inline;
+  const block = [];
+  for (const line of lines.slice(onIndex + 1)) {
+    if (/^\\S/.test(line) && !/^\\s*(?:#|$)/.test(line)) break;
+    block.push(line);
+  }
+  return block.join("\\n");
+};
+
 async function workflowFiles(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
   const files = [];
@@ -84,6 +98,17 @@ async function workflowFiles(directory) {
   }
   return files;
 }
+
+test("workflowのonブロック検出は複数行とinline形式を正しく扱う", () => {
+  const safe = "name: safe\\non:\\n  pull_request:\\n    branches: [develop]\\npermissions:\\n  contents: read\\n";
+  const multilineIssue = "name: issue\\non:\\n  pull_request:\\n  issues:\\n    types: [opened]\\njobs:\\n  verify:\\n";
+  const inlineIssue = "name: issue\\non: [issues]\\njobs:\\n  verify:\\n";
+  const inlineIssueName = "name: issue\\non: issue_comment\\njobs:\\n  verify:\\n";
+  assert.doesNotMatch(workflowOnContent(safe), /(?:^|[\\s,\\[])(?:issues|issue_comment)(?:$|[\\s,\\]])/m);
+  assert.match(workflowOnContent(multilineIssue), /^\\s*issues\\s*:/m);
+  assert.match(workflowOnContent(inlineIssue), /issues/);
+  assert.match(workflowOnContent(inlineIssueName), /issue_comment/);
+});
 
 test("workflowにIssue起動を追加していない", async () => {
   const files = await workflowFiles(join(root, ".github/workflows"));

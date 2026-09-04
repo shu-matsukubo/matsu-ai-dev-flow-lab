@@ -3,11 +3,13 @@ name: analyze-requirement
 description: Requirement Issueの要求と任意の補足を分析し、未確定の人間判断を確認して要求分析書と専用PRを作成する。要求分析書がないopen Issueを後続工程へ進める前にも使用する。
 ---
 
+# 要求分析
+
 ## 開始ゲートと引き渡し
 
 Requirement Issueに関する指示を受けたら、最新Issueの6種類のステータスラベルを確認し、`AI：作業可能`だけが付与され、現在のチャット指示がある場合に限り開始する。未付与、人間承認待ち、複数競合、永続情報との不整合では成果物・コメント・ラベル変更をせず停止する。AIは同ラベルを自己付与しない。要求分析書とRequirement Analysis PRを作成した後はMainが`人間：要求分析承認待ち`へ切り替え、再取得して確認し、同じ指示で設計へ進まない。
 
-# 要求分析
+## 入力と確定範囲
 
 Requirement Issueを分析前の入力、`requirements/<issue-id>.md`を目的・要件・受入条件・判断根拠の正本として分離する。要求分析では何を満たすかを確定し、設計方法、対象file、作業手順、Task、Agent構成を決めない。
 
@@ -20,11 +22,15 @@ Requirement Issueを分析前の入力、`requirements/<issue-id>.md`を目的�
 5. 回答後は、回答・判断を行った人間の確認主体を個人名やアカウントではなく役割などで一般化し、何が未確定だったか、何を確認したか、どの判断が確定したかとともに必要十分な確認履歴へ記録する。AI自身を確認者または人間判断の主体として扱わず、回答なしに要求分析を確定しない。
 6. `requirements/TEMPLATE.md`から`requirements/<issue-id>.md`を作り、元Issue、目的、要件、受入条件、制約、対象外、重要な人間判断、未確定事項、確認履歴、後続工程への引き継ぎを整理する。
 
+### 記録上の制約
+
 確認履歴はチャット全文の保存場所ではない。個人情報、secret、credential、実案件固有情報、判断に不要な会話をGitへ記録せず、判断に必要な内容だけを一般化して残す。
 
 要求分析書は実装進捗やTask状態の記録場所にしない。受入条件は安定したIDを付け、達成状況と根拠はIssue統合PRへ記録する。
 
 ## Requirement Analysis PR
+
+### 公開と承認境界
 
 - 最新の`develop`から専用branchを作り、要求分析書だけを`develop`向けの専用PRで公開する。
 - remote操作はGitHub連携だけを使用する。`git push`、`gh` CLI、GitHub APIへの直接`curl`、credential作成・保存へ切り替えない。
@@ -35,6 +41,8 @@ Requirement Issueを分析前の入力、`requirements/<issue-id>.md`を目的�
 - merge後は要求分析チャットを終了する。後続は別チャットでRequirement Issue、merge済み要求分析書、最新`develop`、最新`docs/`を読み直し、`$check-design-impact`から開始する。
 
 ## 改訂と既存Issue
+
+### 要求変更時の扱い
 
 要求または受入条件そのものを変える必要が生じた場合は後続工程を止め、専用Requirement Analysis PRで要求分析書を改訂する。人間によるmerge後、別チャットで設計影響確認から再開する。
 

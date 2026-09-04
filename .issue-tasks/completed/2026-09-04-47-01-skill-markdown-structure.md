@@ -12,7 +12,7 @@
 - Issue統合PR: `#51`
 - Issue統合PRのベースブランチ: `develop`
 - タスクブランチ: `task/47-t01`
-- Task PR: 未作成（Draft公開前）
+- Task PR: `#53`
 - Task PRのベースブランチ: `issue/47`
 - 承認記録: 2026-09-04のチャットで要求者が「承認します」と明示
 
@@ -87,7 +87,7 @@
   - 8件ではSkill名のH1を本文先頭へ移動相当に整理し、開始ゲートをその配下のH2とした
   - `coordinate-approved-tasks`では、前提、Agent構成、Flow Feedback処理Task、通常Taskの境界、Task完了と公開を固有の見出しで区別した
   - 見出し・空行を除く本文行は変更前と順序を含めて完全一致し、既存規則の追加・削除・言い換えを行っていない
-- 残るリスク: Task PRのCIと人間によるSquash mergeは未実施
+- 残るリスク: 人間によるTask PRのSquash mergeとIssue branchでの統合確認は未実施
 
 ## ローカル検証
 
@@ -105,7 +105,8 @@
 
 ## CI
 
-- Task PR公開前のため未実施
+- GitHub Actions `CI` run `#114`: success
+  - 対象remote commit: `1755af538ed5723ea8b41fc8ae8770bd86d93ba7`
 
 ## Agent割り当て
 
@@ -129,12 +130,21 @@
 
 ## commit
 
-- 未作成（この記録と実装を同じTask commitへ含める）
+- local base整合commit: `3d0386ac4c9a2c88221ef5d2db9132dce49f3f89`
+- local実装commit: `db94109666d6b9943e5025e06c33df8f3a9e0d72`
+- local実装tree: `3aeaf3b47c34bc57809afbb6dc212ae0ebe912a7`
+- remote parent: `fd2a8aa987c8f21f8cbf0916acefc7f66cfdbeb6`
+- remote初回公開commit: `1755af538ed5723ea8b41fc8ae8770bd86d93ba7`
+- remote初回公開tree: `3aeaf3b47c34bc57809afbb6dc212ae0ebe912a7`（local実装treeと一致）
 
 ## Pull Request
 
-- Issue統合Draft PR: `#51`
-- Task PR: 未作成（この記録を含むcommit公開後にDraftで作成する）
+- Issue統合Draft PR: [#51](https://github.com/shu-matsukubo/matsu-ai-dev-flow-lab/pull/51)
+- Task PR: [#53](https://github.com/shu-matsukubo/matsu-ai-dev-flow-lab/pull/53)
+  - 状態: open / draft
+  - base: `issue/47`
+  - head: `task/47-t01`
+  - 初回公開head: `1755af538ed5723ea8b41fc8ae8770bd86d93ba7`
 
 ## 完了報告
 
@@ -143,8 +153,8 @@
 - `AC-08`〜`AC-10`: frontmatterとSkill名を維持し、見出し・空行以外の本文をbaseと完全一致させたことで、既存の意味、責務、承認ゲート、Agent構成、参照先、正式名称、機械値の保持を確認した
 - `AC-11`: 9件のquick_validate、見出し階層検査、本文同一性検査、`git diff --check`、`sh scripts/verify.sh`が成功した
 - 未対象または未充足の事項: Task承認範囲内になし
-- 未実施項目: Task PRの公開とCI確認、人間によるSquash merge
-- 残るリスク: remote公開後のCI結果は未確認
+- 未実施項目: 人間によるTask PRのSquash mergeとIssue branchでの統合・回帰確認
+- 残るリスク: Task PR取り込み後のIssue branch統合結果は未確認
 - Requirement Issueの状態: merge後もopen。全受入条件と根拠を確認した人間だけが明示的にcloseする
 - AI agentによるIssue close: 行わない
 

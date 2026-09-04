@@ -3,11 +3,13 @@ name: process-flow-feedback
 description: 承認済みの専用Flow Feedback処理Taskで、対象feedback群を評価し、人間承認後にMainが処理記録、Requirement Issueへの引き継ぎ、最終結果に応じたfile移動を行う。
 ---
 
+# Flow Feedback処理
+
 ## 開始ゲートと責務境界
 
 Flow Feedback処理Taskを含むRequirement Issue作業では、Mainが開始前に最新ステータスを確認し、`AI：作業可能`だけと現在のチャット指示がある場合に限り開始する。Worker・Reviewerは既存feedback、共通file、ステータスを変更せず、Mainだけが承認後の引き渡しと処理記録を行う。人間承認待ち、未付与、複数競合、永続情報との不整合では安全側に停止する。
 
-# Flow Feedback処理
+## 適用範囲と前提
 
 通常Taskでの新規観測記録には使用しない。既存feedbackの処理は、専用Requirement Issue、merge済み要求分析書、設計ゲート、人間が承認した専用Taskを通して行う。いずれかを確認できなければ開始せず、必要な工程へ戻す。
 
@@ -19,6 +21,8 @@ Worker / Reviewerを使う場合は、固定した対象、Requirement Issue、�
 
 ## 評価案を作る
 
+### 各feedbackの確認事項
+
 各feedbackについて、次を確認する。
 
 - 必須8項目と、発生元Issue、Task、PR、観測根拠
@@ -26,6 +30,8 @@ Worker / Reviewerを使う場合は、固定した対象、Requirement Issue、�
 - 同じ原因または改善候補を持つ他のfeedbackとの関係
 - 重複、既存対応、前提変更、既に解消済みか
 - 対応効果、影響範囲、依存関係、独立した承認や優先順位判断の必要性
+
+### 評価案の内容
 
 Mainは分析を統合し、対象fileごとに次を含む評価案を人間へ提示する。
 
@@ -44,6 +50,8 @@ Task計画の承認と評価案への承認を同一視しない。人間が評�
 
 ## 承認済み処理を反映する
 
+### Mainによる記録
+
 承認後のwriterはMainだけとする。MainはTask記録へ承認内容を記録し、各対象fileへ必要十分な処理履歴を追記する。処理履歴から次を辿れるようにする。
 
 - Flow Feedback処理のRequirement Issue、Task、PR
@@ -60,6 +68,8 @@ feedback、Issue、Taskへ同じ詳細を大量に複製せず参照で結ぶ。
 | 別Issueとして扱う | 独立Requirement Issueへ引き継ぎ、通常フローを通す | Issue作成だけでは完了とせず`pending/` |
 
 改善Requirement Issueまたは独立Requirement Issueで必要な対応が完了し、根拠を確認できた場合だけ、最終結果を追記して`resolved/`へ移動する。引き継ぎ先で対応不要と確定した場合は、根拠を追記して`dismissed/`へ移動する。関連Issueが未完了、結果が確認できない、またはIssueを作成しただけの場合は`pending/`を維持する。処理Issue自体の完了を、引き継いだfeedbackの処理完了とは扱わない。
+
+#### 状態の正本と禁止事項
 
 状態は `.flow-feedback/pending/`、`.flow-feedback/dismissed/`、`.flow-feedback/resolved/` のdirectory配置だけを正本とする。新しい状態directory、外部DB、scheduler、lock service、自動Issue作成、自動改善を導入しない。
 

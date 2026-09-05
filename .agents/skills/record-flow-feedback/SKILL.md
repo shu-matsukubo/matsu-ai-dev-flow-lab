@@ -1,28 +1,57 @@
 ---
 name: record-flow-feedback
-description: Worker・Reviewer・Mainが観測したAI開発フロー上の問題を、Mainが1件1fileのFlow Feedbackとして記録する。
+description: "作業中に観測したAI開発フロー上の一つの問題を、根拠付きの新規Flow Feedbackとして記録する。"
 ---
 
-# フローフィードバックの記録
+# 提供能力
 
-## 観測の引き渡し
+一つの観測事実を、再現可能な証拠と最小の改善候補を持つ新規feedback fileへ変換する。
 
-WorkerとReviewerはタスク粒度、承認、Skill、設計、検証、レビュー、不要手順などの問題をMainへ返す。中央集約ファイルや他タスクファイルを直接編集しない。通常Taskでは既存feedbackの検索・整理・統合・判断・更新・削除・状態変更・移動を行わない。
+## 適用条件
 
-## Mainによる記録
+- AI開発フロー上の具体的な問題を現在の作業で観測した。
+- 発生元と証拠を識別できる。
+- 新規記録の書式と配置先が入力として与えられている。
+- 書き手に新規記録の権限がある。
 
-Mainは観測事実を確認し、filename規則 `i<issue-id>-t<task-id>-f<feedback-id>.md` と必須8項目（発生元Issue、発生元Task、発生元PR、category、symptom、impact、evidence、suggestion）を満たす新規fileを `.flow-feedback/pending/` へ記録する。状態metadataは本文へ記録しない。既存feedbackは通常Taskで処理しない。
+## 入力
 
-- `category`: 問題の種類
-- `symptom`: 実際に観測した事象
-- `impact`: 手戻り、待ち時間、判断不確実性などの影響
-- `evidence`: command、レビュー往復、曖昧だった指示などの根拠
-- `suggestion`: 次回検証できる最小の改善候補
+- 発生元Issue、Task、Pull Request
+- 観測した事実と発生条件
+- 作業への具体的影響
+- command、review往復、文書pathなどの証拠
+- categoryと記録形式
+- 出力先path
 
-### 記録しない事項
+## 出力
 
-一般論や推測だけのフィードバック、個人情報、secret、要求 / 設計全文を記録しない。問題がなければfeedback fileを作成しない。タスクの対象範囲を変えない記録は記録整理として扱う。
+次の8項目を持つ1件の新規feedback fileと作成結果を返す。
 
-## 既存feedbackとの境界
+- 発生元Issue
+- 発生元Task
+- 発生元PR
+- category
+- symptom
+- impact
+- evidence
+- suggestion
 
-複数の完了済みタスクから傾向を調べる場合は読み取り集約とし、元タスクを改変しない。既存feedbackの処理は、専用Requirement Issue、merge済み要求分析書、設計ゲート、人間が承認したTaskを通した `$process-flow-feedback` に限定する。`$record-flow-feedback` から既存feedbackを検索・処理したり、`$process-flow-feedback` を起動したりしない。Skill、承認ゲート、AIフローの変更候補は自動適用せず、別Requirement Issueの通常フローへ渡す。schedulerや自動集約基盤は導入しない。
+あわせて未確認事項、記録失敗、残るリスクを返す。
+
+## 責務外
+
+- 既存feedbackの検索、評価、統合、更新、移動、削除
+- feedbackへの状態metadataの追加
+- 改善要求の承認または実装
+- Issue、branch、commit、Pull Requestの操作
+- 工程状態または担当Agentの変更
+
+## 能力固有の処理
+
+観測と推測を分離し、再現または確認可能な事実だけをsymptomへ記載する。impactは余分な往復、誤判定、作業停止など実際の影響を示す。evidenceは秘密情報を除き、第三者が確認できる最小の証拠とする。suggestionは将来検証できる最小の改善候補であり、採用済みの判断として書かない。
+
+一つのfileへ複数の独立した問題をまとめない。配置directoryと重複する状態を本文へ記録しない。
+
+## 失敗・未実施・残るリスク
+
+証拠または発生元を確定できない場合は推測で補わず未確認として返す。出力先が既存fileと衝突する場合は上書きせず失敗を返す。記録は改善の承認や解決を意味しない。

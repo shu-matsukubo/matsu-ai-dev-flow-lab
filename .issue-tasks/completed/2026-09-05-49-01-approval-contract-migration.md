@@ -97,7 +97,8 @@
 
 ## CI
 
-- Task PR #57をDraftで作成済み。CI確認待ち。
+- Task PR #57のCI run #125は成功。実装と初回Task記録を含むremote commit `e0a9c5f14fd64732f36ff33aac3c5503b14cafe6`で確認した。
+- このCI結果を追記する記録専用commit後の最終CIもPR #57上で成功を確認し、追加の実装変更がないことを確認する。
 
 ## Agent割り当て
 
@@ -124,6 +125,8 @@
 
 - local実装・記録commit: `df20d8e13d502b7792085de043f7e1f8633fa5e8`
 - GitHub公開commit: `30daf4894c4eb7f457af572a7a5ea521b5364d7a`
+- local PR追跡記録commit: `1a0bbc0bbf37aa628fb6aa01667ffdede3889f85`
+- GitHub PR追跡記録commit: `e0a9c5f14fd64732f36ff33aac3c5503b14cafe6`
 
 ## Pull Request
 
@@ -134,12 +137,12 @@
 
 - このTaskが寄与する要求分析書の受入条件ID: `AC-01`〜`AC-12`
 - 根拠: AC-01〜AC-11は文書・Agent指示・8 Skill・13件の契約テスト、独立レビュー、Main検証で充足。AC-12のローカル共通品質ゲートは成功。
-- 未対象または未充足の事項: AC-12のTask PR CIと、Task PR merge後に行うIssue統合PRの統合・回帰検証およびCIは未完了。
-- 未実施項目: Task PR #57のCI確認。Issue統合PRの検証・CI・全受入条件確認はTask PRの人間merge後に行う。
+- 未対象または未充足の事項: AC-12のうち、Task PR merge後に行うIssue統合PRの統合・回帰検証およびCIは未完了。
+- 未実施項目: Issue統合PRの検証・CI・全受入条件確認はTask PRの人間merge後に行う。
 - 残るリスク: GitHub連携からrepository label一覧を直接取得できない。Issue統合PRの最終引き渡し時に`人間：PR確認待ち`への更新と再取得を行い、目的の1状態だけになることを確認する。
 - Requirement Issueの状態: merge後もopen。全受入条件と根拠を確認した人間だけが明示的にcloseする
 - AI agentによるIssue close: 行わない
 
 ## 完了日時
 
-- 2026-09-05（ローカル実装・レビュー・検証・外部ラベル移行確認を完了し、Draft Task PR #57を公開。CI結果は確認後に追記する）
+- 2026-09-05（ローカル実装・レビュー・検証・外部ラベル移行確認を完了し、Draft Task PR #57を公開。Task PR CI成功を確認）

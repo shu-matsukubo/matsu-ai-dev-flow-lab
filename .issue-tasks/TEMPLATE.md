@@ -6,8 +6,8 @@
 - 設計PR: `なし` / `#<number>`
 - 状態: `active`
 - タスクキー: `<承認済みPlan内で一意のkey>`
-- 優先度: `normal` (`high` / `normal` / `low`)
-- Agent構成: `worker-parent-review` (`parent-only` / `worker-parent-review` / `worker-reviewer-parent`)
+- 優先度: `high` / `normal` / `low`
+- Agent構成: `<承認済み計画の役割構成>`
 - Issue branch: `issue/<issue-id>`
 - Issue統合PR: `#<number>`
 - Issue統合PRのベースブランチ: `develop`
@@ -16,7 +16,7 @@
 - Task PRのベースブランチ: `issue/<issue-id>`
 - 承認記録: `<承認日時または会話内の識別情報>`
 
-要求や設計全文は複製せず、元Issue、merge済み要求分析書、現在の `docs/` を参照する。このファイルは着手済み作業の実施記録である。
+要求や設計全文は複製せず、元Issue、merge済み要求分析書、現在の`docs/`を参照する。このfileは着手済み作業の実施記録である。
 
 ## 目的
 
@@ -40,7 +40,7 @@
 
 | 依存対象 | 種類 | ゲート | 完了条件 | 現在状態と根拠 |
 |---|---|---|---|---|
-| `<タスク / Requirement Analysis PR / 設計PR>` | `<hard / soft / ordering>` | `<start / complete / publish / merge>` | `<条件>` | `<状態、URLまたはpath>` |
+| `<Task / Pull Request / 外部条件>` | `<hard / soft / ordering>` | `<start / complete / publish / merge>` | `<条件>` | `<状態、URLまたはpath>` |
 
 ## 懸念事項
 
@@ -65,29 +65,23 @@
 
 ## Agent割り当て
 
-- 未実施
+- 作成担当: 未割り当て
+- 独立Reviewer: 対象外 / 未割り当て
+- Main: 未実施
 
 ## レビュー結果
 
 - セルフレビュー: 未実施
-- 独立レビュー: strategy対象外 / 未実施
+- 独立レビュー: 対象外 / 未実施
 - Mainレビュー: 未実施
 
 ## Flow Feedback参照
 
-必要な場合だけ、対応する `.flow-feedback/pending/` のfile pathを記載する。Feedback本文や状態metadataはTask fileへ重複記録しない。
+必要な場合だけ、対応する`.flow-feedback/pending/`のfile pathを記載する。本文や状態metadataは複製しない。
 
 ## Flow Feedback処理
 
-通常Taskでは「対象外」と記載する。承認済みの専用Flow Feedback処理Taskでは、feedback本文や状態metadataを複製せず次を記録する。
-
-- 処理対象として固定した `.flow-feedback/pending/` のfile path
-- 対象固定後に追加されたため今回含めないfileの有無
-- 評価案への人間承認記録
-- 承認された分類、関連feedbackのまとめ方、引き継ぎ先Issue
-- Mainによる処理記録・file移動と、移動前後の欠落・重複確認
-
-評価案への人間承認前は、既存feedbackの変更や引き継ぎ先Issueの作成・更新を実施済みとして記録しない。
+通常Taskでは「対象外」と記載する。専用処理Taskでは、固定した対象集合、人間承認の証拠、承認された分類と根拠、反映結果、移動前後の欠落・重複確認を記載し、詳細基準は共有Referenceを参照する。
 
 ## commit
 
@@ -99,7 +93,7 @@
 
 ## 完了報告
 
-- このTaskが寄与する要求分析書の受入条件ID（例: `AC-01`）と根拠: 未確認
+- このTaskが寄与する要求分析書の受入条件IDと根拠: 未確認
 - 未対象または未充足の事項: 未確認
 - 未実施項目: 未確認
 - 残るリスク: 未確認

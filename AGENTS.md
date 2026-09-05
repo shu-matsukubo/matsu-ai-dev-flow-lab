@@ -1,39 +1,34 @@
 # AI作業ガイド
 
-このリポジトリでは、要求入力・要求分析・設計・実装・作業記録を別の正本として扱う。
+人間が読む見出し、説明、判断記録は、技術上の正式名称や機械値を除き、自然な日本語で記載する。
 
-人間が読む見出し・説明・記録は、技術上の正式名称や機械値を除き、自然な日本語で記載する。詳細な言語方針は [AI開発フロー](docs/ai-development/overview.md) を参照する。
+## 正本
 
-- 要求原文とIssue登録前の補足: GitHub Issue（原則1要求1 Issue）
+このリポジトリでは、次の情報を別の正本として扱う。
+
+- 要求原文とIssue登録前の補足: GitHub Requirement Issue
 - 要求分析: `requirements/<issue-id>.md`
-- 設計: `docs/`
-- 実装: codeとautomated tests
-- 着手済みタスクの記録: `.issue-tasks/active/`、完了後は `.issue-tasks/completed/`
+- 現在有効な設計: `docs/`
+- 実装の振る舞い: codeとautomated tests
+- 着手済み作業の記録: `.issue-tasks/active/`と`.issue-tasks/completed/`
+- AI開発フロー改善の観測: `.flow-feedback/`
 
-Requirement Issue登録後は `$analyze-requirement` を使用し、要求と任意の補足から要求分析書を作成する。未確定の人間判断がある場合だけ同じチャットで質問し、回答後は同じ判断の再承認を求めず、最新の`develop`をbaseとする専用Requirement Analysis PRの作成まで継続する。PR作成後は`人間：PR確認待ち`へ引き渡し、人間がmergeするまで設計影響確認、Task Planning、実装へ進まない。
+過去のチャット、要約、ラベル、Agentの報告だけで工程や成果を推測せず、現在の要求、設計、実装、差分、検証結果、Pull Requestなどの永続情報を直接確認する。
 
-後続の変更作業は別チャットで、Requirement Issue、merge済み要求分析書、最新の`develop`、最新の`docs/`を読み直し、必ず `$check-design-impact` を実施する。Requirement Analysis PRが未merge、または要求分析書が存在しない場合は要求分析工程へ戻る。設計影響確認では変更の有無にかかわらず設計判断記録と設計PRを作成し、PRの人間mergeまで具体的なTask・実装計画へ進まず停止する。設計PRのmerge後は、そのチャットを完了し、別チャットで同じ正本を読み直して設計影響確認をやり直す。PR mergeを確認できた場合にだけ `$plan-tasks` へ進み、タスク計画はチャットで承認を得て、着手時にだけTask記録を作る。承認範囲外の改善やarchitecture判断は実装しない。
+## 作業原則
 
-実装はタスクごとのAgent構成に従い、`$coordinate-approved-tasks`、`$review-changes`、`$verify-changes`、`$publish-task-pr` を使用する。Worker / Reviewerのフロー改善フィードバックはMainへ返し、Mainが `$record-flow-feedback` で必要な新規feedbackを `.flow-feedback/pending/` の1件1fileへ記録する。役割別modelはSkillではなく `.codex/` が定義する。
+現在の人間指示と承認済みscopeを超えて変更しない。要求または設計上の人間判断が未確定なら、選択肢と影響を示して確認し、AIだけで確定しない。新しい要求、architecture判断、依存関係、運用概念が必要になった場合は、変更前に該当する承認境界へ戻す。
 
-通常Taskは新規Flow Feedbackの記録までとし、既存feedbackを評価・更新・移動しない。既存feedbackの一括処理は、専用Requirement Issue、merge済み要求分析書、設計ゲート、承認済みTaskを通した場合だけ `$process-flow-feedback` を使用する。専用処理TaskではWorker / Reviewerを読み取り分析と提案に限定し、既存feedbackと共通fileのwriterはMainだけとする。
+必要な手順は、その時点で利用可能なWorkflow、Skill、Referenceを確認して選択する。個別能力の名前や存在を固定的に仮定せず、`name`、`description`、適用条件、入力、出力、責務外を照合する。能力が存在しない、入力契約を満たせない、または安全に選べない場合は、無関係な文書を変更して補わず、未実施または不足として返す。
 
-Mainは処理対象、分類、判断根拠、関連feedbackのまとめ方、引き継ぎ先Requirement Issueを評価案として人間へ提示する。人間が評価案を承認するまで既存feedbackの更新・移動、引き継ぎ先Issueの作成・更新、改善実装を行わず、承認後もdirectory配置による3状態と通常の二階層PR、レビュー、検証の境界を維持する。
+## 品質と提出
 
-共通検証入口は `sh scripts/verify.sh`。Dockerが利用できない場合は理由を報告し、成功扱いにしない。
+作業リスクに適したself review、独立review、verificationを選び、Mainが実成果物と根拠を確認する。共通品質ゲートは`sh scripts/verify.sh`とし、変更リスクに応じた追加検証も行う。失敗または未実施を成功扱いにせず、結果、根拠、未実施項目、残るリスクを示してから提出する。
 
-通常の実装は、1 Requirement Issue = 1 `issue/<issue-id>` branch = 1 Issue統合Draft PR、1 Task = 1 `task/<issue-id>-<task-id>` branch = 1 Draft Task PRの二階層とする。Task計画の人間承認後に最新の `develop` からIssue branchとIssue統合Draft PRを作成し、各Taskは着手時点の最新Issue branchから開始する。Task PRのbaseは対応するIssue branch、Issue統合PRのbaseは `develop` とする。Task記録には元Issue、要求分析書、Requirement Analysis PR、設計PR、Issue branch、Issue統合PR、Task branch、Task PRを記録する。設計PRは実装から分離し、元Issueを `Refs #<number>` で参照する。
+提出前に対象repository、branch、base、head、変更内容、公開範囲、禁止事項を確認する。AI agentはPull Requestをmergeせず、branchを削除せず、Requirement Issueをcloseしない。これらの最終判断は人間だけが行う。
 
-Task PRではTask単位の変更・レビュー・検証を行い、Issue統合PRでは全Task完了後に最新 `develop` をIssue branchへmergeした状態でRequirement Issue全体の統合・回帰検証と、要求分析書の受入条件確認を行う。両PRはSquash mergeを基本とし、PRのmerge、branch削除、Issue closeは人間だけが行う。AI agentはPRをmergeせず、全受入条件の確認前にIssueをcloseしない。
+## 安全性
 
-Requirement Analysis PR、設計PR、Task PR、Issue統合PRは、Requirement Issueを `Refs #<number>` などの非close形式で参照する。PR本文では `Closes`、`Fixes`、`Resolves` およびGitHubが同等に扱う自動close keywordを使用しない。設計PRとTask PRには担当範囲が寄与する要求分析書の受入条件、根拠、未対象または未充足の事項を記録し、Issue統合PRとAI agentの完了報告には要求分析書の全受入条件ごとの充足状況と根拠、未実施項目、残るリスクを示す。PR merge後もRequirement Issueはopenのまま維持し、全受入条件と根拠を確認した人間だけが明示的にIssueをcloseする。Main、Worker、Reviewerを含むAI agentはIssueをcloseしない。
+remote操作にはGitHub連携だけを使用する。`git push`、`gh` CLI、GitHub APIへの直接`curl`、credentialの作成・保存へ切り替えない。secret、credential、個人情報、実案件固有情報を成果物やログへ記録しない。
 
-`git push`、`gh` CLI、GitHub APIへの直接`curl`は禁止する。remote操作はGitHub連携だけを使用し、実行できなければlocalの実装・検証・commit状態と必要なユーザー操作を報告して停止する。secret、credential、実案件固有情報をcommitしない。
-
-詳細な判断基準は [AI開発フロー](docs/ai-development/overview.md)、現在の境界は [システム設計](docs/architecture/system.md)、品質ゲートは [テスト戦略](docs/quality/testing.md) を正本とする。
-
-## Requirement Issueの開始ゲートと承認引き渡し
-
-Requirement Issueに関する作業指示を受けたMainは、成果物作成や工程進行より先にGitHub上の最新Issueを取得し、4種類のステータスラベルだけを抽出する。`AI：作業可能`の1種類だけが付与され、対象Issueと作業を示す現在のチャット指示がある場合に限り作業を開始する。人間承認待ち、未付与、複数競合、旧3ラベルの残存、またはラベルと永続情報の不整合では、成果物・コメント・ラベル変更を行わず移行完了まで安全停止する。AIは`AI：作業可能`を自ら付与せず、過去指示やラベルだけを承認の証拠にしない。
-
-開始後はIssue、要求分析書、設計PR、Task記録、Task PR、Issue統合PRなどの永続情報から次工程と既存承認を復元する。工程の承認対象を完成したらMainだけが非ステータスラベルを保持したまま以前のステータスを残さず対応する人間承認待ちへ切り替え、変更後のIssueを再取得して目的の1種類だけであることを確認し、同じ指示では次工程へ進まない。Worker、Reviewer、補助Skillはステータスを変更しない。QA専用・工程別AIラベル、自動起動・merge・closeは追加しない。
+破壊的操作や回復が難しい操作は、正確な対象、承認scope、回復手段を確認する。不明確な対象を推測して削除、上書き、権限変更しない。

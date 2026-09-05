@@ -160,7 +160,7 @@ test("overviewは正本とruntime discoveryの入口に限定される", async (
     assert.doesNotMatch(overview, new RegExp(escapePattern(skill.name), "i"), skill.name);
   }
   assert.match(overview, /name.*description/);
-  assert.match(overview, /SKILL\.mdを全文読み/);
+  assert.match(overview, /SKILL\.md.*全文読み/);
   assert.match(overview, /固定Skill registry.*作らない/);
   assert.match(overview, /references\/.*目的.*適用対象/s);
   assert.match(overview, /Not Executedまたは不足/);
@@ -179,7 +179,7 @@ test("Workflowは個別Skill名なしで能力、順序、承認、停止と再�
     }
   }
   const combined = (await Promise.all(workflowPaths.map((path) => readFile(path, "utf8")))).join("\n");
-  for (const token of ["必要な能力", "Agent構成", "承認", "停止", "再開", "順序"]) {
+  for (const token of ["必要能力", "Agent構成", "承認", "停止", "再開", "順序"]) {
     assert.match(combined, new RegExp(token), token);
   }
 });

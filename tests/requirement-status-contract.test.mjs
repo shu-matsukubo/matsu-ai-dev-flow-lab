@@ -6,22 +6,48 @@ import { test } from "node:test";
 const root = join(import.meta.dirname, "..");
 const read = (relativePath) => readFile(join(root, relativePath), "utf8");
 
-const statusLabels = ["人間：要求承認待ち", "AI：作業可能", "人間：要求分析承認待ち", "人間：基本設計承認待ち", "人間：タスク承認待ち", "人間：最終成果物承認待ち"];
+const statusLabels = ["人間：要求承認待ち", "AI：作業可能", "人間：PR確認待ち", "人間：タスク承認待ち"];
+const retiredLabels = ["人間：要求分析承認待ち", "人間：基本設計承認待ち", "人間：最終成果物承認待ち"];
 const requiredSkills = ["analyze-requirement", "check-design-impact", "coordinate-approved-tasks", "plan-tasks", "process-flow-feedback", "publish-task-pr", "review-changes", "verify-changes"];
 
-const extractRequirementLabels = (text) => [...text.matchAll(/^ {2}- `([^`]+)`$/gm)].map((match) => match[1]);
 const extractDesignLabels = (text) => [...text.matchAll(/^[|] `([^`]+)` [|]/gm)].map((match) => match[1]);
 const assertExactLabels = (actual, sourceName) => {
   assert.deepEqual(actual, statusLabels, sourceName);
   assert.equal(new Set(actual).size, statusLabels.length, sourceName + " has duplicates");
 };
 
-test("要求分析書と設計のステータスラベル一覧が一致する", async () => {
-  const [requirements, overview] = await Promise.all([read("requirements/35.md"), read("docs/ai-development/overview.md")]);
-  const requirementSection = requirements.match(/### RQ-01[\s\S]*?### RQ-02/)?.[0] ?? "";
+test("Issue #49設計とAI開発フローのステータスラベル一覧が一致する", async () => {
+  const [design, overview] = await Promise.all([read("docs/design-decisions/49.md"), read("docs/ai-development/overview.md")]);
+  const designContract = design.split("## 工程と承認境界")[0].split("## ステータス契約")[1] ?? "";
   const designSection = overview.match(/### ステータスラベル[\s\S]*?### AI作業開始ゲート/)?.[0] ?? "";
-  assertExactLabels(extractRequirementLabels(requirementSection), "requirements/35.md RQ-01");
+  assert.match(design, /4種類/);
+  assertExactLabels(extractDesignLabels(designContract), "design status table");
   assertExactLabels(extractDesignLabels(designSection), "overview status table");
+  assert.deepEqual(extractDesignLabels(designContract), extractDesignLabels(designSection), "design and overview status tables");
+  for (const label of retiredLabels) assert.doesNotMatch(designSection, new RegExp(label));
+});
+
+test("旧3ラベルはactive契約から排除し、残存時は安全停止する", async () => {
+  const documents = await Promise.all([
+    read("AGENTS.md"),
+    read("docs/ai-development/overview.md"),
+    ...requiredSkills.map((skill) => read(".agents/skills/" + skill + "/SKILL.md")),
+  ]);
+  for (const document of documents) {
+    assert.match(document, /4種類/);
+    assert.match(document, /旧3ラベル|移行完了まで安全停止/);
+  }
+});
+
+test("active契約に旧設計不要承認・Issueコメント経路を残さない", async () => {
+  const documents = await Promise.all([
+    read("AGENTS.md"),
+    read("docs/ai-development/overview.md"),
+    ...requiredSkills.map((skill) => read(".agents/skills/" + skill + "/SKILL.md")),
+  ]);
+  for (const document of documents) {
+    assert.doesNotMatch(document, /設計PRが不要|設計変更不要判断|設計変更不要時のIssueコメント|Requirement Issueへコメント/);
+  }
 });
 
 test("Requirement Issue Formは人間による要求確認から開始する", async () => {
@@ -42,7 +68,7 @@ test("既定mainとdevelopのbranch責務を設計の正本どおり確認する
 test("各Skillの開始・停止契約とMain単独の引き渡し責務を確認する", async () => {
   const documents = await Promise.all(requiredSkills.map((skill) => read(".agents/skills/" + skill + "/SKILL.md")));
   for (const document of documents) {
-    for (const token of ["AI：作業可能", "現在のチャット指示", "人間承認待ち", "未付与", "複数競合", "不整合"]) assert.match(document, new RegExp(token));
+    for (const token of ["AI：作業可能", "現在のチャット指示", "人間承認", "未付与", "複数競合", "不整合"]) assert.match(document, new RegExp(token));
   }
   const agents = await read("AGENTS.md");
   for (const token of ["永続情報から次工程", "以前のステータスを残さず", "非ステータスラベルを保持", "変更後のIssueを再取得", "Mainだけ"]) assert.match(agents, new RegExp(token));
@@ -56,22 +82,67 @@ test("各Skillの開始・停止契約とMain単独の引き渡し責務を確�
   for (const [path, contract] of handoffContracts) assert.match(await read(path), new RegExp(contract));
 });
 
+test("coordinate-approved-tasksはMainの安全なPR確認待ち引き渡しを所有する", async () => {
+  const document = await read(".agents/skills/coordinate-approved-tasks/SKILL.md");
+  for (const contract of [
+    "非ステータスラベルを保持",
+    "以前のステータスを残さず",
+    "目的のBT人間：PR確認待ちBTへ更新",
+    "更新後Issueを再取得",
+    "目的のステータス1種類だけ",
+    "同一指示内では次工程へ進まず停止",
+    "Task PRだけではこの状態変更を行わない",
+  ]) {
+    assert.ok(document.includes(contract.replaceAll("BT", String.fromCharCode(96))), contract);
+  }
+});
+
 test("工程別の人間承認引き渡し先が正確である", async () => {
   const [overview, designGate] = await Promise.all([read("docs/ai-development/overview.md"), read(".agents/skills/check-design-impact/SKILL.md")]);
   const handoff = overview.match(/### 人間への引き渡し[\s\S]*?## 要求分析/)?.[0] ?? "";
   const mappings = [
-    [/要求分析書とRequirement Analysis PR[\s\S]*?人間：要求分析承認待ち/, "requirements"],
-    [/設計PR[\s\S]*?人間：基本設計承認待ち/, "design"],
-    [/設計変更不要という判断とRequirement Issueへの根拠コメント[\s\S]*?人間：基本設計承認待ち/, "no-design"],
+    [/要求分析書とRequirement Analysis PR[\s\S]*?人間：PR確認待ち/, "requirements"],
+    [/設計判断記録と設計PR[\s\S]*?人間：PR確認待ち/, "design"],
     [/人間が承認可能なタスク計画[\s\S]*?人間：タスク承認待ち/, "task-plan"],
-    [/全Task、統合・回帰検証、全受入条件確認を終えたIssue統合PR[\s\S]*?人間：最終成果物承認待ち/, "final"],
+    [/全Task、統合・回帰検証、全受入条件確認を終えたIssue統合PR[\s\S]*?人間：PR確認待ち/, "final"],
   ];
   for (const [pattern, name] of mappings) assert.match(handoff, pattern, name);
-  assert.match(designGate, /設計変更なし|設計変更不要/);
-  assert.match(designGate, /Requirement Issueへコメント|根拠コメント/);
+  assert.match(designGate, /設計判断記録|設計PR/);
   assert.match(designGate, /同じ指示|同一指示/);
   assert.match(designGate, /Task Planning|タスク計画/);
   assert.match(designGate, /同じ作業指示でタスク分解へ進まない|同じ指示でTask Planningへ進まない/);
+});
+
+test("要求分析・基本設計の質問有無4経路と再承認禁止を確認する", async () => {
+  const [overview, analyze, design] = await Promise.all([
+    read("docs/ai-development/overview.md"),
+    read(".agents/skills/analyze-requirement/SKILL.md"),
+    read(".agents/skills/check-design-impact/SKILL.md"),
+  ]);
+  for (const document of [overview, analyze, design]) {
+    assert.match(document, /未確定.*質問|必要な場合だけ.*質問/);
+    assert.match(document, /回答後.*再承認|同一事項.*再承認/);
+    assert.match(document, /PR確認待ち/);
+  }
+  assert.match(overview, /要求分析.*質問/);
+  assert.match(overview, /設計.*質問/);
+  assert.match(overview, /同じチャット/);
+  assert.match(overview, /人間：タスク承認待ち/);
+});
+
+test("4経路は開始条件・質問条件・継続条件・成果物引き渡しを表形式で満たす", async () => {
+  const overview = await read("docs/ai-development/overview.md");
+  const routes = [
+    { phase: "要求分析", noQuestion: /未確定の人間判断がない場合は質問せず/, question: /判断が必要な場合だけ質問し/, continue: /回答後は同一事項を再承認せず/, artifact: /要求分析書とRequirement Analysis PR/ },
+    { phase: "基本設計", noQuestion: /未確定の設計判断がない場合は質問せず/, question: /判断が必要な場合だけ質問し/, continue: /回答後は同一事項を再承認せず/, artifact: /設計判断記録と設計PR/ },
+  ];
+  for (const route of routes) {
+    assert.match(overview, route.noQuestion, route.phase + " no-question");
+    assert.match(overview, route.question, route.phase + " question");
+    assert.match(overview, route.continue, route.phase + " no re-approval");
+    assert.match(overview, route.artifact, route.phase + " artifact");
+    assert.match(overview, /人間：PR確認待ち/, route.phase + " PR handoff");
+  }
 });
 
 const workflowOnContent = (workflow) => {

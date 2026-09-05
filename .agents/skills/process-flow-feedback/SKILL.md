@@ -7,7 +7,7 @@ description: 承認済みの専用Flow Feedback処理Taskで、対象feedback群
 
 ## 開始ゲートと責務境界
 
-Flow Feedback処理Taskを含むRequirement Issue作業では、Mainが開始前に最新ステータスを確認し、`AI：作業可能`だけと現在のチャット指示がある場合に限り開始する。Worker・Reviewerは既存feedback、共通file、ステータスを変更せず、Mainだけが承認後の引き渡しと処理記録を行う。人間承認待ち、未付与、複数競合、永続情報との不整合では安全側に停止する。
+Flow Feedback処理Taskを含むRequirement Issue作業では、Mainが開始前に4種類の有効ステータスを確認し、`AI：作業可能`だけと現在のチャット指示がある場合に限り開始する。旧3ラベル残存、未付与、複数競合、永続情報との不整合では移行完了まで変更せず安全停止する。Worker・Reviewerは既存feedback、共通file、ステータスを変更せず、Mainだけが承認後の引き渡しと処理記録を行う。
 
 ## 適用範囲と前提
 

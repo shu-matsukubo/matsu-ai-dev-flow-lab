@@ -9,7 +9,7 @@
 | 情報 | 正本 | 責務 |
 |---|---|---|
 | 要求原文と事前の思考材料 | GitHub Issue | 要求者から受け取った要求原文と、Issue登録前に人間から得られた補足を保持する |
-| 作業権と次の承認対象 | Requirement Issueのステータスラベル | 6種類のうち1種類で現在の作業権または人間が確認する承認対象を示す。工程完了の証拠にはしない |
+| 作業権と次の承認対象 | Requirement Issueのステータスラベル | 4種類のうち1種類で現在の作業権または人間が確認する完成成果物を示す。工程完了の証拠にはしない |
 | 要求分析 | `requirements/<issue-id>.md` | Issueを入力として探索・比較し、人間との追加確認を経て確定した目的・要件・受入条件・制約・対象外・判断根拠・未確定事項・確認履歴を保持する |
 | 設計 | `docs/` | 現在有効なアーキテクチャ、責務境界、品質戦略、AI開発フロー |
 | 実装 | コードと自動テスト | 実際の振る舞いと正確な実装詳細 |
@@ -27,16 +27,16 @@ Requirement Issue作成
   -> 人間：要求承認待ち
   -> 人間が要求を確認し、AI：作業可能へ切り替えてチャットで指示
   -> 要求分析 -> requirements/<issue-id>.md -> Requirement Analysis PR
-  -> 人間：要求分析承認待ち -> AI作業終了
+  -> 人間：PR確認待ち -> AI作業終了
 
 Requirement Analysis PRを人間がmerge
   -> AI：作業可能へ切り替えて別チャットで指示
   -> 設計影響確認
-  +-- 設計変更あり -> 設計案の承認 -> 設計PR
-  +-- 設計変更なし -> 根拠をRequirement Issueへコメント
-  -> 人間：基本設計承認待ち -> AI作業終了
+  -> 必要な設計判断だけ同じチャットで質問・回答
+  -> 設計変更の有無にかかわらず設計判断記録 + 設計PR
+  -> 人間：PR確認待ち -> AI作業終了
 
-設計PRのmergeまたは設計変更不要判断を人間が承認
+設計PRを人間が確認してmerge
   -> AI：作業可能へ切り替えて別チャットで指示
   -> 最新の正本から設計影響を再確認 -> タスク計画
   -> 人間：タスク承認待ち -> AI作業終了
@@ -47,14 +47,14 @@ Requirement Analysis PRを人間がmerge
   -> Task実装 -> レビュー -> 検証 -> Task PR -> Issue branch
   -> 最新developをmerge -> 統合レビュー・検証 -> 全受入条件確認
   -> Issue統合PRをReady for review
-  -> 人間：最終成果物承認待ち -> AI作業終了
+  -> 人間：PR確認待ち -> AI作業終了
 
 人間が最終成果物を確認
   -> Issue統合PRをdevelopへSquash merge
   -> 全受入条件と根拠を確認してRequirement Issueを明示的にclose
 ```
 
-ステータスラベルを人間承認や成果物完成の証拠として扱わない。各人間承認待ちへ移行した作業指示では次の工程へ進まず、再開には人間による`AI：作業可能`への切り替えと新しいチャット指示の両方を必要とする。merge済み要求分析書がない状態では設計影響確認やタスク分解へ進まず、設計PRのmergeまたは設計変更不要判断の承認前にはタスク計画へ進まない。
+ステータスラベルを人間承認や成果物完成の証拠として扱わない。各人間承認待ちへ移行した作業指示では次の工程へ進まず、再開には人間による` AI：作業可能`への切り替えと新しいチャット指示の両方を必要とする。merge済み要求分析書がない状態では設計影響確認やタスク分解へ進まず、設計PRの人間merge前にはタスク計画へ進まない。
 
 ## 要求Issue
 
@@ -73,26 +73,24 @@ Requirement Issueには、完成した要求分析、利用するフレームワ
 
 ### ステータスラベル
 
-Requirement Issueでは次の6種類だけをステータスラベルとして扱う。
+Requirement Issueでは次の4種類だけをステータスラベルとして扱う。
 
 | ラベル | 作業権または承認対象 |
 |---|---|
 | `人間：要求承認待ち` | Issueへ登録した要求を人間が確認する |
 | `AI：作業可能` | 人間のチャット指示を受けたAIが、永続情報から復元した次工程を実施できる |
-| `人間：要求分析承認待ち` | Requirement Analysis PRを人間が確認してmergeする |
-| `人間：基本設計承認待ち` | 設計PRの内容、または設計変更不要という判断を人間が確認する |
+| `人間：PR確認待ち` | Requirement Analysis PR、設計PR、またはIssue統合PRを人間が確認してmergeする |
 | `人間：タスク承認待ち` | チャットへ提示されたタスク計画を人間が確認する |
-| `人間：最終成果物承認待ち` | Issue統合PR、検証結果、全受入条件の根拠を人間が確認する |
 
-定常状態では6種類のうち1種類だけを付与し、ステータス以外のラベルは併用できる。ステータスラベルは作業権と次の承認対象を示す補助的な永続情報であり、要求、要求分析、設計、Task、Pull Request、検証結果の正本を置き換えない。
+定常状態では4種類のうち1種類だけを付与し、旧3ラベルが残る場合は移行完了まで安全停止する。ステータス以外のラベルは併用できる。ステータスラベルは作業権と次の承認対象を示す補助的な永続情報であり、要求、要求分析、設計、Task、Pull Request、検証結果の正本を置き換えない。
 
-repositoryの既定branchは`main`とし、開発作業の起点とIssue統合PRのbaseは`develop`とする。6種類のラベルはIssue Formを有効にする前にrepository labelとして用意し、Requirement Issue Formの既定ラベルによって新規Issueへ`人間：要求承認待ち`を自動付与する。Requirement Issue Formは既定branch上の内容がGitHubで利用されるため、変更を`develop`へ取り込んだだけでは有効化完了と扱わない。人間が管理する`develop`から`main`への反映後に、初期ラベルを含む外部動作を確認する。Issue単位で`main`へ直接backportせず、初期付与のためのIssue event orchestrationや、ラベル変更だけを契機とするAIの自動起動も導入しない。
+repositoryの既定branchは`main`とし、開発作業の起点とIssue統合PRのbaseは`develop`とする。4種類のラベルはIssue Formを有効にする前にrepository labelとして用意し、Requirement Issue Formの既定ラベルによって新規Issueへ`人間：要求承認待ち`を自動付与する。Requirement Issue Formは既定branch上の内容がGitHubで利用されるため、変更を`develop`へ取り込んだだけでは有効化完了と扱わない。人間が管理する`develop`から`main`への反映後に、初期ラベルを含む外部動作を確認する。Issue単位で`main`へ直接backportせず、初期付与のためのIssue event orchestrationや、ラベル変更だけを契機とするAIの自動起動も導入しない。
 
 ラベルの未作成、Issue Formの付与失敗、手動操作の不備によりステータスが未付与または競合した場合は、自動補正によってAIへ作業権を与えず、安全側に停止する。導入前に完了したIssueへ遡及付与せず、導入後に後続作業を行うopen Issueは人間が作業開始前に有効なステータスへ整える。
 
 ### AI作業開始ゲート
 
-AIはRequirement Issueに関する作業指示を受けるたびに、成果物作成や工程進行より先にGitHub上の最新Issueを取得し、6種類のステータスラベルだけを抽出する。次の両方を満たす場合に限り作業を開始する。
+AIはRequirement Issueに関する作業指示を受けるたびに、成果物作成や工程進行より先にGitHub上の最新Issueを取得し、4種類のステータスラベルだけを抽出する。次の両方を満たす場合に限り作業を開始する。
 
 - ステータスラベル集合が`AI：作業可能`の1種類だけである。
 - 人間から対象Issueと作業を示す現在のチャット指示がある。
@@ -103,15 +101,14 @@ AIはRequirement Issueに関する作業指示を受けるたびに、成果物�
 
 ### 人間への引き渡し
 
-AIが現在工程の承認対象を完成させた場合だけ、`AI：作業可能`を次の人間承認待ちへ切り替える。切り替えではステータス以外のラベルを保持し、以前のステータスを残さず、変更後のIssueを再取得して6種類のうち目的の1種類だけであることを確認する。変更または確認に失敗した場合は次工程へ進まず、不完全な引き渡しとして報告する。
+AIが現在工程の完成成果物を作成した場合だけ、`AI：作業可能`を`人間：PR確認待ち`へ切り替える。タスク計画の確認だけは`人間：タスク承認待ち`へ引き渡す。切り替えではステータス以外のラベルを保持し、以前のステータスを残さず、変更後のIssueを再取得して4種類のうち目的の1種類だけであることを確認する。旧3ラベル、未付与、競合、または確認失敗時は移行完了まで安全停止する。
 
 | AIが完成させた承認対象 | 引き渡し先 |
 |---|---|
-| 要求分析書とRequirement Analysis PR | `人間：要求分析承認待ち` |
-| 設計PR | `人間：基本設計承認待ち` |
-| 設計変更不要という判断とRequirement Issueへの根拠コメント | `人間：基本設計承認待ち` |
+| 要求分析書とRequirement Analysis PR | `人間：PR確認待ち` |
+| 設計判断記録と設計PR | `人間：PR確認待ち` |
 | 人間が承認可能なタスク計画 | `人間：タスク承認待ち` |
-| 全Task、統合・回帰検証、全受入条件確認を終えたIssue統合PR | `人間：最終成果物承認待ち` |
+| 全Task、統合・回帰検証、全受入条件確認を終えたIssue統合PR | `人間：PR確認待ち` |
 
 AIは人間承認待ちへ切り替えた同じ作業指示で後続工程を続けない。人間は承認対象を確認した後、以前の人間承認待ちを残さず`AI：作業可能`へ切り替え、新しいチャット指示を行う。
 
@@ -147,7 +144,9 @@ Requirement Issue登録後、`$analyze-requirement`を使用してIssueの要求
 
 ### Requirement Analysis PR
 
-要求分析書は最新の`develop`をbaseとする専用PRで公開する。PRはRequirement Issueを`Refs #<number>`などの非close形式で参照し、要求分析の内容、主要な判断、未確定事項を人間が確認できる状態にする。専用PRを作成した後、AIはRequirement Issueを`人間：要求分析承認待ち`へ切り替えて終了し、PRをmergeせず、設計影響確認へ進まない。
+未確定の人間判断がない場合は質問せず、同じチャットで要求分析書とPRを完成させる。判断が必要な場合だけ質問し、回答後は同一事項を再承認せず完成まで継続する。
+
+要求分析書は最新の`develop`をbaseとする専用PRで公開する。PRはRequirement Issueを`Refs #<number>`などの非close形式で参照し、要求分析の内容、主要な判断、未確定事項を人間が確認できる状態にする。専用PRを作成した後、AIはRequirement Issueを`人間：PR確認待ち`へ切り替えて終了し、PRをmergeせず、設計影響確認へ進まない。
 
 人間がRequirement Analysis PRをmergeして内容を承認した後、Requirement Issueを`AI：作業可能`へ切り替えて新しいチャット指示を行う。後続は別チャットでRequirement Issue、merge済み要求分析書、最新の`develop`、最新の`docs/`を読み直して開始し、過去チャットを正本にしない。
 
@@ -167,6 +166,8 @@ Requirement Issue登録後、`$analyze-requirement`を使用してIssueの要求
 
 ## 設計影響確認
 
+未確定の設計判断がない場合は質問せず、同じチャットで設計判断記録と設計PRを完成させる。判断が必要な場合だけ質問し、回答後は同一事項を再承認せず完成まで継続する。
+
 Requirement Analysis PRのmerge後に`$check-design-impact`を使用する。Requirement Issue、merge済みの`requirements/<issue-id>.md`、現在の`develop`、`docs/`、関連コードとテストを読み、次を確認する。
 
 - frontend / backendの責務
@@ -185,15 +186,15 @@ Issueは要求原文と事前の思考材料を確認する入力として使い
 
 設計変更が必要と判断したチャットでは、後続の具体的なTask、実装対象ファイル、作業順序、実装手順、Agent割り当てを決めず、`$plan-tasks`を使用しない。設計上必然的に生じる影響範囲は説明できるが、具体的な実装計画へ落とし込まない。
 
-設計変更または既存設計の明確化が必要なら、選択肢、影響、推奨案を人間へ提示し、チャット内の承認後に元Issueを`Refs #<number>`で参照する設計PRを作る。設計PR作成後はRequirement Issueを`人間：基本設計承認待ち`へ切り替えて終了し、人間がmergeするまでタスク計画や実装へ進まない。設計PRはRequirement Issueをcloseしない。
+設計変更または既存設計の明確化が必要なら、選択肢、影響、推奨案を人間へ提示し、回答後は同じ判断を再承認せず、元Issueを`Refs #<number>`で参照する設計PRを作る。設計PR作成後はRequirement Issueを`人間：PR確認待ち`へ切り替えて終了し、人間がmergeするまでタスク計画や実装へ進まない。設計PRはRequirement Issueをcloseしない。
 
-設計文書の変更が不要なら、その理由と確認した正本をRequirement Issueへコメントし、`人間：基本設計承認待ち`へ切り替えて終了する。同じ作業指示でタスク計画へ進まない。
+設計文書の変更が不要でも、理由と確認した正本を`docs/design-decisions/<issue-id>.md`へ記録する設計PRを作り、Requirement Issueを`人間：PR確認待ち`へ切り替えて終了する。同じ作業指示でタスク計画へ進まない。
 
-人間が設計PRをmergeするか設計変更不要という判断を承認した後、Requirement Issueを`AI：作業可能`へ切り替えて新しいチャット指示を行う。後続の別チャットではRequirement Issue、merge済み要求分析書、最新の`develop`、最新の`docs/`から設計影響確認をやり直す。追加の設計変更が不要で、前の基本設計ゲートの承認も確認できた場合にだけタスク計画へ進む。
+人間が設計PRをmergeした後、Requirement Issueを`AI：作業可能`へ切り替えて新しいチャット指示を行う。後続の別チャットではRequirement Issue、merge済み要求分析書、最新の`develop`、最新の`docs/`から設計影響確認をやり直す。追加の設計変更が不要で、前の設計PRのmergeを確認できた場合にだけタスク計画へ進む。
 
 ## タスク分解と承認ゲート
 
-Requirement Analysis PRがmerge済みで、設計PRのmergeまたは設計変更不要判断の承認を確認できることを前提とする。Requirement Issueが`AI：作業可能`で新しいチャット指示を受けた後、Requirement Issue、merge済み要求分析書、最新の`develop`、最新の`docs/`から設計影響を再評価し、追加の設計変更が不要と判断できた場合にだけ`$plan-tasks`を使用する。
+Requirement Analysis PRがmerge済みで、設計判断記録と設計PRの人間mergeを確認できることを前提とする。Requirement Issueが`AI：作業可能`で新しいチャット指示を受けた後、Requirement Issue、merge済み要求分析書、最新の`develop`、最新の`docs/`から設計影響を再評価し、設計PRのmerge後にだけ`$plan-tasks`を使用する。
 
 `$plan-tasks`ではmerge済み要求分析書の目的、要件、受入条件、制約、対象外を根拠に、1 Task = 1責務のレビュー可能な計画をチャットへ提示する。各Taskは目的、対象範囲、作業内容、対象外、依存、懸念事項、完了条件、優先度、Agent構成、必須レビュー経路を持つ。計画提示後はRequirement Issueを`人間：タスク承認待ち`へ切り替えて終了し、branch、Pull Request、Task fileを作成しない。
 
@@ -313,10 +314,10 @@ WorkerまたはMainは実装後にセルフレビューを行う。承認済みA
 
 ステータスラベルフローを変更するTaskでは、共通品質ゲートに加えて少なくとも次を確認する。
 
-- 6種類のラベル名、Requirement Issue Formの初期ラベル、repositoryの既定branchが`main`であること、作業branchとIssue統合PRが`develop`を起点・baseとしていること、Issue Formが`main`へ反映された後の外部動作が設計と一致する
+- 4種類のラベル名、Requirement Issue Formの初期ラベル、repositoryの既定branchが`main`であること、作業branchとIssue統合PRが`develop`を起点・baseとしていること、Issue Formが`main`へ反映された後の外部動作が設計と一致する
 - `AI：作業可能`だけの場合、各人間承認待ち、未付与、複数競合の場合の開始判定が設計どおりである
 - 各工程の引き渡しで以前のステータスを残さず、ステータス以外のラベルを保持する
-- 設計変更不要時のIssueコメント、各工程での停止、永続情報との不整合時の停止を確認できる
+- 設計変更の有無にかかわらない設計判断記録と設計PR、各工程での停止、永続情報との不整合時の停止を確認できる
 - ラベル変更だけでAI実行、Pull Request merge、Requirement Issue closeが起きない
 - GitHub上で初期付与と遷移を確認する必要がある場合、その実確認を未実施のまま成功扱いにしない
 
@@ -328,7 +329,7 @@ WorkerまたはMainは実装後にセルフレビューを行う。承認済みA
 
 Requirement Analysis PR、設計PR、Task PR、Issue統合PRの本文では、対応するRequirement Issueを`Refs #<number>`または通常のリンクなど、closeを伴わない形式で参照する。`Closes`、`Fixes`、`Resolves`およびGitHubが同等に扱う自動closeキーワードは使用しない。Requirement Issueとの追跡関係は維持しながら、どのPRのmergeでもIssueを自動closeさせない。
 
-Main、Worker、Reviewerを含むAI agentとSkillは、受入条件の充足状況にかかわらずRequirement Issueをcloseしない。IssueをcloseするGitHub Actionsなどの自動化も導入しない。全Task、最新`develop`との統合、回帰検証、全受入条件確認を終えてIssue統合PRを人間が確認可能な状態にした後、MainはRequirement Issueを`人間：最終成果物承認待ち`へ切り替えて終了する。人間がIssue統合PRをmergeした後もRequirement Issueはopenのまま維持し、要求分析書の全受入条件とその根拠を人間が確認した後に限り、人間が明示的にcloseする。
+Main、Worker、Reviewerを含むAI agentとSkillは、受入条件の充足状況にかかわらずRequirement Issueをcloseしない。IssueをcloseするGitHub Actionsなどの自動化も導入しない。全Task、最新`develop`との統合、回帰検証、全受入条件確認を終えてIssue統合PRを人間が確認可能な状態にした後、MainはRequirement Issueを`人間：PR確認待ち`へ切り替えて終了する。人間がIssue統合PRをmergeした後もRequirement Issueはopenのまま維持し、要求分析書の全受入条件とその根拠を人間が確認した後に限り、人間が明示的にcloseする。
 
 Requirement Analysis PRは、要求分析の内容、主要な選択肢と判断、確認履歴、未確定事項を人間が承認する境界である。設計PRとTask PRには、そのPRの範囲が要求分析書のどの受入条件へ寄与するか、根拠、未対象または未充足の事項を記録する。Issue統合PRとAI agentの完了報告には、要求分析書の受入条件を1件ずつ確認した充足状況と根拠、未実施項目、残るリスクを示し、人間がIssue完了を判断できる状態にする。途中のPRやTaskだけを根拠にRequirement Issue全体を完了扱いにしない。
 
@@ -341,17 +342,17 @@ Task PR作成後は、Requirement Issue、merge済み要求分析書、現在の
 ## チャットと永続状態の境界
 
 - AIはRequirement Issueに関する各作業指示の開始時に最新ステータスを確認し、開始ゲートを満たさなければ永続状態を変更せず終了する。
-- 要求分析チャットはRequirement Issueの要求と補足から開始し、必要な探索、選択肢比較、人間への質問、回答の記録、要求分析書とRequirement Analysis PRの作成までを担う。作成後は`人間：要求分析承認待ち`へ引き渡して終了する。
+- 要求分析チャットはRequirement Issueの要求と補足から開始し、必要な探索、選択肢比較、人間への質問、回答の記録、要求分析書とRequirement Analysis PRの作成までを担う。作成後は`人間：PR確認待ち`へ引き渡して終了する。
 - Requirement Analysis PRを人間がmergeし、`AI：作業可能`への切り替えと新しい指示を行った後、設計影響確認を別チャットで開始する。
-- 設計PRが不要な場合も根拠をRequirement Issueへコメントし、`人間：基本設計承認待ち`へ引き渡して終了する。同じチャットでタスク分解へ進まない。
-- 設計変更または既存設計の明確化が必要な場合は、そのチャットの責務を影響分析、設計案の承認、設計PRの作成までに限定する。作成後は`人間：基本設計承認待ち`へ引き渡し、タスク分解や実装へ進まない。
-- 設計PRのmergeまたは設計変更不要判断の承認後、人間が`AI：作業可能`への切り替えと新しい指示を行った別チャットで、最新の正本から設計影響確認をやり直す。
+- 設計変更の有無にかかわらず設計判断記録と設計PRを作成し、`人間：PR確認待ち`へ引き渡して終了する。同じチャットでタスク分解へ進まない。
+- 設計変更または既存設計の明確化が必要な場合は、そのチャットの責務を影響分析、設計上の質問、設計PRの作成までに限定する。作成後は`人間：PR確認待ち`へ引き渡し、タスク分解や実装へ進まない。
+- 設計PRのmerge後、人間が`AI：作業可能`への切り替えと新しい指示を行った別チャットで、最新の正本から設計影響確認をやり直す。
 - 追加の設計変更が不要ならタスク計画を提示し、`人間：タスク承認待ち`へ引き渡して終了する。未着手計画はGitへ保存しない。
 - 人間がタスク計画を承認し、`AI：作業可能`への切り替えと新しい指示を行った後、Issue branch、Issue統合Draft PR、Task file、Task branchを開始する。
 - 過去チャット上の未永続な要求分析、タスク計画、実装計画を正本として復元しない。タスク計画と承認を現在のチャットで確認できない場合は再計画・再承認へ戻る。
 - Task PR後はRequirement Issue、merge済み要求分析書、現在の設計、Issue統合PR、Task file、Task PR、diff、レビュー・CI結果から別チャットで復元できる。
 - Issue統合レビューは、Requirement Issue、merge済み要求分析書、現在の設計、Issue統合PR、取り込み済みTask PR、Task file、最新`develop`との差分と検証結果から別チャットでも復元できる。
-- Issue統合PRを人間が確認可能な状態にした後は`人間：最終成果物承認待ち`へ引き渡して終了し、AIはmergeまたはIssue closeを行わない。
+- Issue統合PRを人間が確認可能な状態にした後は`人間：PR確認待ち`へ引き渡して終了し、AIはmergeまたはIssue closeを行わない。
 - Flow Feedback処理は専用Requirement Issue、merge済み要求分析書、現在の設計、処理対象の`pending/` file、Task file、Pull Request、評価案への人間承認から別チャットでも復元できる。
 - 改善Requirement Issueまたは別Issueへ引き継いだfeedbackは、そのIssueの最終結果が確定するまで`pending/`を維持する。引き継ぎ先は別チャットで通常フローを開始する。
 

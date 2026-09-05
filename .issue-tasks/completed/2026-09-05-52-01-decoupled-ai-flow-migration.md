@@ -103,12 +103,13 @@
 ## CI
 
 - run 134: Failed。契約テストの本文記号と表記差に関する期待値2件を確認し、実装意味を変えず修正した
-- run 135: Passed
-- URL: https://github.com/shu-matsukubo/matsu-ai-dev-flow-lab/actions/runs/33963949002
+- run 136: Passed
+- URL: https://github.com/shu-matsukubo/matsu-ai-dev-flow-lab/actions/runs/33964078544
 - job `verify`: success
 - step「品質検証」: success
-- 対象revision: `7ce6a55656ec1b58b6db90fda2468167bb66c047`
-- Task記録移動を含む最終headのCIはTask PRで再確認する
+- 対象revision: `50950e2630e0c0f9d20e36eb7507d9a966d071b1`
+- このrevisionは成果物、completed Task記録への移動、Flow Feedbackの発生元更新を含む
+- CI証拠を追記するcommit自体との自己参照を避けるため、Task PRの最新headと最新CI状態はGitHub上のPR checksを正本とする
 
 ## Agent割り当て
 

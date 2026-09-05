@@ -6,7 +6,7 @@ AI駆動開発で、要求入力・要求分析・設計・タスク・実装・
 
 - `apps/front`: React + TypeScript + Vite
 - `apps/api`: Hono + TypeScript
-- 疎通契約: Frontから `GET /api/health` を呼び出す最小構成
+- 疎通契約: Frontから`GET /api/health`を呼び出す最小構成
 
 DB、認証、認可、外部SaaS、OpenAPI、code generation、shared package、deployment構成は導入していません。
 
@@ -14,50 +14,26 @@ DB、認証、認可、外部SaaS、OpenAPI、code generation、shared package�
 
 Docker DesktopとDocker Compose v2が必要です。
 
-```sh
+~~~sh
 sh scripts/setup.sh
 docker compose up front api
-```
+~~~
 
-Frontは `http://localhost:5173`、API healthは `http://localhost:3000/api/health` で確認できます。リポジトリ更新後は `sh scripts/refresh.sh`、共通品質ゲートは `sh scripts/verify.sh` を使用します。
+Frontは`http://localhost:5173`、API healthは`http://localhost:3000/api/health`で確認できます。リポジトリ更新後は`sh scripts/refresh.sh`、共通品質ゲートは`sh scripts/verify.sh`を使用します。
 
-TLS inspection環境でnpm registry用の追加CAが必要な場合は、local PEM fileのpathを `NPM_CA_FILE` に設定してscriptを実行します。CAはBuildKit secretとしてだけ使用され、repositoryやimageへ保存されません。
+TLS inspection環境でnpm registry用の追加CAが必要な場合は、local PEM fileのpathを`NPM_CA_FILE`に設定してscriptを実行します。CAはBuildKit secretとしてだけ使用され、repositoryやimageへ保存されません。
 
 ## AI開発フロー
 
-```text
-要求分析
-要求Issue（要求 + 任意の補足）
-  -> 要求分析 -> requirements/<issue-id>.md
-  -> Requirement Analysis PR -> 人間がSquash merge
-  -> 要求分析チャット終了
+AI開発フローは、変更頻度と責務の異なる情報を次の場所へ分離しています。
 
-設計変更なし
-Requirement Analysis PR merge後の別チャット
-  -> 要求Issue・merge済み要求分析書・最新develop・最新docsを再読込
-  -> 設計影響確認 -> タスク分解 -> 承認
-  -> Issue branch・Issue統合Draft PR
-  -> Task branch -> Task実装 -> レビュー -> 検証 -> Draft Task PR
-  -> Issue branchへTaskをSquash merge
-  -> 最新developをmerge -> 統合レビュー・検証 -> 受入条件確認
-  -> Issue統合PRをReady for review
-  -> 人間がSquash merge・branch削除・Issue完了を判断
+- 安定した作業原則: [AGENTS.md](AGENTS.md)
+- 正本と能力発見の入口: [AI開発フロー](docs/ai-development/overview.md)
+- 工程、承認、停止・再開: [Workflow](docs/ai-development/workflows/)
+- 複数能力で共有する判断基準: [Reference](docs/ai-development/references/)
+- 実行時に発見する単一能力: `.agents/skills/*/SKILL.md`
+- Agentの役割と実行設定: `.codex/agents/`
 
-設計PRが必要（設計変更または既存設計の明確化）
-Requirement Analysis PR merge後の別チャット
-  -> 設計影響確認 -> 影響分析 -> 設計案提示 -> 承認
-  -> 設計PR -> merge -> 別チャットで正本を再読込
-  -> 設計影響確認から再開
-```
+Workflowは必要な能力を意味、入力、期待する出力で指定し、個別Skill名を固定しません。Skillは一つの能力だけを提供し、Referenceは判断知識だけを提供します。詳細な工程をREADMEへ複製せず、作業時点のWorkflowとReferenceを参照してください。
 
-Requirement Issueは要求原文とIssue登録前の補足、`requirements/<issue-id>.md`は目的・要件・受入条件などの要求分析を保持します。Requirement Analysis PRが人間によってmergeされるまで後続へ進まず、merge後は別チャットで元Issue、merge済み要求分析書、最新の`develop`、最新の`docs/`を読み直します。
-
-設計の検討は常に行います。設計変更または既存設計の明確化により設計PRが必要な場合は、mergeまで具体的なタスク分解や実装計画へ進まず、merge後に同じ正本から別チャットで再評価します。設計文書の変更は影響がある場合だけ行います。
-
-詳細は次を参照してください。
-
-- [現在のシステム設計](docs/architecture/system.md)
-- [テスト戦略](docs/quality/testing.md)
-- [AI開発フロー](docs/ai-development/overview.md)
-
-Issue統合Draft PRは、対応するRequirement Issue、要求分析書、Requirement Analysis PR、設計、Task記録・Task PR、検証結果、受入条件、`develop` 同期状態を辿る索引です。AI agentはPRをmergeせず、Task PRは対応するIssue branchをbaseにします。
+現在のアプリケーション境界は[システム設計](docs/architecture/system.md)、共通品質ゲートは[テスト戦略](docs/quality/testing.md)を正本とします。

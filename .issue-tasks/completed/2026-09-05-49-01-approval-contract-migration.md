@@ -12,7 +12,7 @@
 - Issue統合PR: `#56`
 - Issue統合PRのベースブランチ: `develop`
 - タスクブランチ: `task/49-approval-contract-migration`
-- Task PR: 未作成
+- Task PR: [#57](https://github.com/shu-matsukubo/matsu-ai-dev-flow-lab/pull/57)（Draft）
 - Task PRのベースブランチ: `issue/49`
 - 承認記録: 2026-09-05、このチャットで要求者がタスク計画を「承認」と回答
 
@@ -97,7 +97,7 @@
 
 ## CI
 
-- Task PR未作成のため未実施。Task PR公開後に確認する。
+- Task PR #57をDraftで作成済み。CI確認待ち。
 
 ## Agent割り当て
 
@@ -122,23 +122,24 @@
 
 ## commit
 
-- 未作成
+- local実装・記録commit: `df20d8e13d502b7792085de043f7e1f8633fa5e8`
+- GitHub公開commit: `30daf4894c4eb7f457af572a7a5ea521b5364d7a`
 
 ## Pull Request
 
 - Issue統合Draft PR: #56
-- Task PR: 未作成
+- Task PR: [#57](https://github.com/shu-matsukubo/matsu-ai-dev-flow-lab/pull/57)（base `issue/49`、head `task/49-approval-contract-migration`、Draft）
 
 ## 完了報告
 
 - このTaskが寄与する要求分析書の受入条件ID: `AC-01`〜`AC-12`
 - 根拠: AC-01〜AC-11は文書・Agent指示・8 Skill・13件の契約テスト、独立レビュー、Main検証で充足。AC-12のローカル共通品質ゲートは成功。
 - 未対象または未充足の事項: AC-12のTask PR CIと、Task PR merge後に行うIssue統合PRの統合・回帰検証およびCIは未完了。
-- 未実施項目: Task PR作成とCI確認。Issue統合PRの検証・CI・全受入条件確認はTask PRの人間merge後に行う。
+- 未実施項目: Task PR #57のCI確認。Issue統合PRの検証・CI・全受入条件確認はTask PRの人間merge後に行う。
 - 残るリスク: GitHub連携からrepository label一覧を直接取得できない。Issue統合PRの最終引き渡し時に`人間：PR確認待ち`への更新と再取得を行い、目的の1状態だけになることを確認する。
 - Requirement Issueの状態: merge後もopen。全受入条件と根拠を確認した人間だけが明示的にcloseする
 - AI agentによるIssue close: 行わない
 
 ## 完了日時
 
-- 2026-09-05（ローカル実装・レビュー・検証・外部ラベル移行確認を完了。Task PRの追跡情報とCI結果は公開後に追記する）
+- 2026-09-05（ローカル実装・レビュー・検証・外部ラベル移行確認を完了し、Draft Task PR #57を公開。CI結果は確認後に追記する）

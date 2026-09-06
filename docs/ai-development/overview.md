@@ -14,7 +14,9 @@
 | Reference | 複数能力で共有する判断基準、形式、禁止事項、例 | 処理実行、Agent割当、状態遷移、別能力の呼び出し |
 | Agent定義 | Main、Worker、Reviewerの役割とmodel / reasoning effort | Workflow固有の能力一覧や工程順序 |
 
-依存方向は、現在の人間指示と永続状態からWorkflowへ、Workflowから必要な能力契約とReferenceへ向かう。Skill同士を依存させず、SkillまたはReferenceからWorkflowの遷移を要求しない。
+依存方向は、現在の人間指示と永続状態からWorkflowへ、Workflowから必要な能力契約とReferenceへ向かう。
+
+WorkflowまたはAgentは、高難度、高リスク、または判断困難な論点について、能力のdescriptionと契約から独立した専門レビューを任意に選択できる。依頼は現在の承認scope内で行い、元Agentが助言を正本と照合して対応を決める。結果、未確認事項、利用不能または入力不足、残るリスクは正式な引き渡し前に既存成果物へ要約する。専門レビューは通常のreview、verification、提出、承認、または最終判断を置き換えない。Skill同士を依存させず、SkillまたはReferenceからWorkflowの遷移を要求しない。
 
 ## 情報の正本
 

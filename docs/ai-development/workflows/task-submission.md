@@ -47,6 +47,8 @@ Task記録には少なくとも次を保持する。
 
 ## Taskのreviewとverification
 
+Taskでは、必要な入力と期待する出力を満たす独立した専門レビュー能力を、難度、影響、不確実性から必要と判断した特定論点の追加相談として利用できる。元Agentは結果を正本と承認scopeへ照合し、利用理由、対象、主要結果、対応判断、未確認事項、remaining riskをTask記録へ要約する。利用不能、入力不足、結果未取得は成功扱いせず、通常review、verification、提出、人間の承認境界を維持する。
+
 Taskの実差分、Task記録、要求、設計を入力にreviewを行い、重要度付きfinding、確認範囲、未確認事項、remaining riskを得る。承認済み構成に独立Reviewerが含まれる場合は、実装担当から独立したreviewを完了する。Mainの最終reviewは省略しない。
 
 Taskの変更リスクに従って`sh scripts/verify.sh`と追加検証を実行する。各確認をPassed、Failed、Not Executedで記録し、未実施を成功扱いにしない。P0〜P2またはTask起因の検証失敗が残る場合は提出しない。

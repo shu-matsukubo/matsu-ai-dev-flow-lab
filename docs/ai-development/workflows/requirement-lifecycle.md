@@ -81,6 +81,8 @@ Task計画にはTask ID、目的、scope、作業内容、対象外、寄与す�
 
 全Task完了後、最新`develop`をIssue branchへ取り込み、統合review、共通品質ゲート、必要な回帰検証、要求分析書の全受入条件を確認する。Issue統合PRへ各受入条件の状態と根拠、未実施項目、残るリスクを記録し、Ready for reviewにする。
 
+各工程の元Agentは、影響、可逆性、復旧コスト、不確実性、判断困難度から必要と判断した場合、実行時に発見した独立した専門レビュー能力へ、現在の承認scope内で相談できる。相談結果は元Agentが正本と照合し、対応判断と主要結果を既存成果物へ要約してから通常工程へ戻す。利用不能、入力不足、結果未取得は成功扱いせず、未確認事項と残るリスクを引き継ぐ。専門レビューは通常のself review、独立review、verification、提出、承認、merge、branch削除、Issue closeを置き換えない。
+
 完成したIssue統合PRを`人間：PR確認待ち`へ引き渡して終了する。AIはIssue統合PRをmergeせず、Requirement Issueをcloseしない。
 
 ## 人間への正式な引き渡し

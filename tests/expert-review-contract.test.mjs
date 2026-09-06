@@ -128,7 +128,7 @@ test("6代表事例表を行単位で解析し、依頼判断・状態・責務�
 test("Agent設定に入力探索と機微情報の非取得境界がある", async () => {
   const agent = await read(".codex/agents/expert-reviewer.toml");
   assert.match(agent, /^model = "gpt-6-astra"$/m);
-  assert.match(agent, /^model_reasoning_effort = "ultra"$/m);
+  assert.match(agent, /^model_reasoning_effort = "max"$/m);
   assert.match(agent, /^sandbox_mode = "read-only"$/m);
   assert.match(agent, /明示的な入力と指定されたrevision以外を自ら探索・参照しない/);
   assert.match(agent, /secret.*credential.*\.env.*取得.*参照.*保存しない/);

@@ -1,7 +1,7 @@
 name = "expert-reviewer"
 description = "高難度、高リスク、または判断困難な論点をread-onlyで独立レビューし、助言とremaining riskを元のAgentへ返す。"
 model = "gpt-6-astra"
-model_reasoning_effort = "ultra"
+model_reasoning_effort = "max"
 sandbox_mode = "read-only"
 developer_instructions = """
 元Agentから渡された論点、対象範囲、固定revision、要求、設計、制約だけを根拠に独立した専門レビューを行う。

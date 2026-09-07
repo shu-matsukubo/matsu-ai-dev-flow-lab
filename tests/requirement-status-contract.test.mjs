@@ -12,12 +12,12 @@ const referencesRoot = join(root, "docs", "ai-development", "references");
 const read = (relativePath) => readFile(join(root, relativePath), "utf8");
 
 const activeStatusLabels = [
-  "人間：要求承認待ち",
   "AI：作業可能",
   "人間：PR確認待ち",
-  "人間：タスク承認待ち",
 ];
 const retiredStatusLabels = [
+  "人間：要求承認待ち",
+  "人間：タスク承認待ち",
   "人間：要求分析承認待ち",
   "人間：基本設計承認待ち",
   "人間：最終成果物承認待ち",
@@ -184,7 +184,7 @@ test("Workflowは個別Skill名なしで能力、順序、承認、停止と再�
   }
 });
 
-test("Requirement Issueの4状態、開始ゲート、正式引き渡しを一意に保つ", async () => {
+test("Requirement Issueの2状態、開始ゲート、正式引き渡しを一意に保つ", async () => {
   const workflow = await read("docs/ai-development/workflows/requirement-lifecycle.md");
   const statusSection = workflow.split("## AI作業開始ゲート")[0].split("## ステータス契約")[1] ?? "";
   const tableLabels = [...statusSection.matchAll(/^\| `([^`]+)` \|/gm)].map((match) => match[1]);
@@ -192,7 +192,7 @@ test("Requirement Issueの4状態、開始ゲート、正式引き渡しを一�
   assert.equal(new Set(tableLabels).size, activeStatusLabels.length);
   for (const label of retiredStatusLabels) assert.ok(statusSection.includes(label), label);
   for (const token of [
-    "移行完了まで安全停止",
+    "移行完了または人間確認まで安全停止",
     "ステータス集合が`AI：作業可能`の1種類だけ",
     "現在のチャット指示",
     "自ら付与して作業権を取得しない",
@@ -201,6 +201,10 @@ test("Requirement Issueの4状態、開始ゲート、正式引き渡しを一�
     "更新後のIssueを再取得",
     "同じ作業指示では次工程へ進まず停止",
     "Worker、Reviewer、個別能力はステータスを変更しない",
+    "新規Requirement Issueは、AIが作成する場合もIssue Formから送信する場合もステータスを付与しない",
+    "人間が要求原文と補足を確認し、作業開始を認める場合だけ人間が`AI：作業可能`を付与する",
+    "未付与は第3の状態ではなく安全停止条件",
+    "Issue作成またはラベル付与だけではAIを自動起動しない",
   ]) assert.ok(workflow.includes(token), token);
 });
 
@@ -209,12 +213,26 @@ test("要求分析、設計、Task計画、Issue統合の人間承認境界を�
   for (const pattern of [
     /Requirement Analysis PR.*人間：PR確認待ち/s,
     /設計PR完成後.*人間：PR確認待ち/s,
-    /Task計画.*人間：タスク承認待ち/s,
+    /Task計画を同じチャットで提示し、人間が明示的に確認・承認/s,
     /完成したIssue統合PR.*人間：PR確認待ち/s,
     /人間がmerge.*新しいチャット指示.*停止/s,
   ]) assert.match(workflow, pattern);
   assert.match(workflow, /未確定.*場合だけ.*質問/s);
   assert.match(workflow, /回答後は同一事項を再承認しない/);
+  assert.match(workflow, /PR確認待ち.*対象Pull Requestの人間確認前.*次工程を自律的に進めない/s);
+  assert.match(workflow, /明示的に依頼された対象PRの修正、追加review、verification、説明.*次工程へ進まない/s);
+  assert.match(workflow, /対応後も対象PRが人間確認対象なら`人間：PR確認待ち`を維持する/s);
+  assert.match(workflow, /次工程、要求変更、設計変更、または別scope.*永続状態と承認境界を確認/s);
+  assert.match(workflow, /要求分析、設計影響確認、Task Planning、実装の途中.*同じチャット/s);
+  assert.match(workflow, /該当する要求分析書、設計判断記録、Task記録、PR本文などへ.*同一事項の再承認/s);
+});
+
+test("Requirement Issue Formは工程別ステータスを初期付与しない", async () => {
+  const form = await read(".github/ISSUE_TEMPLATE/requirement.yml");
+  assert.doesNotMatch(form, /^labels\s*:/m);
+  for (const label of [...activeStatusLabels, ...retiredStatusLabels]) {
+    assert.doesNotMatch(form, new RegExp(escapePattern(label)));
+  }
 });
 
 test("二階層PR、branch責務、非自動close、人間だけの最終操作を維持する", async () => {

@@ -60,9 +60,9 @@
 | 設計PR #76 | hard | start | 人間による`develop`へのmerge | merge済み。merge commit `1802c13b5e2cfde663a6814c78dbf698c04a97a1` |
 | 承認済みTask計画とIssue #68開始ゲート | hard | start | 計画の人間承認、`AI：作業可能`単独、現在のチャット指示 | 2026-09-07に承認を受け、GitHub再取得でopenかつ`AI：作業可能`単独を確認 |
 | Issue統合PR #77 | ordering | publish | `develop`をbase、`issue/68`をheadとするDraft PRから統合結果を追跡できる | open、Draft。開始commit `f7fbf0555ece8b0c938e04b0e98b4901babc725b` |
-| Task PR #78 | hard | publish | `issue/68`をbase、`task/68-skill-design-contract`をheadとするDraft PRとCIからTask結果を追跡できる | open、Draft、mergeable。remote実装commit `2943e481a12795ca333a77cce566a2bfdd1da546`のCI run 169がsuccess |
-| 独立Reviewer | hard | publish | P0〜P2を解消し、確認範囲、未確認事項、remaining riskを記録する | 3回のP1修正後、最終再レビューで未解消P0〜P2なし |
-| 共通品質ゲートとTask固有検証 | hard | publish | 必須検証が成功し、未実施と残るリスクを記録する | 専用・既存契約テスト29/29成功。Docker固定環境の`sh scripts/verify.sh`でlint、typecheck、全test、build成功。Task PR CI run 169もsuccess |
+| Task PR #78 | hard | publish | `issue/68`をbase、`task/68-skill-design-contract`をheadとするDraft PRとCIからTask結果を追跡できる | open、Draft、mergeable。remote実装commit `2943e481a12795ca333a77cce566a2bfdd1da546`のCI run 169と、completed記録公開commit `7f52a8cd4c03f0840d65bad1f6fd9ea1df6eccd8`のCI run 170がsuccess |
+| 独立Reviewer | hard | publish | P0〜P2を解消し、確認範囲、未確認事項、remaining riskを記録する | 3回の実装P1を修正。completed記録公開後の再確認で最終headとCI証拠の記録不足P2を1件確認し、本追記で初回実装CI、completed記録公開CI、自己参照境界を区別した |
+| 共通品質ゲートとTask固有検証 | hard | publish | 必須検証が成功し、未実施と残るリスクを記録する | 専用・既存契約テスト29/29成功。Docker固定環境の`sh scripts/verify.sh`でlint、typecheck、全test、build成功。Task PR CI run 169とrun 170もsuccess |
 
 ## 懸念事項
 
@@ -126,12 +126,15 @@
 
 ## CI
 
-- GitHub Actions CI [run 169](https://github.com/shu-matsukubo/matsu-ai-dev-flow-lab/actions/runs/34142089160)（run id `34142089160`）: `success`
-- 対象remote commit: `2943e481a12795ca333a77cce566a2bfdd1da546`
-- 対象tree: `7186f3a20cd63fd3b685d2299730d1189d90d52b`
-- job `verify`: `success`
-- step「品質検証」: `success`
-- completed Task記録を追記するcommit自体との自己参照を避けるため、最終Task headのchecksはTask PR #78を正本として再確認する。
+- 初回実装CI [run 169](https://github.com/shu-matsukubo/matsu-ai-dev-flow-lab/actions/runs/34142089160)（run id `34142089160`）: `success`
+- 対象remote実装commit: `2943e481a12795ca333a77cce566a2bfdd1da546`
+- 対象実装tree: `7186f3a20cd63fd3b685d2299730d1189d90d52b`
+- completed記録公開CI [run 170](https://github.com/shu-matsukubo/matsu-ai-dev-flow-lab/actions/runs/34146640648)（run id `34146640648`）: `success`
+- 対象remote completed記録公開commit: `7f52a8cd4c03f0840d65bad1f6fd9ea1df6eccd8`
+- 対象completed記録公開tree: `008748c5640c10d086743bf6d1fac463199a2e6c`
+- run 169とrun 170のjob `verify`: `success`
+- run 169とrun 170のstep「品質検証」: `success`
+- 本CI証拠追記commitは自身のSHAと将来のrun番号を本文へ固定できないため、公開後のTask branch headと最終checksはTask PR #78を提出時の正本として確認する。この自己参照境界を最終head未確認とは扱わない。
 
 ## Agent割り当て
 
@@ -143,7 +146,7 @@
 
 - Workerセルフレビュー: Not Executed。`/root/issue68_worker`は初回・再実行ともACL障害と利用上限で成果物を作成できず、最終成果物の根拠には使用していない。
 - Mainセルフレビュー: 要求AC-01〜AC-15、設計判断、対象7file、変更scope、Skill本文の8不変条件、契約predicateとfixtureを照合した。否定語による行全体除外を独立レビュー前の自己確認でもリスクとして認識し、Reviewer findingと合わせて修正対象にした。
-- 独立レビュー: 初回は否定語で行全体を除外するP1、再確認では依存操作の後置否定によるP1、次の確認では`呼び出す`と要求構文の活用差によるP1を報告した。すべて修正して前後混在、直接呼び出し、要求構文fixtureを追加し、最終再レビューで未解消P0〜P2なしを確認した。
+- 独立レビュー: 初回は否定語で行全体を除外するP1、再確認では依存操作の後置否定によるP1、次の確認では`呼び出す`と要求構文の活用差によるP1を報告した。すべて修正して前後混在、直接呼び出し、要求構文fixtureを追加した。completed記録公開後の再確認では実装内容に追加findingなし、最終headとCI run 170の記録不足を手続き上のP2として報告したため、本記録へ証拠と自己参照境界を追記した。
 - Main最終レビュー: 独立findingの修正差分、全29契約テスト、共通品質ゲート、対象外fileの非変更を直接確認した。未解消P0〜P2なし。
 
 ## Flow Feedback参照
@@ -161,7 +164,10 @@
 - local実装commit: `e70d013ae468566b0707101ff79da27127ab34b5`
 - remote実装commit: `2943e481a12795ca333a77cce566a2bfdd1da546`
 - localとremoteの実装tree: `7186f3a20cd63fd3b685d2299730d1189d90d52b`
-- Task完了記録: このfileの`.issue-tasks/completed/`への移動と本監査追記を含むTask head
+- local completed記録初回commit: `0d40efab4e534606f175b076042db85bac181c37`
+- remote completed記録初回公開commit: `7f52a8cd4c03f0840d65bad1f6fd9ea1df6eccd8`
+- localとremoteのcompleted記録初回公開tree: `008748c5640c10d086743bf6d1fac463199a2e6c`
+- Task完了記録の提出head: Task PR #78の`task/68-skill-design-contract` ref。自己参照となる本fileの証拠追記後は、同PRのhead SHAとchecksを正本として確認する
 
 ## Pull Request
 
@@ -169,7 +175,7 @@
 - Draft Task PR: [#78](https://github.com/shu-matsukubo/matsu-ai-dev-flow-lab/pull/78)
 - Task PR base: `issue/68`
 - Task PR head: `task/68-skill-design-contract`
-- Task PR状態: open、Draft、mergeable。初回remote実装commitのCI成功
+- Task PR状態: open、Draft、mergeable。初回remote実装commitのCI run 169とcompleted記録初回公開commitのCI run 170が成功。本証拠追記後の最終状態はPR headとchecksで追跡する
 - merge、branch削除、Requirement Issueのcloseは人間だけが行う
 
 ## 完了報告
@@ -188,13 +194,14 @@
 
 - 未対象または未充足の事項: Task PR #78のIssue branchへの人間merge、merge後のIssue統合tree検証、Issue統合PR #77の完成確認。
 - 未実施項目: Worker実装・セルフレビュー、`quick_validate.py`、host依存コマンド。理由と代替確認は上記のとおり。
-- 残るリスク: 正規表現で解釈できない自然言語、削除済み識別子、Task PR最終headと人間merge後のIssue統合treeに対するremote CI。
+- 残るリスク: 正規表現で解釈できない自然言語、削除済み識別子、人間merge後のIssue統合treeに対するremote CI。
 - Requirement Issueの状態: merge後もopen。全受入条件と根拠を確認した人間だけが明示的にcloseする
 - AI agentによるIssue close: 行わない
 
 ## 完了日時
 
-- Draft Task PR公開・初回CI成功確認: 2026-09-08
+- Draft Task PR公開・初回実装CI run 169成功確認: 2026-09-08
+- completed記録初回公開・CI run 170成功確認・独立レビューP2反映: 2026-09-08
 
 ## 専門レビュー追跡要約
 

@@ -4,7 +4,7 @@
 - 要求分析書: `requirements/67.md`
 - Requirement Analysis PR: `#69`（merge済み）
 - 設計PR: `#72`（merge済み）
-- 状態: `active`
+- 状態: `completed`
 - タスクキー: `67-01 two-state-status-contract-migration`
 - 優先度: `high`
 - Agent構成: `worker-reviewer-parent`
@@ -12,11 +12,11 @@
 - Issue統合PR: `#73`
 - Issue統合PRのベースブランチ: `develop`
 - タスクブランチ: `task/67-two-state-status-contract-migration`
-- Task PR: 未作成
+- Task PR: `#74`
 - Task PRのベースブランチ: `issue/67`
 - 承認記録: 2026-09-07、このチャットで要求者が「戻しました」「承認します」と回答し、Issue #67を`AI：作業可能`へ切り替えた
 
-要求や設計全文は複製せず、元Issue、merge済み要求分析書、`docs/design-decisions/67.md`と現在の`docs/`を参照する。このfileは着手済み作業の実施記録である。
+要求や設計全文は複製せず、元Issue、merge済み要求分析書、`docs/design-decisions/67.md`と現在の`docs/`を参照する。このfileは完了したTaskの実施記録である。
 
 ## 目的
 
@@ -74,21 +74,21 @@ Requirement Issueの現在有効な契約、初期状態、契約テスト、確
 
 ## 完了条件
 
-- [ ] AC-01〜AC-06: activeな状態契約が2状態だけとなり、開始・停止・自己付与禁止・異常状態の安全停止を確認できる。
-- [ ] AC-07〜AC-12: 永続成果物からの工程復元、同一チャット内判断、完成PRだけの正式引き渡し、Task計画とTask PRの中間境界を確認できる。
-- [ ] AC-13〜AC-14: Issue Formが初期ステータスを付与せず、Workflowだけが状態遷移を所有し、Skill、Reference、Agent定義へ状態機械を分散していない。
-- [ ] AC-15〜AC-16: open Requirement Issueの変更前後、未移行、失敗、非ステータスラベル保持を確認し、履歴的成果物を不要に変更していない。
-- [ ] AC-17〜AC-18: 既存のreview、verification、品質ゲート、人間限定操作、非自動化を維持し、未実施の外部操作と残るリスクを追跡できる。
-- [ ] `node --test tests/requirement-status-contract.test.mjs`と`sh scripts/verify.sh`が成功する。
-- [ ] Workerセルフレビュー、独立Reviewer、Main最終レビューを完了し、未解消のP0〜P2がない。
-- [ ] Task記録をcompletedへ移し、実装と同じDraft Task PRへ公開する。
+- [x] AC-01〜AC-06: activeな状態契約が2状態だけとなり、開始・停止・自己付与禁止・異常状態の安全停止を確認できる。
+- [x] AC-07〜AC-12: 永続成果物からの工程復元、同一チャット内判断、完成PRだけの正式引き渡し、Task計画とTask PRの中間境界を確認できる。
+- [x] AC-13〜AC-14: Issue Formが初期ステータスを付与せず、Workflowだけが状態遷移を所有し、Skill、Reference、Agent定義へ状態機械を分散していない。
+- [x] AC-15〜AC-16: open Requirement Issueの変更前後、未移行、失敗、非ステータスラベル保持を確認し、履歴的成果物を不要に変更していない。
+- [x] AC-17〜AC-18: 既存のreview、verification、品質ゲート、人間限定操作、非自動化を維持し、未実施の外部操作と残るリスクを追跡できる。
+- [x] `node --test tests/requirement-status-contract.test.mjs`と`sh scripts/verify.sh`が成功する。
+- [x] Workerセルフレビュー、独立Reviewer、Main最終レビューを完了し、未解消のP0〜P2がない。
+- [x] Task記録をcompletedへ移し、実装と同じDraft Task PRへ公開する。
 
 ## 実装結果
 
 - 変更内容: Requirement Issue lifecycleとoverviewを2状態、初期未付与、二条件の開始ゲート、同一チャット内判断、完成PRだけの正式引き渡しへ更新した。Issue Formの初期label指定を削除し、契約テストを2状態と否定経路へ更新した。
 - 対象外確認: application、API、認証、DB、AGENTS、Skill、Reference、Agent定義、Task提出Workflow、CI、履歴的要求分析書・設計・完了Task記録は変更していない。
 - 外部状態: #67、#68、#71をGitHubから再取得し、いずれもopenかつ`AI：作業可能`単独、非ステータスlabelなしを確認した。#71は変更前の未付与から、人間の対応依頼後に同状態へ移行した。`main`のlive Issue Formはlabel指定なし。要求者が旧5repository labelの削除完了を回答した。repository label定義の列挙はGitHub連携から実行不能のため、人間確認を直接取得結果と区別して記録する。
-- 残るリスク: remote提出とCIは未完了。旧repository label削除は人間確認に依存し、GitHub連携による一覧の直接確認はできない。
+- 残るリスク: Task PRのIssue branchへの取り込みとIssue統合検証は未完了。旧repository label削除は人間確認に依存し、GitHub連携による一覧の直接確認はできない。
 
 ## ローカル検証
 
@@ -100,7 +100,9 @@ Requirement Issueの現在有効な契約、初期状態、契約テスト、確
 
 ## CI
 
-- 未確認
+- GitHub Actions CI run [#159](https://github.com/shu-matsukubo/matsu-ai-dev-flow-lab/actions/runs/34077649340)（run id `34077649340`）: `success`
+- 対象remote head: `8e8ef20272760a8147fdbb9d1ef46ac0870a414b`
+- CI証拠とPR情報を反映する後続のTask記録commit自体との自己参照を避けるため、最終headのchecksはDraft Task PR #74を正本として確認する。
 
 ## Agent割り当て
 
@@ -126,24 +128,32 @@ Requirement Issueの現在有効な契約、初期状態、契約テスト、確
 
 - Issue branch remote開始commit: `2b789f239d1d0646c62e6d32b110da2824c55324`
 - Task branch開始点: `2b789f239d1d0646c62e6d32b110da2824c55324`
+- ローカル実装commit: `d15e02d`
+- 外部label削除確認commit: `56c68d4`
+- 外部移行・再レビュー記録commit: `9d29e8d`
+- remote初回成果物commit: `8e8ef20272760a8147fdbb9d1ef46ac0870a414b`
+- Task完了記録: このfileの`.issue-tasks/completed/`への移動を含むTask head
 
 ## Pull Request
 
 - Issue統合Draft PR: [#73](https://github.com/shu-matsukubo/matsu-ai-dev-flow-lab/pull/73)
-- Task PR: 未作成
+- Draft Task PR: [#74](https://github.com/shu-matsukubo/matsu-ai-dev-flow-lab/pull/74)
+- base: `issue/67`
+- head: `task/67-two-state-status-contract-migration`
+- merge、branch削除は人間だけが行う
 
 ## 完了報告
 
-- このTaskが寄与する要求分析書の受入条件IDと根拠: `AC-01`〜`AC-17`はWorkflow、overview、Issue Form、契約テスト、履歴的成果物の非変更、open Requirement Issueの再取得、review、ローカルverifyで根拠を確認した。`AC-18`はローカルverify成功、remote CIが未完了。
-- 未対象または未充足の事項: `AC-18`のremote CIと、Task PRの人間merge後に行うIssue統合検証。
-- 未実施項目: remote Task成果物公開、Task PR CI、Task PRの人間merge後に行うIssue統合検証。旧repository label削除は人間が完了したが、連携から一覧を再取得できない。
-- 残るリスク: repository label削除は人間確認を証拠とし、GitHub連携による直接確認はできない。Taskをactiveのまま維持し、独立再レビュー、remote提出、CIへ進む。
+- このTaskが寄与する要求分析書の受入条件IDと根拠: `AC-01`〜`AC-17`はWorkflow、overview、Issue Form、契約テスト、履歴的成果物の非変更、open Requirement Issueの再取得、review、ローカルverifyで根拠を確認した。`AC-18`はローカルverifyとTask PR CIが成功し、外部移行結果、未実施項目、残るリスクを本記録とTask PRで追跡できる。Issue統合PRでの最終確認はTask取り込み後に行う。
+- 未対象または未充足の事項: Task PRの人間merge、branch削除、最新`develop`同期、Issue全体の統合review・検証・最終受入条件確認。
+- 未実施項目: Task PR #74のIssue branchへの取り込みと、その後のIssue統合検証。旧repository label削除は人間が完了したが、連携から一覧を再取得できない。
+- 残るリスク: repository label削除は人間確認を証拠とし、GitHub連携による直接確認はできない。Task担当範囲の実装・review・local verification・初回remote CIは成功済みで、残りはIssue統合境界で確認する。
 - Requirement Issueの状態: merge後もopen。全受入条件と根拠を確認した人間だけが明示的にcloseする
 - AI agentによるIssue close: 行わない
 
 ## 完了日時
 
-- 未完了
+- Draft Task PR公開・初回CI成功確認: 2026-09-07T11:52:39+09:00
 
 ## 専門レビュー追跡要約
 

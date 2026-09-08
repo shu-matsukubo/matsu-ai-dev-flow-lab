@@ -16,7 +16,7 @@
 - Task PRのベースブランチ: `issue/68`
 - 承認記録: 2026-09-07の現在チャットで要求者がTask案に対して「承認」と回答。2026-09-08にGitHubへ送信するSkill本文とTask記録の具体的なpayloadと宛先を示し、要求者が「承認します」と回答
 
-要求や設計全文は複製せず、元Issue、merge済み要求分析書、`docs/design-decisions/68.md`と現在の`docs/`を参照する。このfileは完了したTaskの実施記録である。
+要求や設計全文は複製せず、元Issue、merge済み要求分析書、`docs/design-decisions/68.md`と現在の`docs/`を参照する。このfileは完了したTaskの実施記録であり、PR状態、未対象、残るリスクはTask完了時点のsnapshotとして保持する。Task PR merge後の現在状態とIssue全体の統合結果はIssue統合PR #77を正本とする。
 
 ## 目的
 
@@ -60,7 +60,7 @@
 | 設計PR #76 | hard | start | 人間による`develop`へのmerge | merge済み。merge commit `1802c13b5e2cfde663a6814c78dbf698c04a97a1` |
 | 承認済みTask計画とIssue #68開始ゲート | hard | start | 計画の人間承認、`AI：作業可能`単独、現在のチャット指示 | 2026-09-07に承認を受け、GitHub再取得でopenかつ`AI：作業可能`単独を確認 |
 | Issue統合PR #77 | ordering | publish | `develop`をbase、`issue/68`をheadとするDraft PRから統合結果を追跡できる | open、Draft。開始commit `f7fbf0555ece8b0c938e04b0e98b4901babc725b` |
-| Task PR #78 | hard | publish | `issue/68`をbase、`task/68-skill-design-contract`をheadとするDraft PRとCIからTask結果を追跡できる | open、Draft、mergeable。remote実装commit `2943e481a12795ca333a77cce566a2bfdd1da546`のCI run 169と、completed記録公開commit `7f52a8cd4c03f0840d65bad1f6fd9ea1df6eccd8`のCI run 170がsuccess |
+| Task PR #78 | hard | publish | `issue/68`をbase、`task/68-skill-design-contract`をheadとするDraft PRとCIからTask結果を追跡できる | Task完了時点ではopen、Draft、mergeable。remote実装commit `2943e481a12795ca333a77cce566a2bfdd1da546`のCI run 169と、completed記録公開commit `7f52a8cd4c03f0840d65bad1f6fd9ea1df6eccd8`のCI run 170がsuccess |
 | 独立Reviewer | hard | publish | P0〜P2を解消し、確認範囲、未確認事項、remaining riskを記録する | 3回の実装P1を修正。completed記録公開後の再確認で最終headとCI証拠の記録不足P2を1件確認し、本追記で初回実装CI、completed記録公開CI、自己参照境界を区別した |
 | 共通品質ゲートとTask固有検証 | hard | publish | 必須検証が成功し、未実施と残るリスクを記録する | 専用・既存契約テスト29/29成功。Docker固定環境の`sh scripts/verify.sh`でlint、typecheck、全test、build成功。Task PR CI run 169とrun 170もsuccess |
 
@@ -175,7 +175,7 @@
 - Draft Task PR: [#78](https://github.com/shu-matsukubo/matsu-ai-dev-flow-lab/pull/78)
 - Task PR base: `issue/68`
 - Task PR head: `task/68-skill-design-contract`
-- Task PR状態: open、Draft、mergeable。初回remote実装commitのCI run 169とcompleted記録初回公開commitのCI run 170が成功。本証拠追記後の最終状態はPR headとchecksで追跡する
+- Task完了時点のTask PR状態: open、Draft、mergeable。初回remote実装commitのCI run 169とcompleted記録初回公開commitのCI run 170が成功。本証拠追記後の最終状態はPR headとchecksで追跡する
 - merge、branch削除、Requirement Issueのcloseは人間だけが行う
 
 ## 完了報告
@@ -192,9 +192,9 @@
 | AC-13〜AC-14 | Task範囲で充足。runtime discovery、4層責務、review、verification、submission、承認、人間だけの最終判断を維持した |
 | AC-15 | Task範囲で充足。application変更なし、local共通品質ゲートとTask PR CIが成功し、Not Executedとremaining riskを本記録とPRへ残した |
 
-- 未対象または未充足の事項: Task PR #78のIssue branchへの人間merge、merge後のIssue統合tree検証、Issue統合PR #77の完成確認。
+- Task完了時点の未対象または未充足の事項: Task PR #78のIssue branchへの人間merge、merge後のIssue統合tree検証、Issue統合PR #77の完成確認。
 - 未実施項目: Worker実装・セルフレビュー、`quick_validate.py`、host依存コマンド。理由と代替確認は上記のとおり。
-- 残るリスク: 正規表現で解釈できない自然言語、削除済み識別子、人間merge後のIssue統合treeに対するremote CI。
+- Task完了時点の残るリスク: 正規表現で解釈できない自然言語、削除済み識別子、人間merge後のIssue統合treeに対するremote CI。
 - Requirement Issueの状態: merge後もopen。全受入条件と根拠を確認した人間だけが明示的にcloseする
 - AI agentによるIssue close: 行わない
 

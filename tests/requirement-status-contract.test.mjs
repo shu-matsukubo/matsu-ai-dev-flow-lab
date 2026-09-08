@@ -360,9 +360,17 @@ test("要求・Task・Flow Feedback templateは新しい責務境界と整合す
   assert.match(feedback, /配置directory.*正本/);
 });
 
-test("能力の追加・名称変更・削除がAGENTS.mdと無関係なSkillを変更しない", async () => {
+test("能力の追加・名称変更・削除がAGENTS.md、設計ガイド、無関係なSkillを変更しない", async () => {
   const runtimeSkills = await discoverSkills();
-  assert.ok(runtimeSkills.length >= 3, "fixture needs three independent capabilities");
+  const guideConcepts = ["新規設計", "変更", "分割", "統合", "削除", "設計レビュー", "自己完結", "責務配置"];
+  const selectGuide = (skills) => {
+    const candidates = skills.filter((skill) => guideConcepts.every((concept) => skill.description.includes(concept)));
+    assert.equal(candidates.length, 1, "fixture must discover one Skill design guide by capability contract");
+    return candidates[0];
+  };
+  const repositoryGuideBefore = selectGuide(runtimeSkills);
+  const mutableRuntimeSkills = runtimeSkills.filter((skill) => skill.name !== repositoryGuideBefore.name);
+  assert.ok(mutableRuntimeSkills.length >= 3, "fixture needs three independent capabilities besides the design guide");
   const temporaryRoot = await mkdtemp(join(tmpdir(), "matsu-skill-contract-"));
   const fixtureRoot = join(temporaryRoot, ".agents", "skills");
   const fixtureAgentsPath = join(temporaryRoot, "AGENTS.md");
@@ -372,9 +380,12 @@ test("能力の追加・名称変更・削除がAGENTS.mdと無関係なSkillを
     await cp(join(root, "AGENTS.md"), fixtureAgentsPath);
     const fixtureAgentsBefore = await readFile(fixtureAgentsPath, "utf8");
     const fixtureSkills = await discoverSkills(fixtureRoot);
-    const renamedSkill = fixtureSkills[0];
-    const removedSkill = fixtureSkills[1];
-    const unrelatedSkill = fixtureSkills[2];
+    const fixtureGuide = selectGuide(fixtureSkills);
+    const fixtureGuideBefore = fixtureGuide.source;
+    const mutableSkills = fixtureSkills.filter((skill) => skill.name !== fixtureGuide.name);
+    const renamedSkill = mutableSkills[0];
+    const removedSkill = mutableSkills[1];
+    const unrelatedSkill = mutableSkills[2];
     const unrelatedBefore = await readFile(unrelatedSkill.path, "utf8");
 
     const addedName = "fixture-capability";
@@ -417,6 +428,7 @@ test("能力の追加・名称変更・削除がAGENTS.mdと無関係なSkillを
     ].join("\n"), "utf8");
     const afterAddition = await discoverSkills(fixtureRoot);
     assert.ok(afterAddition.some((skill) => skill.name === addedName));
+    assert.equal(selectGuide(afterAddition).source, fixtureGuideBefore);
 
     const renamedName = renamedSkill.name + "-renamed";
     const renamedDirectory = join(fixtureRoot, renamedName);
@@ -427,17 +439,20 @@ test("能力の追加・名称変更・削除がAGENTS.mdと無関係なSkillを
     const afterRename = await discoverSkills(fixtureRoot);
     assert.ok(afterRename.some((skill) => skill.name === renamedName));
     assert.ok(!afterRename.some((skill) => skill.name === renamedSkill.name));
+    assert.equal(selectGuide(afterRename).source, fixtureGuideBefore);
 
     await rm(join(fixtureRoot, removedSkill.name), { recursive: true, force: true });
     const afterRemoval = await discoverSkills(fixtureRoot);
     assert.ok(!afterRemoval.some((skill) => skill.name === removedSkill.name));
     assert.ok(afterRemoval.some((skill) => skill.name === addedName));
     assert.ok(afterRemoval.some((skill) => skill.name === renamedName));
+    assert.equal(selectGuide(afterRemoval).source, fixtureGuideBefore);
 
     const unrelatedAfter = await readFile(join(fixtureRoot, basename(dirname(unrelatedSkill.path)), "SKILL.md"), "utf8");
     assert.equal(unrelatedAfter, unrelatedBefore);
     assert.equal(await readFile(fixtureAgentsPath, "utf8"), fixtureAgentsBefore);
     assert.equal(await read("AGENTS.md"), repositoryAgentsBefore);
+    assert.equal(selectGuide(await discoverSkills()).source, repositoryGuideBefore.source);
   } finally {
     await rm(temporaryRoot, { recursive: true, force: true });
   }
